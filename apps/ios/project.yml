@@ -97,6 +97,7 @@ targets:
         # defaults (read by AppConfig).
         API_BASE_URL: https://api.acadeea.ro
         BRAND_NAME: Acadeea
+        ORG_SLUG: acadeea
     # Push Notifications capability — the aps-environment entitlement. Shared by
     # both schemes (Horae + Horae Test). Real delivery needs an APNs key on the
     # server; the client wiring is complete regardless.
@@ -112,7 +113,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ro.acadeea.app
         BUNDLE_DISPLAY_NAME: Acadeea
-        MARKETING_VERSION: "1.39.1"
+        MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: false

@@ -29,6 +29,9 @@ enum AppConfig {
 
     /// Product name in the UI ("Horae", or the org's own name on a standalone build).
     static let brandName = infoString("BRAND_NAME") ?? "Horae"
+    /// The one organization of a standalone build (public branding is fetched
+    /// for it before login, so a fresh install already shows its logo + colours).
+    static let standaloneOrgSlug = infoString("ORG_SLUG")
     /// True on a standalone (single-organization, on-prem) build.
     static let isStandalone = infoString("BRAND_NAME") != nil
 

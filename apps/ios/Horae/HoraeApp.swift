@@ -31,14 +31,20 @@ struct HoraeApp: App {
             ZStack {
                 if authManager.isAuthenticated {
                     AppTabView()
-                } else if formationDone {
+                } else if formationDone && !AppConfig.isStandalone {
                     // Login on the scheme's paper (redesign), revealed when
                     // the splash fades out — and directly after a logout.
                     LoginView()
                         .transition(.opacity)
                 }
 
-                if !splashHidden {
+                if AppConfig.isStandalone && !authManager.isAuthenticated {
+                    // Acadeea: the login lives ON the splash — the logo lifts,
+                    // centred, and the form fades in on the accent gradient.
+                    SplashView(showLogin: formationDone)
+                        .transition(.opacity)
+                        .zIndex(1)
+                } else if !splashHidden {
                     // Brand moment only; the login form lives in LoginView.
                     SplashView(showLogin: false)
                         .transition(.opacity)

@@ -28,6 +28,8 @@
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>ORG_SLUG</key>
+	<string>acadeea</string>
 	<key>POSTHOG_HOST</key>
 	<string>$(POSTHOG_HOST)</string>
 	<key>POSTHOG_KEY</key>

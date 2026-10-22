@@ -436,7 +436,10 @@ final class BrandingManager {
         // `/organization` now REQUIRES auth. Pre-login there's no token, so skip
         // the fetch and stay on the cached/neutral Horae brand (iOS has no slug
         // pre-login to hit the public by-slug endpoint).
-        guard KeychainService.shared.hasTokens else { return }
+        guard KeychainService.shared.hasTokens else {
+            await loadStandaloneBranding()
+            return
+        }
         do {
             let url = URL(string: "\(APIClient.baseURL)/api/v1/organization")!
             var request = URLRequest(url: url)
@@ -459,6 +462,22 @@ final class BrandingManager {
             await apply(org)
         } catch {
             // Silent fail — use cached/default values
+        }
+    }
+
+    /// Standalone build, logged out: the org is known at build time, so apply its
+    /// PUBLIC branding (logo, accent, font) — the login looks like that org's
+    /// login on Horae instead of the neutral brand.
+    private func loadStandaloneBranding() async {
+        guard let slug = AppConfig.standaloneOrgSlug,
+              let url = URL(string: "\(APIClient.baseURL)/api/v1/organization/by-slug/\(slug)") else { return }
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
+            let org = try decoder.decode(OrganizationBranding.self, from: data)
+            await apply(org)
+        } catch {
+            // Silent fail — cached/default values stay
         }
     }
 
