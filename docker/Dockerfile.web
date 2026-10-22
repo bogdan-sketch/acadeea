@@ -1,0 +1,36 @@
+# ============================================================
+# Web (Next.js) for a standalone / on-prem deployment, e.g. app.acadeea.ro.
+# The Horae multi-tenant web stays on Vercel; this image is only used by
+# docker-compose.acadeea-ro.yml. NEXT_PUBLIC_* are inlined at build time.
+# ============================================================
+FROM node:20-alpine
+
+RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared-types/package.json ./packages/shared-types/
+COPY packages/tsconfig/package.json ./packages/tsconfig/
+COPY packages/eslint-config/package.json ./packages/eslint-config/
+
+RUN pnpm install --frozen-lockfile --filter web... --filter @horae/shared-types...
+
+COPY . .
+
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_STANDALONE_ORG
+ARG NEXT_PUBLIC_BRAND_NAME
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_STANDALONE_ORG=$NEXT_PUBLIC_STANDALONE_ORG \
+    NEXT_PUBLIC_BRAND_NAME=$NEXT_PUBLIC_BRAND_NAME \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_OPTIONS=--max-old-space-size=3072
+
+RUN pnpm --filter @horae/shared-types build && pnpm --filter web build
+
+ENV NODE_ENV=production
+USER node
+EXPOSE 3000
+CMD ["pnpm", "--filter", "web", "start", "-p", "3000"]

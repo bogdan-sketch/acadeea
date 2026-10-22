@@ -1,0 +1,49 @@
+meta {
+  name: Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "email": "test.user@acadeea.ro",
+    "password": "TestUser2024!",
+    "firstName": "Test",
+    "lastName": "User",
+    "role": "COFETAR"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("createdUserId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("email matches", function() {
+    expect(res.getBody().email).to.equal('test.user@acadeea.ro');
+  });
+  test("role matches", function() {
+    expect(res.getBody().role).to.equal('COFETAR');
+  });
+  test("isActive is true", function() {
+    expect(res.getBody().isActive).to.equal(true);
+  });
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "@horae/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2021",
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,1863 @@
+// ============================================================================
+// Horae — Prisma Schema
+// ============================================================================
+// Bakery/pastry production management system.
+// PostgreSQL datasource with prisma-client-js generator.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum UserRole {
+  ADMINISTRATOR
+  SEF_LABORATOR
+  SEF_EVENIMENTE
+  COFETAR
+  PATISER
+  AJUTOR_COFETAR
+  MAGAZIONER
+}
+
+// ============================================================================
+// Dynamic RBAC — Roles & Permissions
+// ============================================================================
+
+/// A named role with dynamic permissions. System roles (isSystem=true) cannot be deleted.
+/// Per-organization: each org has its own role rows (standard set cloned at org creation).
+model Role {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  slug           String
+  isSystem       Boolean  @default(false)
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization Organization     @relation(fields: [organizationId], references: [id])
+  permissions  RolePermission[]
+  users        User[]
+  invitations  UserInvitation[]
+
+  // Constraints
+  @@unique([organizationId, name])
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+/// A single permission rule: (action, subject) granted to a role.
+model RolePermission {
+  id      String @id @default(uuid()) @db.Uuid
+  roleId  String @db.Uuid
+  action  String // create | read | update | delete | manage
+  subject String // Recipe | Task | Order | all | etc.
+
+  // Relations
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([roleId, action, subject])
+  @@index([roleId])
+}
+
+enum UnitType {
+  MILIGRAME
+  GRAME
+  KILOGRAME
+  MILILITRI
+  LITRI
+  BUCATI
+  LINGURITE
+  LINGURI
+  CANI
+  OUNCES
+  POUNDS
+}
+
+enum StorageType {
+  COLD
+  WARM
+  FROZEN
+}
+
+enum MaterialStatus {
+  ACTIVE
+  LOW_STOCK
+  OUT_OF_STOCK
+  DISCONTINUED
+}
+
+enum RecipeType {
+  FINAL
+  SEMIPREPARAT
+}
+
+/// Admin-managed recipe categories (dynamic, not an enum). Per-organization.
+model RecipeCategoryConfig {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  kind           String   @default("RECIPE") // MATERIE_PRIMA | SEMIPREPARAT | PRODUS_FINIT (type separation)
+  parentId       String?  @db.Uuid // null = super-category; set = sub-category
+  color          String? // hex, set on super-categories; sub-categories inherit the parent's color
+  isSystem       Boolean  @default(false) // seeded, cannot be renamed/deleted
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  organization Organization           @relation(fields: [organizationId], references: [id])
+  parent       RecipeCategoryConfig?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children     RecipeCategoryConfig[] @relation("CategoryHierarchy")
+
+  @@unique([organizationId, name, kind])
+  @@index([parentId])
+  @@index([organizationId])
+}
+
+/// A super-category (dynamic). `kind` is its stable slug — the 3 seeded ones
+/// (MATERIE_PRIMA / SEMIPREPARAT / PRODUS_FINIT) are isSystem and drive entity
+/// tagging; users can add more. Sub-categories (RecipeCategoryConfig rows with
+/// the same `kind`) inherit this colour.
+model CategoryKindColor {
+  organizationId String  @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  kind           String
+  color          String
+  name           String?
+  sortOrder      Int     @default(0)
+  isSystem       Boolean @default(false)
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([organizationId, kind])
+}
+
+enum TaskStatus {
+  DE_FACUT
+  BLOCAT
+  IN_LUCRU
+  FINALIZAT
+  ANULAT
+}
+
+/// Who sees a task besides users with `manage Task` (administrators always see everything):
+/// ASSIGNED = only the assignee (and subtask assignees), EVERYONE = anyone who can read tasks,
+/// SELECTED = the assignee plus the users in Task.visibleToIds.
+enum TaskVisibility {
+  ASSIGNED
+  EVERYONE
+  SELECTED
+}
+
+enum StockMovementType {
+  INTRARE
+  IESIRE_PRODUCTIE
+  AJUSTARE
+  REZERVARE
+  ELIBERARE
+  INTRARE_PRODUCTIE
+  /// Raw materials consumed for R&D/test bakes — no task, no recipe output.
+  IESIRE_TESTE
+  /// Finished goods sold (POS report / manual / website) — written by a confirmed SalesDeduction.
+  IESIRE_VANZARE
+}
+
+enum PieceType {
+  SAC
+  CUTIE
+  BIDON
+  PUNGA
+  RECIPIENT
+  BUCATA
+}
+
+enum OrderStatus {
+  NOUA
+  IN_PREGATIRE
+  PREGATITA
+  IN_TRANZIT
+  LIVRATA
+  ANULATA
+}
+
+enum LocationType {
+  DEPOZIT
+  FRIGIDER
+  CONGELATOR
+  LABORATOR
+  MAGAZIN
+  PUNCT_LUCRU
+}
+
+enum TransferStatus {
+  IN_ASTEPTARE
+  IN_TRANZIT
+  FINALIZAT
+  ANULAT
+}
+
+enum TransferApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderItemStatus {
+  IN_PREGATIRE
+  GATA
+  IN_TRANZIT
+  LIVRAT
+}
+
+enum EquipmentType {
+  MIXER
+  CUPTOR
+  TAVA
+  ROBOT
+  FRIGIDER
+  CONGELATOR
+  MASINA_AMBALAT
+  CANTAR
+  TERMOMETRU
+  ALTELE
+}
+
+enum IntegrationProvider {
+  EBRIZA
+  WOOCOMMERCE
+}
+
+enum IntegrationSyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+  SKIPPED
+}
+
+enum EquipmentStatus {
+  DISPONIBIL
+  IN_UTILIZARE
+  IN_MENTENANTA
+  DEFECT
+  SCOS_DIN_UZ
+}
+
+// ============================================================================
+// Models
+// ============================================================================
+
+/// A tenant organization. Every business entity row belongs to exactly one
+/// organization (organizationId FK) and is isolated by the tenant Prisma
+/// extension (src/prisma/tenant.extension.ts). Also carries the org's
+/// white-label branding (logos, accent color, font, app icon) managed by the
+/// org's admin.
+///
+/// NOTE on `organizationId` defaults: every tenant column is declared with a
+/// sentinel `@default(dbgenerated("'0000…0000'::uuid"))`. This makes the field
+/// OPTIONAL in Prisma's create types — services never pass it; the tenant
+/// extension injects the real org id from AsyncLocalStorage on every write.
+/// The actual DB default is the environment's default-org uuid (set by the
+/// hand-written migrations as a rollout safety net) — the sentinel literal
+/// never reaches the database. Accepted schema↔DB drift; migrations are
+/// hand-written only (never `prisma migrate dev` / `db push`).
+model Organization {
+  id                        String   @id @default(uuid()) @db.Uuid
+  name                      String   @default("Acadeea")
+  /// URL-safe tenant identifier — the org's subdomain: <slug>.horae.ca.
+  slug                      String   @unique
+  isActive                  Boolean  @default(true)
+  accentColor               String   @default("#D4527B")
+  /// Optional brand palette companions to accentColor. Clients derive every
+  /// adjacent UI color (tints, charts, highlights) from these three — there is
+  /// deliberately no free-form per-token theming. Null = client defaults.
+  secondaryColor            String?
+  tertiaryColor             String?
+  /// Extended per-platform theme overrides (design "Branding si teme"):
+  /// { web?: {accent, accentPressed, textPrimary, textSecondary, background,
+  ///   card, radiusCard, radiusSheet, secondary, tertiary}, ios?: {...},
+  ///   android?: {...} }. Null = only the 3-color brand palette applies.
+  /// Keys are whitelisted in OrganizationService.sanitizeBrandingTokens.
+  brandingTokens            Json?
+  /// Predefined UI font key (see FONT_FAMILIES in organization module).
+  /// Null = platform default font.
+  fontFamily                String?
+  defaultDeliveryLocationId String?  @db.Uuid // default location deliveries leave from
+  /// Admin-configurable default production/reception location (ClickUp: loc
+  /// implicit receptie) — replaces the old hardcoded "Laborator" name match on
+  /// task creation and goods receipt. Null = no org default configured (falls
+  /// back to the old heuristics).
+  defaultLocationId         String?  @db.Uuid
+  logoUrl                   String? // legacy / fallback logo
+  logoLightUrl              String? // LOGIN logo for light theme
+  logoDarkUrl               String? // LOGIN logo for dark theme
+  appLogoLightUrl           String? // IN-APP logo for light theme
+  appLogoDarkUrl            String? // IN-APP logo for dark theme
+  appIconName               String? // selected iOS alternate app icon (null = default)
+  /// Feature switch: nutrition values per ingredient + aggregated recipe
+  /// nutrition. On by default (clients need it); an admin can still hide it.
+  nutritionEnabled          Boolean  @default(true)
+  /// Feature switch "Livrări din magazinul online": WooCommerce delivery date +
+  /// method import (Pickupia), location external id, "unitate principală"
+  /// stock deduction, delivery-method filters and short names. Off for orgs
+  /// without a shop; the migration turned it on for orgs with a Woo integration.
+  wooDeliveryEnabled        Boolean  @default(false)
+  /// VAT payer (plătitor de TVA): stored purchase prices are the org's REAL
+  /// cost — net (fără TVA) for payers, who recover the VAT, gross (cu TVA)
+  /// for non-payers. Price inputs carry a cu/fără TVA toggle and the API
+  /// normalizes to this basis using vatRatePercent.
+  vatPayer                  Boolean  @default(true)
+  vatRatePercent            Decimal  @default(21)
+  /// Legal identity for printed documents (aviz, declaratie de conformitate).
+  cui                       String?
+  legalAddress              String?
+  regCom                    String? // trade registry no. (e.g. J2019004159128)
+  contactPhone              String?
+  contactEmail              String?
+  website                   String?
+  administratorName         String? // signs the conformity declaration
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  // Tenant back-relations (every org-scoped model)
+  users                  User[]
+  roles                  Role[]
+  rawMaterials           RawMaterial[]
+  suppliers              Supplier[]
+  consumables            Consumable[]
+  recipes                Recipe[]
+  recipeCategoryConfigs  RecipeCategoryConfig[]
+  categoryKindColors     CategoryKindColor[]
+  tasks                  Task[]
+  orders                 Order[]
+  deliveryNotes          DeliveryNote[]
+  conformityCertificates ConformityCertificate[]
+  unitConversions        UnitConversion[]
+  invitations            UserInvitation[]
+  stockMovements         StockMovement[]
+  stockReservations      StockReservation[]
+  locations              Location[]
+  materialStocks         MaterialStock[]
+  stockTransfers         StockTransfer[]
+  equipment              Equipment[]
+  integrations           Integration[]
+  priceHistory           PriceHistory[]
+  notifications          Notification[]
+  recipeStockLots        RecipeStockLot[]
+  orgSnapshots           OrgSnapshot[]
+  salesDeductions        SalesDeduction[]
+  salesProductAliases    SalesProductAlias[]
+  deliveryMethodAliases  DeliveryMethodAlias[]
+  systemLogs             SystemLog[]
+  imageAssets            ImageAsset[]
+}
+
+/// System user — staff members with role-based access. Belongs to exactly one
+/// organization; email stays GLOBALLY unique (apex login resolves email → org).
+model User {
+  id                  String    @id @default(uuid()) @db.Uuid
+  organizationId      String    @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  email               String    @unique
+  passwordHash        String? // null for provider-only accounts (Sign in with Apple/Google, no password set)
+  firstName           String
+  lastName            String
+  /// Profile photo — `/api/v1/images/<ImageAsset.id>` (WebP, 512px), null = initials.
+  avatarUrl           String?
+  role                UserRole // @deprecated — kept for migration; use dynamicRole
+  roleId              String?   @db.Uuid
+  isActive            Boolean   @default(true)
+  failedLoginAttempts Int       @default(0)
+  lockedAt            DateTime? // set on 5 failed logins or reactivation; cleared on password reset
+  deletedAt           DateTime? // set on self-service account deletion (GDPR); PII anonymized, row kept for referential integrity
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  organization             Organization            @relation(fields: [organizationId], references: [id])
+  dynamicRole              Role?                   @relation(fields: [roleId], references: [id])
+  refreshTokens            RefreshToken[]
+  authProviders            UserAuthProvider[]
+  passwordHistory          PasswordHistory[]
+  passwordResetTokens      PasswordResetToken[]
+  createdRecipes           Recipe[]                @relation("RecipeCreatedBy")
+  createdTasks             Task[]                  @relation("TaskCreatedBy")
+  assignedTasks            Task[]                  @relation("TaskAssignedTo")
+  taskStatusChanges        TaskStatusHistory[]
+  stockMovements           StockMovement[]
+  createdInvitations       UserInvitation[]
+  createdOrders            Order[]                 @relation("orderCreator")
+  deliveryOrders           Order[]                 @relation("orderDelivery")
+  stockTransfers           StockTransfer[]         @relation("transferCreatedBy")
+  transfersAssigned        StockTransfer[]         @relation("transferAssignee")
+  orderStatusChanges       OrderStatusHistory[]
+  deviceTokens             DeviceToken[]
+  userLocations            UserLocation[]
+  transferApprovals        TransferApproval[]      @relation("approvedByUser")
+  maintenanceLogs          MaintenanceLog[]
+  recipeVersions           RecipeVersion[]
+  priceChanges             PriceHistory[]
+  issuedCertificates       ConformityCertificate[] @relation("certificateIssuer")
+  handoffCodes             AuthHandoffCode[]
+  notifications            Notification[]
+  salesDeductions          SalesDeduction[]        @relation("salesDeductionCreatedBy")
+  confirmedSalesDeductions SalesDeduction[]        @relation("salesDeductionConfirmedBy")
+
+  orgSnapshots OrgSnapshot[]
+
+  // Indexes
+  @@index([organizationId])
+}
+
+/// Single-use, short-TTL code minted at login on the apex domain and redeemed
+/// on the org's subdomain for a fresh token pair (localStorage is per-origin,
+/// so tokens can't cross subdomains directly). sha256-hashed for O(1) lookup.
+model AuthHandoffCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  codeHash  String    @unique // sha256(code)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Refresh tokens for JWT authentication. Supports revocation.
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  // Indexes
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+enum AuthProviderKind {
+  APPLE
+  GOOGLE
+}
+
+/// A linked social identity (Sign in with Apple / Google). A user may link
+/// several; `providerUserId` is the provider's stable subject (`sub`). Global
+/// unique per (provider, subject) so one social identity maps to one account.
+model UserAuthProvider {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @db.Uuid
+  provider       AuthProviderKind
+  providerUserId String // the provider's `sub` claim
+  email          String? // email as reported by the provider at link time (may be a relay)
+  createdAt      DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
+// Previous password hashes, to block reuse of the last N passwords.
+model PasswordHistory {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum PasswordResetPurpose {
+  RESET // user-requested forgot-password
+  REACTIVATION // admin reactivated the account
+}
+
+model PasswordResetToken {
+  id        String               @id @default(uuid()) @db.Uuid
+  userId    String               @db.Uuid
+  token     String               @unique
+  purpose   PasswordResetPurpose @default(RESET)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+/// Raw materials — ingredients tracked in the warehouse.
+model RawMaterial {
+  id                   String         @id @default(uuid()) @db.Uuid
+  organizationId       String         @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  title                String
+  category             String? // admin-managed product category (null = Misc)
+  producer             String?
+  supplierId           String?        @db.Uuid
+  unit                 UnitType
+  quantityPerPiece     Decimal?
+  pieceType            PieceType?
+  stockCount           Decimal        @default(0)
+  openedCount          Decimal        @default(0)
+  orderedCount         Decimal        @default(0)
+  reservedCount        Decimal        @default(0)
+  storageType          StorageType
+  status               MaterialStatus @default(ACTIVE)
+  minimumStock         Decimal        @default(0)
+  estimatedLossPercent Decimal        @default(0) // estimated waste/loss %
+  purchasePrice        Decimal?
+  invoiceNumber        String?
+  invoiceDate          DateTime?
+  lotNumber            String?
+  expiryDate           DateTime?
+  /// How many days before a lot's expiry date to start notifying (per-material
+  /// lead time). Null = use the system default lead time in the expiry cron.
+  expiryNotifyLeadDays Int?
+  /// Nutrition per 100g (solids) / 100ml (liquids) of this material, JSON:
+  /// { calories, protein, carbs, sugars, fat, saturatedFat, fiber, salt } —
+  /// all numbers, all optional. Null = no data. Feature-gated by
+  /// Organization.nutritionEnabled in the clients.
+  nutrition            Json?
+  /// EU-14 allergen keys this material declares (shared-types `Allergen`,
+  /// e.g. SOIA, LAPTE). Propagated up the recipe tree: a product contains
+  /// every allergen any of its raw materials declares.
+  allergens            String[]       @default([])
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  // Relations
+  organization      Organization        @relation(fields: [organizationId], references: [id])
+  supplier          Supplier?           @relation(fields: [supplierId], references: [id])
+  recipeIngredients RecipeIngredient[]
+  stockMovements    StockMovement[]
+  stockReservations StockReservation[]
+  unitConversions   UnitConversion[]
+  materialStocks    MaterialStock[]
+  transferItems     StockTransferItem[]
+  lots              StockLot[]
+  priceHistory      PriceHistory[]
+
+  // Indexes
+  @@index([title])
+  @@index([status])
+  @@index([supplierId])
+  @@index([organizationId])
+}
+
+/// A supplier / distributor that provides raw materials. Per-organization.
+model Supplier {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  contactPerson  String?
+  phone          String?
+  email          String?
+  notes          String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  rawMaterials RawMaterial[]
+
+  @@index([name])
+  @@index([organizationId])
+}
+
+/// Consumables — non-ingredient supplies (boxes, ribbons, etc.).
+model Consumable {
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String         @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  title          String
+  category       String? // admin-managed product category (null = Misc)
+  stockCount     Decimal        @default(0)
+  orderedCount   Decimal        @default(0)
+  reservedCount  Decimal        @default(0)
+  status         MaterialStatus @default(ACTIVE)
+  minimumStock   Decimal        @default(0)
+  purchasePrice  Decimal?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relations
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  stockMovements    StockMovement[]
+  stockReservations StockReservation[]
+  lots              StockLot[]
+  priceHistory      PriceHistory[]
+
+  // Indexes
+  @@index([title])
+  @@index([organizationId])
+}
+
+/// Recipe — a versioned recipe for a final product or semi-prepared item.
+model Recipe {
+  id                      String     @id @default(uuid()) @db.Uuid
+  organizationId          String     @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name                    String
+  photoUrl                String?
+  unit                    UnitType
+  quantityPerPiece        Decimal    @default(1)
+  /// Shelf life of the produced good, in months (presets 1/2/3/6/12 or a
+  /// custom value). Null = no expiry tracking for this product.
+  shelfLifeMonths         Int?
+  yieldQuantity           Decimal
+  /// Weight of the whole finished batch in grams, AFTER preparation (e.g. water
+  /// lost in baking). Optional EU-1169 "yield factor" input — when set, the
+  /// nutrition per-100g uses it as the denominator instead of the summed raw
+  /// ingredient weight, so baked/reduced products report correct per-100g.
+  finishedWeightGrams     Decimal?
+  /// What ONE yield unit (bucată) of this semipreparat is equivalent to, for a
+  /// recipe whose yield is counted in BUCATI. Lets it be used as an ingredient
+  /// in another unit/family — e.g. a blat yielding bucăți where 1 bucată = 2 kg
+  /// (or 0.5 l) — by bridging: 1 [yield unit] = pieceEquivalentQuantity
+  /// [pieceEquivalentUnit]. Both null = no bridge (unit must match/convert).
+  pieceEquivalentQuantity Decimal?
+  pieceEquivalentUnit     UnitType?
+  type                    RecipeType @default(FINAL)
+  stockCount              Int        @default(0)
+  reservedCount           Int        @default(0)
+  category                String?
+  flavors                 String[]
+  estimatedLossPercent    Decimal    @default(0) // estimated production waste/loss %
+  version                 Int        @default(1)
+  sellingPrice            Decimal?
+  calculatedCost          Decimal?
+  /// Manual cost override (labor, utilities, anything beyond ingredients).
+  /// When set, margins use IT instead of the computed ingredients cost;
+  /// null = ingredients-only cost.
+  manualCost              Decimal?
+  costCalculatedAt        DateTime?
+  /// Archived recipes are hidden from every default listing (and pickers);
+  /// they stay in the DB because tasks/movements reference them.
+  isArchived              Boolean    @default(false)
+  archivedAt              DateTime?
+  /// Draft recipes are works-in-progress: hidden from default listings/pickers
+  /// and blocked from production, orders and stock like archived ones, but kept
+  /// separate so the author can keep editing before publishing.
+  isDraft                 Boolean    @default(false)
+  draftedAt               DateTime?
+  /// A byproduct is a SEMIPREPARAT left over after producing another recipe
+  /// (e.g. trimmings). It behaves like any semipreparat (stock, ingredient
+  /// use) but is listed as its own category in ingredient pickers.
+  isByproduct             Boolean    @default(false)
+  /// The recipe this byproduct is left over from (its source). Only set on
+  /// byproducts; the source's form checkbox reflects `byproducts`.
+  sourceRecipeId          String?    @db.Uuid
+  createdById             String     @db.Uuid
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+
+  // Relations
+  organization Organization      @relation(fields: [organizationId], references: [id])
+  createdBy    User              @relation("RecipeCreatedBy", fields: [createdById], references: [id])
+  components   RecipeComponent[]
+  tasks        Task[]
+  versions     RecipeVersion[]
+  priceHistory PriceHistory[]
+
+  // A Recipe of type SEMIPREPARAT can be referenced as an ingredient in other recipes.
+  usedAsIngredientIn RecipeIngredient[] @relation("SemipreparatRecipe")
+
+  // Byproduct self-relation: a byproduct semipreparat points at the recipe it
+  // remains from; a recipe lists the byproducts it leaves behind.
+  sourceRecipe Recipe?  @relation("RecipeByproducts", fields: [sourceRecipeId], references: [id])
+  byproducts   Recipe[] @relation("RecipeByproducts")
+
+  // Stock-related relations
+  recipeStockLots   RecipeStockLot[]
+  stockMovements    StockMovement[]
+  stockReservations StockReservation[]
+  yieldHistory      RecipeYieldHistory[]
+  locationStocks    RecipeStock[]
+  transferItems     StockTransferItem[]
+
+  // Order relations
+  orderItems      OrderItem[]
+  productMappings ProductMapping[]
+
+  // Sales deductions (stock out from sales reports)
+  salesDeductionLines SalesDeductionLine[]
+  salesProductAliases SalesProductAlias[]
+
+  // Indexes
+  @@index([name])
+  @@index([type])
+  @@index([createdById])
+  @@index([organizationId])
+  @@index([sourceRecipeId])
+}
+
+/// Logical grouping of ingredients within a recipe (e.g. "Blat", "Crema").
+model RecipeComponent {
+  id        String @id @default(uuid()) @db.Uuid
+  recipeId  String @db.Uuid
+  name      String
+  sortOrder Int
+
+  // Relations
+  recipe      Recipe             @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredients RecipeIngredient[]
+
+  // Indexes
+  @@index([recipeId, sortOrder])
+}
+
+/// An ingredient line inside a recipe component.
+/// XOR constraint: exactly one of rawMaterialId or semipreparatRecipeId must be
+/// set. Prisma cannot enforce XOR natively — this MUST be enforced in the
+/// application layer (service / domain validation).
+model RecipeIngredient {
+  id                   String   @id @default(uuid()) @db.Uuid
+  componentId          String   @db.Uuid
+  rawMaterialId        String?  @db.Uuid
+  semipreparatRecipeId String?  @db.Uuid
+  name                 String
+  quantity             Decimal
+  unit                 UnitType
+  prepMethod           String?
+  sortOrder            Int
+
+  // Relations
+  component          RecipeComponent @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  rawMaterial        RawMaterial?    @relation(fields: [rawMaterialId], references: [id])
+  semipreparatRecipe Recipe?         @relation("SemipreparatRecipe", fields: [semipreparatRecipeId], references: [id])
+
+  // Indexes
+  @@index([componentId, sortOrder])
+}
+
+/// A production task — an assignment to produce a recipe at a given scale.
+model Task {
+  id               String         @id @default(uuid()) @db.Uuid
+  organizationId   String         @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  recipeId         String         @db.Uuid
+  /// Optional custom name; shown instead of the recipe name when set (displayName).
+  title            String?
+  visibility       TaskVisibility @default(ASSIGNED)
+  /// Extra users who see the task when visibility = SELECTED.
+  visibleToIds     String[]       @default([]) @db.Uuid
+  parentTaskId     String?        @db.Uuid
+  locationId       String?        @db.Uuid // production location — stock is reserved/consumed here
+  scaleFactor      Decimal        @default(1)
+  targetQuantity   Decimal
+  targetUnit       UnitType
+  status           TaskStatus     @default(DE_FACUT)
+  priority         Int            @default(0)
+  plannedDate      DateTime? // when production is planned to start
+  dueDate          DateTime? // delivery deadline (to client)
+  notes            String?        @db.Text
+  createdById      String         @db.Uuid
+  assignedToId     String?        @db.Uuid
+  startedAt        DateTime?
+  completedAt      DateTime?
+  cancelledAt      DateTime?
+  cancelReason     String?
+  shortages        Json? /// Array of shortage info when task is BLOCAT
+  actualYield      Decimal?
+  varianceAbsolute Decimal?
+  variancePercent  Decimal?
+  /// Tasks created together via "task multiplu"/"familie" share a groupId;
+  /// groupLabel is the user-facing name of the batch (e.g. "Sosuri înghețată").
+  groupId          String?        @db.Uuid
+  groupLabel       String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  // Relations
+  organization          Organization           @relation(fields: [organizationId], references: [id])
+  recipe                Recipe                 @relation(fields: [recipeId], references: [id])
+  parentTask            Task?                  @relation("TaskSubtasks", fields: [parentTaskId], references: [id])
+  subtasks              Task[]                 @relation("TaskSubtasks")
+  location              Location?              @relation(fields: [locationId], references: [id])
+  createdBy             User                   @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  assignedTo            User?                  @relation("TaskAssignedTo", fields: [assignedToId], references: [id])
+  statusHistory         TaskStatusHistory[]
+  stockMovements        StockMovement[]
+  stockReservations     StockReservation[]
+  yieldHistory          RecipeYieldHistory[]
+  equipmentReservations EquipmentReservation[]
+  lotConsumptions       LotConsumption[]
+  recipeStockLots       RecipeStockLot[]
+
+  // Indexes
+  @@index([status])
+  @@index([groupId])
+  @@index([assignedToId])
+  @@index([dueDate])
+  @@index([recipeId])
+  @@index([parentTaskId])
+  @@index([locationId])
+  @@index([organizationId])
+}
+
+/// Audit trail for task status transitions.
+model TaskStatusHistory {
+  id          String      @id @default(uuid()) @db.Uuid
+  taskId      String      @db.Uuid
+  fromStatus  TaskStatus?
+  toStatus    TaskStatus
+  changedById String      @db.Uuid
+  reason      String?
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  task      Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  changedBy User @relation(fields: [changedById], references: [id])
+}
+
+/// Ledger of all stock changes for raw materials, consumables, and recipes.
+/// XOR constraint: exactly one of rawMaterialId, consumableId, or recipeId must be set.
+/// Prisma cannot enforce XOR natively — enforce in the application layer.
+model StockMovement {
+  id             String            @id @default(uuid()) @db.Uuid
+  organizationId String            @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  rawMaterialId  String?           @db.Uuid
+  consumableId   String?           @db.Uuid
+  recipeId       String?           @db.Uuid
+  locationId     String?           @db.Uuid // where the movement happened (per-location stock)
+  movementType   StockMovementType
+  quantity       Decimal
+  unit           UnitType
+  taskId         String?           @db.Uuid
+  referenceNote  String?
+  performedById  String            @db.Uuid
+  createdAt      DateTime          @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  rawMaterial  RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  consumable   Consumable?  @relation(fields: [consumableId], references: [id])
+  recipe       Recipe?      @relation(fields: [recipeId], references: [id])
+  task         Task?        @relation(fields: [taskId], references: [id])
+  location     Location?    @relation(fields: [locationId], references: [id])
+  performedBy  User         @relation(fields: [performedById], references: [id])
+
+  // Indexes
+  @@index([rawMaterialId])
+  @@index([consumableId])
+  @@index([recipeId])
+  @@index([taskId])
+  @@index([locationId])
+  @@index([createdAt])
+  @@index([organizationId])
+}
+
+/// Reservation of stock against a task — prevents over-allocation.
+/// XOR constraint: exactly one of rawMaterialId, consumableId, or recipeId must be set.
+/// Prisma cannot enforce XOR natively — enforce in the application layer.
+model StockReservation {
+  id               String   @id @default(uuid()) @db.Uuid
+  organizationId   String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  taskId           String   @db.Uuid
+  rawMaterialId    String?  @db.Uuid
+  consumableId     String?  @db.Uuid
+  recipeId         String?  @db.Uuid
+  locationId       String?  @db.Uuid // location the stock was reserved from
+  quantityReserved Decimal
+  unit             UnitType
+  isFulfilled      Boolean  @default(false)
+  isReleased       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  task         Task         @relation(fields: [taskId], references: [id])
+  rawMaterial  RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  consumable   Consumable?  @relation(fields: [consumableId], references: [id])
+  recipe       Recipe?      @relation(fields: [recipeId], references: [id])
+  location     Location?    @relation(fields: [locationId], references: [id])
+
+  // Indexes
+  @@index([taskId])
+  @@index([locationId])
+  @@index([organizationId])
+}
+
+/// Conversion factors between units, optionally scoped to a specific raw material.
+/// A null rawMaterialId means the conversion is universal.
+model UnitConversion {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  fromUnit       UnitType
+  toUnit         UnitType
+  factor         Decimal
+  rawMaterialId  String?  @db.Uuid
+  createdAt      DateTime @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  rawMaterial  RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+
+  // Unique constraint — at most one conversion per (org, from, to, material).
+  @@unique([organizationId, fromUnit, toUnit, rawMaterialId])
+  @@index([organizationId])
+}
+
+/// Variance log per recipe per batch — tracks actual vs expected yield.
+model RecipeYieldHistory {
+  id               String   @id @default(uuid()) @db.Uuid
+  recipeId         String   @db.Uuid
+  taskId           String   @db.Uuid
+  targetQuantity   Decimal
+  actualYield      Decimal
+  varianceAbsolute Decimal
+  variancePercent  Decimal
+  scaleFactor      Decimal
+  recordedAt       DateTime @default(now())
+
+  // Relations
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+  task   Task   @relation(fields: [taskId], references: [id])
+
+  // Indexes
+  @@index([recipeId, recordedAt])
+}
+
+/// Email invitation tokens for new user onboarding.
+model UserInvitation {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  email          String
+  role           UserRole // @deprecated — kept for migration; use dynamicRole
+  roleId         String?   @db.Uuid
+  token          String    @unique
+  createdById    String?   @db.Uuid // null for system/bootstrap-generated invitations
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  dynamicRole  Role?        @relation(fields: [roleId], references: [id])
+  createdBy    User?        @relation(fields: [createdById], references: [id])
+
+  // Indexes
+  @@index([email])
+  @@index([token])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// Orders
+// ============================================================================
+
+/// A customer order for final products with delivery tracking.
+enum OrderFulfillmentType {
+  DELIVERY // brought to the customer by a driver
+  PICKUP // picked up by the customer from a location
+}
+
+model Order {
+  id               String               @id @default(uuid()) @db.Uuid
+  organizationId   String               @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  orderNumber      String
+  status           OrderStatus          @default(NOUA)
+  fulfillmentType  OrderFulfillmentType @default(DELIVERY)
+  pickupLocationId String?              @db.Uuid // location the customer picks up from (PICKUP)
+  deliveryPoint    String
+  deliveryAddress  String?
+  /// Customer name (e.g. WooCommerce billing first+last name for imported orders).
+  customerName     String?
+  /// Status in the external system for imported orders (e.g. WooCommerce "processing"/"completed").
+  externalStatus   String?
+  /// Delivery method chosen in the shop for imported orders (Pickupia method
+  /// name, e.g. "Ridicare Napoca 15"; several joined with " + ").
+  deliveryMethod   String?
+  /// Archived orders are hidden from default lists (auto-archived 60 days
+  /// after LIVRATA/ANULATA by OrderArchiveJob, or manually).
+  isArchived       Boolean              @default(false)
+  archivedAt       DateTime?
+  notes            String?
+  createdById      String               @db.Uuid
+  assignedToId     String?              @db.Uuid
+  dueDate          DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  completedAt      DateTime?
+
+  // Invoice
+  invoiceFileName String?
+  invoiceData     Bytes?
+  invoiceMimeType String?
+
+  // Relations
+  organization    Organization          @relation(fields: [organizationId], references: [id])
+  createdBy       User                  @relation("orderCreator", fields: [createdById], references: [id])
+  assignedTo      User?                 @relation("orderDelivery", fields: [assignedToId], references: [id])
+  items           OrderItem[]
+  deliveryNote    DeliveryNote?
+  statusHistory   OrderStatusHistory[]
+  externalSources ExternalOrderSource[]
+
+  // Constraints — order numbers are per-organization
+  @@unique([organizationId, orderNumber])
+  // Indexes
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdById])
+  @@index([organizationId])
+}
+
+/// A line item within an order — references a FINAL recipe, OR (for imported
+/// external orders with no ProductMapping) carries a free-text `label` only.
+model OrderItem {
+  id       String          @id @default(uuid()) @db.Uuid
+  orderId  String          @db.Uuid
+  recipeId String?         @db.Uuid
+  /// Free-text product name for unmapped external products (recipeId null).
+  label    String?
+  quantity Decimal
+  unit     UnitType
+  status   OrderItemStatus @default(IN_PREGATIRE)
+  notes    String?
+
+  // Relations
+  order  Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  recipe Recipe? @relation(fields: [recipeId], references: [id])
+
+  // Indexes
+  @@index([orderId])
+  @@index([recipeId])
+}
+
+/// Delivery note (foaie de parcurs) — snapshot for PDF + signature capture.
+/// Serial numbers are per-organization (generated by per-day counting).
+model DeliveryNote {
+  id              String    @id @default(uuid()) @db.Uuid
+  organizationId  String    @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  orderId         String    @unique @db.Uuid
+  deliveryAddress String
+  deliveryPoint   String
+  serialNumber    String?
+  signatureImage  Bytes?
+  signedByName    String?
+  signedAt        DateTime?
+  notes           String?
+  generatedAt     DateTime  @default(now())
+
+  // Relations
+  organization          Organization           @relation(fields: [organizationId], references: [id])
+  order                 Order                  @relation(fields: [orderId], references: [id])
+  conformityCertificate ConformityCertificate?
+
+  // Constraints
+  @@unique([organizationId, serialNumber])
+  @@index([organizationId])
+}
+
+/// Conformity certificate linked to a delivery note. Serials per-organization.
+model ConformityCertificate {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  deliveryNoteId String   @unique @db.Uuid
+  serialNumber   String
+  issuedByUserId String   @db.Uuid
+  notes          String?
+  createdAt      DateTime @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  deliveryNote DeliveryNote @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+  issuedBy     User         @relation("certificateIssuer", fields: [issuedByUserId], references: [id])
+
+  // Constraints
+  @@unique([organizationId, serialNumber])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// Locations & Transfers
+// ============================================================================
+
+/// A physical storage or work location (warehouse, fridge, lab, shop, etc.).
+/// Names are unique per-organization.
+model Location {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  type           LocationType
+  address        String
+  phone          String?
+  /// Id of this location in the shop's delivery plugin (Pickupia
+  /// `_pickupia_delivery_method_external_id`) — imported Woo orders whose
+  /// delivery method carries it become PICKUP orders from here.
+  externalId     String?
+  /// "Unitate principală": WooCommerce sales are deducted from stock here
+  /// (the order's pickup location when it is one, else the first such unit).
+  isMainUnit     Boolean      @default(false)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  materialStocks    MaterialStock[]
+  recipeStocks      RecipeStock[]
+  recipeStockLots   RecipeStockLot[]
+  transfersFrom     StockTransfer[]    @relation("transferFrom")
+  transfersTo       StockTransfer[]    @relation("transferTo")
+  userLocations     UserLocation[]
+  equipment         Equipment[]
+  tasks             Task[]
+  stockMovements    StockMovement[]
+  stockReservations StockReservation[]
+  salesDeductions   SalesDeduction[]
+
+  // Constraints
+  @@unique([organizationId, name])
+  @@unique([organizationId, externalId])
+  @@index([organizationId])
+}
+
+/// Per-location stock for raw materials.
+model MaterialStock {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  locationId     String   @db.Uuid
+  rawMaterialId  String   @db.Uuid
+  quantity       Decimal  @default(0)
+  reservedCount  Decimal  @default(0) // reserved by in-progress tasks at this location
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  location     Location     @relation(fields: [locationId], references: [id])
+  rawMaterial  RawMaterial  @relation(fields: [rawMaterialId], references: [id])
+
+  // Constraints
+  @@unique([locationId, rawMaterialId])
+  @@index([locationId])
+  @@index([rawMaterialId])
+  @@index([organizationId])
+}
+
+/// Per-location stock for produced recipes (FINAL products + SEMIPREPARAT).
+/// The recipe-level `Recipe.stockCount`/`reservedCount` are kept as the sum of
+/// these rows so existing global views keep working.
+model RecipeStock {
+  id            String    @id @default(uuid()) @db.Uuid
+  locationId    String    @db.Uuid
+  recipeId      String    @db.Uuid
+  quantity      Decimal   @default(0)
+  reservedCount Decimal   @default(0) // reserved by tasks consuming this as a semipreparat
+  /// Earliest expiry among the batches currently in this stock row —
+  /// set at production from Recipe.shelfLifeMonths (conservative: min of
+  /// existing and new batch), cleared when the row empties.
+  expiryDate    DateTime?
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  location Location @relation(fields: [locationId], references: [id])
+  recipe   Recipe   @relation(fields: [recipeId], references: [id])
+
+  // Constraints
+  @@unique([locationId, recipeId])
+  @@index([locationId])
+  @@index([recipeId])
+}
+
+/// One production batch of a finished product / semipreparat ("stoc
+/// diferențiat"): tarts made Monday vs Tuesday are separate lots with their
+/// own quantity and expiry. Aggregate view stays in RecipeStock; lots are
+/// created when a task finalizes and decremented FIFO on consumption.
+model RecipeStockLot {
+  id                String    @id @default(uuid()) @db.Uuid
+  organizationId    String    @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  recipeId          String    @db.Uuid
+  locationId        String    @db.Uuid
+  /// Auto-generated: ddMMyyyy-<recipe name> N, N = batches of this recipe made the same Romania calendar day.
+  lotNumber         String
+  quantity          Decimal   @default(0)
+  remainingQuantity Decimal   @default(0)
+  expiryDate        DateTime?
+  taskId            String?   @db.Uuid
+  producedAt        DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  recipe       Recipe       @relation(fields: [recipeId], references: [id])
+  location     Location     @relation(fields: [locationId], references: [id])
+  task         Task?        @relation(fields: [taskId], references: [id])
+
+  @@index([recipeId, locationId])
+  @@index([organizationId])
+  @@index([taskId])
+}
+
+/// A stock transfer between two locations.
+model StockTransfer {
+  id                 String         @id @default(uuid()) @db.Uuid
+  organizationId     String         @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  fromLocationId     String         @db.Uuid
+  /// Null for ad-hoc destinations (event transports) — see destinationName.
+  toLocationId       String?        @db.Uuid
+  /// Free-text destination for one-off transports (events) not worth saving
+  /// as a Location. XOR with toLocationId. On FINALIZAT the goods leave the
+  /// system (no destination stock increment).
+  destinationName    String?
+  destinationAddress String?
+  /// Recipient (person) at the destination — printed on the aviz. Useful for
+  /// event transports where someone specific receives the goods.
+  destinationContact String?
+  status             TransferStatus @default(IN_ASTEPTARE)
+  notes              String?
+  createdById        String         @db.Uuid
+  assignedToId       String?        @db.Uuid // person who carries out the transport
+  /// Serial of the printed "aviz de insotire a marfii" (AVZ-YYYYMMDD-NNN),
+  /// assigned lazily on first print request. Per-organization.
+  avizSerial         String?
+  /// Serial of the printed conformity declaration (CB-YYYYMMDD-NNN), lazy.
+  conformitySerial   String?
+  /// Aviz delegate/transport details — captured at creation, printed on the
+  /// aviz (previously blank hand-filled lines).
+  delegateIdCard     String? // delegat: seria + numarul CI/buletin
+  transportMeans     String? // mijloc de transport (ex: auto B-01-ABC)
+  dispatchedAt       DateTime? // ora efectuarii expeditiei
+  /// Digital receipt signature (semnatura primire) — captured on delivery,
+  /// mirrors the order DeliveryNote signature flow.
+  receiverName       String?
+  receiverSignature  Bytes?
+  receivedAt         DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  // Relations
+  organization Organization        @relation(fields: [organizationId], references: [id])
+  fromLocation Location            @relation("transferFrom", fields: [fromLocationId], references: [id])
+  toLocation   Location?           @relation("transferTo", fields: [toLocationId], references: [id])
+  createdBy    User                @relation("transferCreatedBy", fields: [createdById], references: [id])
+  assignedTo   User?               @relation("transferAssignee", fields: [assignedToId], references: [id])
+  items        StockTransferItem[]
+  approval     TransferApproval?
+
+  // Constraints — printed serials are per-organization
+  @@unique([organizationId, avizSerial])
+  @@unique([organizationId, conformitySerial])
+  // Indexes
+  @@index([status])
+  @@index([fromLocationId])
+  @@index([toLocationId])
+  @@index([organizationId])
+}
+
+/// A line item within a stock transfer.
+/// XOR: exactly one of rawMaterialId / recipeId is set (raw material vs produced
+/// recipe). Enforced in the application layer. Recipe items carry finished goods
+/// generated by a "finalize at a different location" transfer.
+model StockTransferItem {
+  id            String   @id @default(uuid()) @db.Uuid
+  transferId    String   @db.Uuid
+  rawMaterialId String?  @db.Uuid
+  recipeId      String?  @db.Uuid
+  quantity      Decimal
+  unit          UnitType
+
+  // Relations
+  transfer    StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  rawMaterial RawMaterial?  @relation(fields: [rawMaterialId], references: [id])
+  recipe      Recipe?       @relation(fields: [recipeId], references: [id])
+
+  // Indexes
+  @@index([transferId])
+}
+
+// ============================================================================
+// Order Status History & Device Tokens (M4)
+// ============================================================================
+
+/// Tracks order status transitions for audit.
+model OrderStatusHistory {
+  id          String      @id @default(uuid()) @db.Uuid
+  orderId     String      @db.Uuid
+  fromStatus  OrderStatus
+  toStatus    OrderStatus
+  changedById String      @db.Uuid
+  reason      String?
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  changedBy User  @relation(fields: [changedById], references: [id])
+
+  // Indexes
+  @@index([orderId])
+}
+
+/// Push notification device tokens.
+model DeviceToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+}
+
+/// In-app notification (inbox) row. Org-scoped and addressed to one user; the
+/// push scaffold delivers the same title/body best-effort to the user's devices.
+model Notification {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @db.Uuid
+  userId         String    @db.Uuid
+  type           String // e.g. TASK_ASSIGNED, STOCK_EXPIRING
+  title          String
+  body           String
+  data           Json? // arbitrary payload (taskId, lotId, …) for client deep-links + de-dupe
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// User–Location Assignments & Transfer Approvals (M5)
+// ============================================================================
+
+/// Many-to-many: which users are assigned to which locations.
+model UserLocation {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  locationId String   @db.Uuid
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([userId, locationId])
+  @@index([userId])
+  @@index([locationId])
+}
+
+/// Approval record for a stock transfer (destination manager approves/rejects).
+model TransferApproval {
+  id           String                 @id @default(uuid()) @db.Uuid
+  transferId   String                 @unique @db.Uuid
+  status       TransferApprovalStatus @default(PENDING)
+  approvedById String?                @db.Uuid
+  reason       String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  // Relations
+  transfer   StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  approvedBy User?         @relation("approvedByUser", fields: [approvedById], references: [id])
+}
+
+// ============================================================================
+// Stock Lots (M6)
+// ============================================================================
+
+/// A batch/lot of raw material or consumable with traceability info.
+/// A point-in-time logical backup of one organization's data ("salvează
+/// state-ul"). The gzipped JSON payload lives in S3/MinIO under storageKey;
+/// nightly job creates auto snapshots, admins can create/restore/download
+/// manual ones (download gated by BACKUP_ADMIN_EMAILS).
+model OrgSnapshot {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  label          String?
+  /// true = created by the nightly job (subject to retention), false = manual.
+  auto           Boolean  @default(false)
+  storageKey     String
+  sizeBytes      BigInt   @default(0)
+  /// Row counts per table at snapshot time — shown in the UI list.
+  summary        Json?
+  createdById    String?  @db.Uuid
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  createdBy    User?        @relation(fields: [createdById], references: [id])
+
+  @@index([organizationId, createdAt])
+}
+
+model StockLot {
+  id                String    @id @default(uuid()) @db.Uuid
+  rawMaterialId     String?   @db.Uuid
+  consumableId      String?   @db.Uuid
+  lotNumber         String?
+  barcode           String?
+  quantity          Decimal   @default(0)
+  /// What's left of this intake — decremented FIFO by production (LotConsumption).
+  remainingQuantity Decimal   @default(0)
+  /// Held back from FIFO: production consumes every other lot first and only
+  /// falls back to held lots when nothing else remains. Lets the lab keep an
+  /// (older) lot for a specific purpose or steer consumption to another lot.
+  onHold            Boolean   @default(false)
+  expiryDate        DateTime?
+  purchasePrice     Decimal?
+  supplier          String? // distribuitor / furnizor for this intake
+  supplierInvoice   String?
+  receivedAt        DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  rawMaterial  RawMaterial?     @relation(fields: [rawMaterialId], references: [id])
+  consumable   Consumable?      @relation(fields: [consumableId], references: [id])
+  consumptions LotConsumption[]
+
+  // Indexes
+  @@index([rawMaterialId])
+  @@index([consumableId])
+  @@index([expiryDate])
+  @@index([barcode])
+}
+
+/// FIFO lot attribution: how much of which intake lot a task's production
+/// consumed. Written by StockReservationService.fulfillForTask; read by the
+/// traceability sheet so each ingredient lists its real lots (multiple intakes
+/// on the same day stay distinguishable).
+model LotConsumption {
+  id            String   @id @default(uuid()) @db.Uuid
+  taskId        String   @db.Uuid
+  stockLotId    String   @db.Uuid
+  rawMaterialId String   @db.Uuid
+  quantity      Decimal
+  unit          UnitType
+  createdAt     DateTime @default(now())
+
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  stockLot StockLot @relation(fields: [stockLotId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([stockLotId])
+  @@index([rawMaterialId])
+}
+
+/// Anchored stakeholder feedback on the public /design-system page: a pin at
+/// (x,y) — percentages relative to the prototype viewport — per prototype tab.
+/// Public endpoints (no auth): the page is for reviewers without accounts.
+model DesignComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  page      String // "web" | "ios" | "android" | "doc"
+  x         Float
+  y         Float
+  author    String
+  text      String   @db.Text
+  resolved  Boolean  @default(false)
+  /// DOM anchor captured at comment time: { anchorText, anchorIndex, dx, dy }.
+  /// Pins render only while the anchored element is present/visible (so a pin
+  /// left on a modal shows only when that modal is open). Null = legacy
+  /// viewport-absolute pin.
+  anchor    Json?
+  createdAt DateTime @default(now())
+
+  @@index([page])
+}
+
+// ============================================================================
+// Equipment (M7)
+// ============================================================================
+
+/// A piece of equipment used in production.
+model Equipment {
+  id             String          @id @default(uuid()) @db.Uuid
+  organizationId String          @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  type           EquipmentType
+  quantity       Int             @default(1)
+  locationId     String?         @db.Uuid
+  status         EquipmentStatus @default(DISPONIBIL)
+  purchaseDate   DateTime?
+  warrantyExpiry DateTime?
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  // Relations
+  organization    Organization           @relation(fields: [organizationId], references: [id])
+  location        Location?              @relation(fields: [locationId], references: [id])
+  reservations    EquipmentReservation[]
+  maintenanceLogs MaintenanceLog[]
+
+  // Indexes
+  @@index([type])
+  @@index([status])
+  @@index([locationId])
+  @@index([organizationId])
+}
+
+/// Reservation of equipment for a task.
+model EquipmentReservation {
+  id            String   @id @default(uuid()) @db.Uuid
+  equipmentId   String   @db.Uuid
+  taskId        String   @db.Uuid
+  quantity      Int      @default(1)
+  reservedFrom  DateTime
+  reservedUntil DateTime
+  createdAt     DateTime @default(now())
+
+  // Relations
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([equipmentId])
+  @@index([taskId])
+}
+
+/// Maintenance log entry for a piece of equipment.
+model MaintenanceLog {
+  id            String    @id @default(uuid()) @db.Uuid
+  equipmentId   String    @db.Uuid
+  description   String
+  performedById String    @db.Uuid
+  nextScheduled DateTime?
+  cost          Decimal?
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  performedBy User      @relation(fields: [performedById], references: [id])
+
+  // Indexes
+  @@index([equipmentId])
+}
+
+// ============================================================================
+// Task Dependencies, Templates & Recipe Versions (M8)
+// ============================================================================
+
+/// Snapshot of a recipe at a point in time for version history.
+model RecipeVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  recipeId    String   @db.Uuid
+  version     Int
+  snapshot    Json
+  changedById String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  // Relations
+  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  changedBy User   @relation(fields: [changedById], references: [id])
+
+  // Constraints
+  @@unique([recipeId, version])
+  @@index([recipeId])
+}
+
+// ============================================================================
+// Pricing & Margin (M9)
+// ============================================================================
+
+/// Tracks price changes for raw materials, consumables, and recipes.
+model PriceHistory {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  rawMaterialId  String?  @db.Uuid
+  consumableId   String?  @db.Uuid
+  recipeId       String?  @db.Uuid
+  priceType      String // "PURCHASE" | "SELLING"
+  oldPrice       Decimal?
+  newPrice       Decimal
+  changedById    String   @db.Uuid
+  createdAt      DateTime @default(now())
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id])
+  rawMaterial  RawMaterial? @relation(fields: [rawMaterialId], references: [id])
+  consumable   Consumable?  @relation(fields: [consumableId], references: [id])
+  recipe       Recipe?      @relation(fields: [recipeId], references: [id])
+  changedBy    User         @relation(fields: [changedById], references: [id])
+
+  // Indexes
+  @@index([rawMaterialId])
+  @@index([consumableId])
+  @@index([recipeId])
+  @@index([createdAt])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// Integrations (M11)
+// ============================================================================
+
+/// External integration configuration (eBriza, WooCommerce, etc.).
+/// Per-organization — webhooks resolve their org from the integration row.
+model Integration {
+  id             String              @id @default(uuid()) @db.Uuid
+  organizationId String              @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  provider       IntegrationProvider
+  status         String              @default("INACTIVE") // INACTIVE | ACTIVE | ERROR
+  config         Json                @default("{}")
+  lastSyncAt     DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  // Relations
+  organization   Organization          @relation(fields: [organizationId], references: [id])
+  externalOrders ExternalOrderSource[]
+  mappings       ProductMapping[]
+
+  // Indexes
+  @@index([provider])
+  @@index([organizationId])
+}
+
+/// Tracks orders received from external systems before/after syncing to Horae orders.
+model ExternalOrderSource {
+  id            String                @id @default(uuid()) @db.Uuid
+  integrationId String                @db.Uuid
+  externalId    String // ID in the external system
+  orderId       String?               @db.Uuid
+  syncStatus    IntegrationSyncStatus @default(PENDING)
+  rawPayload    Json
+  errorMessage  String?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  // Relations
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  order       Order?      @relation(fields: [orderId], references: [id])
+
+  // Constraints
+  @@unique([integrationId, externalId])
+  @@index([integrationId])
+  @@index([syncStatus])
+}
+
+/// Maps external product IDs to internal recipes for auto-order-creation.
+model ProductMapping {
+  id                  String   @id @default(uuid()) @db.Uuid
+  integrationId       String   @db.Uuid
+  externalProductId   String
+  externalProductName String
+  recipeId            String   @db.Uuid
+  createdAt           DateTime @default(now())
+
+  // Relations
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  recipe      Recipe      @relation(fields: [recipeId], references: [id])
+
+  // Constraints
+  @@unique([integrationId, externalProductId])
+  @@index([integrationId])
+  @@index([recipeId])
+}
+
+enum SalesDeductionSource {
+  EXCEL
+  MANUAL
+  WOOCOMMERCE
+}
+
+enum SalesDeductionStatus {
+  DRAFT
+  CONFIRMED
+  ANULAT
+}
+
+enum SalesDeductionDecision {
+  ACCEPT
+  DECLINE
+  CREATE_NEW
+}
+
+/// One "scădere din stoc pe bază de vânzări" session — the audit log of a sales
+/// report (eBriza Excel, manual entry, or WooCommerce orders) being applied to
+/// one location's finished-goods stock. Created as DRAFT by parsing/matching,
+/// turned CONFIRMED atomically (movements + stock) by the confirm step.
+model SalesDeduction {
+  id             String               @id @default(uuid()) @db.Uuid
+  organizationId String               @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  locationId     String               @db.Uuid
+  source         SalesDeductionSource
+  status         SalesDeductionStatus @default(DRAFT)
+  /// Original upload name (EXCEL) — display only.
+  fileName       String?
+  /// sha256 of the uploaded file — warns when the same report is applied twice.
+  fileHash       String?
+  periodFrom     DateTime?
+  periodTo       DateTime?
+  note           String?
+  createdById    String               @db.Uuid
+  confirmedById  String?              @db.Uuid
+  confirmedAt    DateTime?
+  revertedAt     DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  organization Organization         @relation(fields: [organizationId], references: [id])
+  location     Location             @relation(fields: [locationId], references: [id])
+  createdBy    User                 @relation("salesDeductionCreatedBy", fields: [createdById], references: [id])
+  confirmedBy  User?                @relation("salesDeductionConfirmedBy", fields: [confirmedById], references: [id])
+  lines        SalesDeductionLine[]
+
+  @@index([organizationId])
+  @@index([locationId])
+  @@index([fileHash])
+  @@index([createdAt])
+}
+
+/// One product line of a SalesDeduction. `quantityReported` is what the source
+/// said; `quantity` is what the user confirmed (signed: >0 = scade, <0 = adaugă
+/// înapoi). stockBefore/After are captured at confirm time.
+model SalesDeductionLine {
+  id               String                 @id @default(uuid()) @db.Uuid
+  salesDeductionId String                 @db.Uuid
+  position         Int                    @default(0)
+  rawName          String
+  rawUnit          String?
+  quantityReported Decimal?
+  recipeId         String?                @db.Uuid
+  /// 0..1 name-match score at parse time (1 = alias / exact).
+  matchScore       Decimal?
+  matchKind        String? // ALIAS | EXACT | CONTAINS | FUZZY | MAPPING | NONE | MANUAL
+  decision         SalesDeductionDecision @default(ACCEPT)
+  quantity         Decimal?
+  /// Absolute stock to set after the sale (overrides the computed result).
+  stockOverride    Decimal?
+  /// Sold more than was in stock and the user confirmed clamping at 0.
+  shortfall        Decimal?
+  stockBefore      Decimal?
+  stockAfter       Decimal?
+  createdAt        DateTime               @default(now())
+
+  salesDeduction SalesDeduction @relation(fields: [salesDeductionId], references: [id], onDelete: Cascade)
+  recipe         Recipe?        @relation(fields: [recipeId], references: [id])
+
+  @@index([salesDeductionId])
+  @@index([recipeId])
+}
+
+/// Learned name → product mapping: once a user confirms that the report's
+/// "Sos usturoi" is the app's "Sos de usturoi", later reports match it directly.
+model SalesProductAlias {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  /// normalizeProductName(rawName) — see sales-deductions/name-matcher.ts
+  normalizedName String
+  rawName        String
+  recipeId       String   @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  recipe       Recipe       @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, normalizedName])
+  @@index([organizationId])
+}
+
+/// Display settings for a shop delivery method: short name ("Livrare în
+/// Cluj-Napoca" → "Cluj") and Ridicare/Livrare assignment, used by order
+/// filters and cards. Keyed by the imported name — the shop plugin stays as is. `name` is the method exactly as
+/// imported (Order.deliveryMethod parts).
+model DeliveryMethodAlias {
+  id             String                @id @default(uuid()) @db.Uuid
+  organizationId String                @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  name           String
+  /// null = default label (name without a leading "Ridicare la …").
+  shortName      String?
+  /// Admin assignment Ridicare / Livrare for filters; null = auto-detected.
+  kind           OrderFulfillmentType?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+enum SystemLogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+/// Durable, queryable activity/ops log ("Jurnal sistem"): every mutating API
+/// request, every failed request, auth events, emails, background jobs and
+/// integration calls. organizationId is null for system-wide events (cron
+/// without an org, unauthenticated failures). Retained 90 days
+/// (SystemLogRetentionJob). Written fire-and-forget by SystemLogService —
+/// logging never breaks the request that triggered it.
+model SystemLog {
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String?        @db.Uuid
+  createdAt      DateTime       @default(now())
+  level          SystemLogLevel @default(INFO)
+  /// HTTP | AUTH | EMAIL | JOB | INTEGRATION | SYSTEM
+  category       String
+  /// Short machine-friendly action, e.g. "POST /users/invite", "email.invitation", "job.woo-poll"
+  action         String
+  message        String
+  userId         String?        @db.Uuid
+  userEmail      String?
+  method         String?
+  path           String?
+  statusCode     Int?
+  durationMs     Int?
+  correlationId  String?
+  ip             String?
+  metadata       Json?
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([createdAt])
+  @@index([category])
+  @@index([level])
+}
+
+/// Uploaded image (recipe photo, user avatar), stored as WebP bytes after
+/// server-side compression — the client may send a 50 MB JPEG, we keep a
+/// ~100 KB WebP. Served publicly by id (unguessable UUID) at /api/v1/images/:id.
+model ImageAsset {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @default(dbgenerated("'00000000-0000-0000-0000-000000000000'::uuid")) @db.Uuid
+  /// RECIPE | USER_AVATAR
+  kind           String
+  /// The recipe / user the image belongs to.
+  ownerId        String   @db.Uuid
+  mime           String   @default("image/webp")
+  data           Bytes
+  width          Int
+  height         Int
+  bytes          Int
+  originalName   String?
+  originalBytes  Int?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+  @@index([kind, ownerId])
+}

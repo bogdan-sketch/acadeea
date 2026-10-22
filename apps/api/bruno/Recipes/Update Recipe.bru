@@ -1,0 +1,34 @@
+meta {
+  name: Update Recipe
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/recipes/{{recipeId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Tort Ciocolata Dubla",
+    "yieldQuantity": 2
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("name updated", function() {
+    expect(res.getBody().name).to.equal('Tort Ciocolata Dubla');
+  });
+  test("yieldQuantity updated", function() {
+    expect(res.getBody().yieldQuantity).to.equal(2);
+  });
+}

@@ -1,0 +1,33 @@
+meta {
+  name: Get Me
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("has email", function() {
+    expect(res.getBody().email).to.be.a('string');
+  });
+  test("has role", function() {
+    expect(res.getBody().role).to.be.a('string');
+  });
+  test("has firstName", function() {
+    expect(res.getBody().firstName).to.be.a('string');
+  });
+}

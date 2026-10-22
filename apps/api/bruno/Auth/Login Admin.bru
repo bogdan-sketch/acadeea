@@ -1,0 +1,44 @@
+meta {
+  name: Login Admin
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{adminEmail}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    bru.setVar("accessToken", res.getBody().accessToken);
+    bru.setVar("refreshToken", res.getBody().refreshToken);
+    bru.setVar("userId", res.getBody().user.id);
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has accessToken", function() {
+    expect(res.getBody().accessToken).to.be.a('string');
+  });
+  test("has refreshToken", function() {
+    expect(res.getBody().refreshToken).to.be.a('string');
+  });
+  test("has user with role ADMINISTRATOR", function() {
+    expect(res.getBody().user.role).to.equal('ADMINISTRATOR');
+  });
+  test("has user id", function() {
+    expect(res.getBody().user.id).to.be.a('string');
+  });
+}

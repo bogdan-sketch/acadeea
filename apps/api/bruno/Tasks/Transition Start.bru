@@ -1,0 +1,33 @@
+meta {
+  name: Transition Start
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tasks/{{taskId}}/transition
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "IN_LUCRU"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("status is IN_LUCRU", function() {
+    expect(res.getBody().status).to.equal('IN_LUCRU');
+  });
+  test("startedAt is set", function() {
+    expect(res.getBody().startedAt).to.be.a('string');
+  });
+}

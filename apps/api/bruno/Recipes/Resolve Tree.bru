@@ -1,0 +1,38 @@
+meta {
+  name: Resolve Tree
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/{{recipeId}}/resolved-tree?quantity=2&unit=BUCATI
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has recipeId", function() {
+    expect(res.getBody().recipeId).to.equal(bru.getVar("recipeId"));
+  });
+  test("has recipeName", function() {
+    expect(res.getBody().recipeName).to.be.a('string');
+  });
+  test("has rawMaterials array", function() {
+    expect(res.getBody().rawMaterials).to.be.an('array');
+  });
+  test("rawMaterials have quantity and unit", function() {
+    const materials = res.getBody().rawMaterials;
+    if (materials.length > 0) {
+      expect(materials[0]).to.have.property('quantity');
+      expect(materials[0]).to.have.property('unit');
+      expect(materials[0]).to.have.property('rawMaterialId');
+    }
+  });
+}

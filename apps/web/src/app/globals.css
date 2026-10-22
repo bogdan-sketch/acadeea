@@ -1,0 +1,604 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono-stack);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-text: var(--primary-text);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-tertiary: var(--brand-tertiary);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-accent-strong: var(--accent-strong);
+  --color-text-tertiary: var(--text-tertiary);
+  --font-serif: var(--font-serif-stack);
+  --shadow-sm: var(--shadow-card-sm);
+  --shadow-md: var(--shadow-card-md);
+}
+
+/* Horae design system — warm palette from the Claude Design web prototype
+   (project file web/app.css): cream surfaces, warm-tinted neutrals, serif
+   display headings, #D4527B default accent. Light and dark values mirror the
+   prototype's :root / :root[data-theme="dark"] maps.
+
+   Contrast contract (UI/UX audit 17.10.2026, H-2/M-5): every TEXT token below
+   reaches WCAG AA (4.5:1) on `--background`, `--card` and `--sidebar` of its
+   own scheme; accent-derived text goes through `--primary-text`, never the raw
+   accent. Numbers in the audit report; recompute with lib/contrast.ts. */
+:root {
+  /* UI face = DM Sans; display headings (page titles, big numbers) = Fraunces.
+     OrgThemeProvider swaps only the DISPLAY slot for tenants with their own
+     font (Lora, Inter, Manrope, Poppins — loaded on demand, L-13). */
+  --font-sans: var(--font-dm-sans);
+  --font-serif-stack: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  /* No bundled mono face: ids/logs use the platform's monospace. */
+  --font-mono-stack: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  /* Tenant display-font options resolve to a Google Fonts family that
+     OrgThemeProvider links in only when the tenant picked it; until it loads
+     (or on tenants that never do) they fall back to the UI face. */
+  --font-inter: 'Inter', var(--font-dm-sans), sans-serif;
+  --font-manrope: 'Manrope', var(--font-dm-sans), sans-serif;
+  --font-poppins: 'Poppins', var(--font-dm-sans), sans-serif;
+  --font-lora: 'Lora', var(--font-fraunces), Georgia, serif;
+  --background: #f6f3ee;
+  --foreground: #1c1719;
+  --card: #ffffff;
+  --card-foreground: #1c1719;
+  --popover: #ffffff;
+  --popover-foreground: #1c1719;
+  /* Accent system: --primary is the single source (overridden per scheme by
+     OrgThemeProvider with the tenant accent). Every accent-derived token
+     below MUST reference var(--primary) via color-mix / relative colour —
+     never hardcode the default pink — so one override re-tints the whole UI. */
+  --primary: #c2305b;
+  /* Text ON the accent. Stylesheet default = white (5.4:1 on the pink);
+     OrgThemeProvider recomputes it per tenant accent with lib/contrast.ts
+     `readableOn` (white when white reaches 4.5:1, else #1a1206 ink). */
+  --primary-foreground: #ffffff;
+  /* The accent AS TEXT on light surfaces (links, BackLink, active menu item,
+     badges on the 10 % tint, "v1.34.2"): same hue/chroma, lightness capped at
+     0.48 so it reaches ≥4.5:1 on page, card and tint for any accent that is
+     not pastel. Acadeea #009688 → #086d62: 5.9 / 6.2 / 5.3. */
+  --primary-text: oklch(from var(--primary) min(l, 0.48) c h);
+  /* Pressed/hover shade of the accent — overridable per tenant via the
+     brandingTokens `accentPressed` token (default = perceptual darken). */
+  --primary-pressed: oklch(from var(--primary) calc(l * 0.82) c h);
+  --secondary: #efebe7;
+  --secondary-foreground: #6b6369;
+  --muted: #efebe7;
+  --muted-foreground: #6b6369;
+  /* Third text tier (prototype --text3): faint hints, counters. 4.75:1 on the
+     page, 5.3:1 on card (was #8f868c = 3.2–3.5). */
+  --text-tertiary: #716a6f;
+  --accent: color-mix(in srgb, var(--primary) 10%, transparent);
+  /* Stronger accent wash — tile hover (prototype --accent-bg-2). */
+  --accent-strong: color-mix(in srgb, var(--primary) 16%, transparent);
+  --accent-foreground: var(--primary-text);
+  --destructive: #c92a2a;
+  --success: #2e7d5b;
+  --warning: #b9701a;
+  --border: #e8e2dc;
+  --input: #d9d1c9;
+  --ring: var(--primary);
+  /* Warm card shadows (prototype --shadow-sm/--shadow-md). */
+  --shadow-card-sm: 0 1px 2px rgba(33, 27, 30, 0.04), 0 1px 3px rgba(33, 27, 30, 0.05);
+  --shadow-card-md: 0 2px 8px rgba(33, 27, 30, 0.06), 0 8px 24px rgba(33, 27, 30, 0.05);
+  /* Secondary/tertiary brand roles. Defaults are DERIVED from the accent by
+     hue rotation (analogous harmony) so the trio always matches; an org that
+     sets its own secondaryColor/tertiaryColor overrides these inline on <html>
+     (OrgThemeProvider). Chart series + icon-chip tones read the brand vars. */
+  --brand-secondary: oklch(from var(--primary) l c calc(h + 45));
+  --brand-tertiary: oklch(from var(--primary) calc(l * 0.92) c calc(h - 45));
+  --chart-1: var(--primary);
+  --chart-2: var(--brand-secondary);
+  --chart-3: var(--brand-tertiary);
+  --chart-4: #2e7d5b;
+  --chart-5: #b9701a;
+  /* Card radius 18px (redesign 10.2026); controls use --radius-ctl 12px. */
+  --radius: 18px;
+  --radius-card: var(--radius);
+  --radius-ctl: 12px;
+  /* Header controls are 42px, filter chips 34px, row actions 32px. */
+  --ctl-h: 42px;
+  --chip-h: 34px;
+  /* Corner radius of dialogs/sheets = cards (L-11); brandingTokens
+     `radiusSheet` may still override it per tenant. */
+  --radius-sheet: var(--radius-card);
+  --sidebar: #fbf9f6;
+  --sidebar-foreground: #1c1719;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: color-mix(in srgb, var(--primary) 10%, transparent);
+  --sidebar-accent-foreground: var(--primary-text);
+  --sidebar-border: #e8e2dc;
+  --sidebar-ring: var(--primary);
+
+  /* Domain status tokens (redesign palette, soft capsule backgrounds).
+     Each `--st-*` reaches ≥4.5:1 on its own `--st-*-bg` composited over the
+     page and the card. */
+  --st-blue: #2456b0;
+  --st-blue-bg: #e7effb;
+  --st-green: #1f6b48;
+  --st-green-bg: #e3f2ea;
+  --st-orange: #8a5411;
+  --st-orange-bg: #fbeedc;
+  --st-red: #8e2626;
+  --st-red-bg: #f3e3e3;
+  --st-yellow: #756000; /* 4.8:1 on tint over cream (was #b08f00 = 2.4) */
+  --st-yellow-bg: rgba(176, 143, 0, 0.15);
+  --st-purple: #6d3fd9; /* 4.8:1 (was #8b5cf6 = 3.3) */
+  --st-purple-bg: rgba(139, 92, 246, 0.13);
+  --st-indigo: #5856d6;
+  --st-indigo-bg: rgba(88, 86, 214, 0.13);
+  --st-gray: #5b5358;
+  --st-gray-bg: #efebe7;
+  /* Category tiles (recipe cards, detail square): 8 designed tints per scheme,
+     slots 1–8 = rose, apricot, sky, caramel, lilac, pistachio, coral, teal. `--cat-N` is the tile, `--cat-N-ink` the
+     watermark/accent ink (decorative only, never body text). Title
+     (`--foreground`) on every tile ≥10:1 light, ≥8.6:1 dark. */
+  --cat-1: #f4c9d6;
+  --cat-1-ink: #a8325c;
+  --cat-2: #f9d3a5;
+  --cat-2-ink: #a65a12;
+  --cat-3: #c7dcf6;
+  --cat-3-ink: #2c63aa;
+  --cat-4: #ebcfae;
+  --cat-4-ink: #8a5424;
+  --cat-5: #dccbf3;
+  --cat-5-ink: #6a43b0;
+  --cat-6: #d2e5bf;
+  --cat-6-ink: #4a7a2c;
+  --cat-7: #f8c5b4;
+  --cat-7-ink: #ae4426;
+  --cat-8: #bce2da;
+  --cat-8-ink: #23766a;
+}
+
+.dark {
+  --background: #1a1416;
+  --foreground: #f3ecee;
+  --card: #241c1f;
+  --card-foreground: #f3ecee;
+  --popover: #241c1f;
+  --popover-foreground: #f3ecee;
+  --primary: #c9386a; /* white on it 4.93:1 */
+  --primary-foreground: #ffffff;
+  /* Accent as text on dark surfaces: lightness floored at 0.78 → ≥5.3:1 on
+     card, page and the 20–28 % tints for every scheme accent. */
+  --primary-text: oklch(from var(--primary) max(l, 0.78) c h);
+  --primary-pressed: oklch(from var(--primary) calc(l * 0.82) c h);
+  --secondary: #272025;
+  --secondary-foreground: #a79ba1;
+  --muted: #272025;
+  --muted-foreground: #a79ba1;
+  --text-tertiary: #948a8f; /* 5.0:1 on card (was #786e73 = 3.4) */
+  --accent: color-mix(in srgb, var(--primary) 20%, transparent);
+  --accent-strong: color-mix(in srgb, var(--primary) 28%, transparent);
+  --accent-foreground: var(--primary-text);
+  --destructive: #ff6369;
+  --success: #46c266;
+  --warning: #ff9f0a;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: var(--primary);
+  --shadow-card-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card-md: 0 8px 30px rgba(0, 0, 0, 0.4);
+  /* Dark: same hue rotations, slightly lifted lightness so the derived pair
+     reads on dark cards. */
+  --brand-secondary: oklch(from var(--primary) calc(l * 1.05) c calc(h + 45));
+  --brand-tertiary: oklch(from var(--primary) l c calc(h - 45));
+  --chart-1: var(--primary);
+  --chart-2: var(--brand-secondary);
+  --chart-3: var(--brand-tertiary);
+  --chart-4: #46c266;
+  --chart-5: #ff9f0a;
+  --sidebar: #1f181b;
+  --sidebar-foreground: #f3ecee;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: color-mix(in srgb, var(--primary) 20%, transparent);
+  --sidebar-accent-foreground: var(--primary-text);
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-ring: var(--primary);
+
+  --st-blue: #7bb0e0; /* 4.9:1 on tint over card (was #6ba3d6 = 4.4) */
+  --st-blue-bg: rgba(107, 163, 214, 0.2);
+  --st-green: #46c266;
+  --st-green-bg: rgba(70, 194, 102, 0.2);
+  --st-orange: #ff9f0a;
+  --st-orange-bg: rgba(255, 159, 10, 0.2);
+  --st-red: #ff7a7f; /* 4.7:1 (was #ff6369 = 4.2) */
+  --st-red-bg: rgba(255, 99, 105, 0.2);
+  --st-yellow: #e8c400;
+  --st-yellow-bg: rgba(232, 196, 0, 0.2);
+  --st-purple: #b89bf9; /* 5.0:1 (was #a985f7 = 4.1) */
+  --st-purple-bg: rgba(169, 133, 247, 0.22);
+  --st-indigo: #9896ff; /* 5.2:1 (was #7d7aff = 3.9) */
+  --st-indigo-bg: rgba(94, 92, 230, 0.22);
+  --st-gray: #a79ba1;
+  --st-gray-bg: rgba(167, 155, 161, 0.18);
+  /* Category tiles — see :root. */
+  --cat-1: #5c2338;
+  --cat-1-ink: #f497b8;
+  --cat-2: #5e3a12;
+  --cat-2-ink: #f6b867;
+  --cat-3: #1f3a5e;
+  --cat-3-ink: #8db9f2;
+  --cat-4: #4e3320;
+  --cat-4-ink: #e2b07f;
+  --cat-5: #3e2a62;
+  --cat-5-ink: #bea2f2;
+  --cat-6: #2f4422;
+  --cat-6-ink: #a9d98a;
+  --cat-7: #5e2a1c;
+  --cat-7-ink: #f59e80;
+  --cat-8: #17463f;
+  --cat-8-ink: #7fd6c6;
+}
+
+/* ── Color schemes (web only, 10.2026): 3 light + 3 dark, picked in Setări › Temă.
+   `data-scheme` lives on <html> (ColorSchemeProvider); next-themes keeps the
+   `dark` class in sync with the scheme's mode. "atelier" (light) and "cacao"
+   (dark) are the base palettes above and keep the org's white-label accent;
+   the other four carry their own accent, forced over the inline org accent
+   with !important so the scheme reads as designed. `--primary-text` follows
+   automatically (relative colour of --primary). ── */
+:root[data-scheme='lapte'] {
+  --background: #f7f7f9;
+  --foreground: #15171c;
+  --card: #ffffff;
+  --card-foreground: #15171c;
+  --popover: #ffffff;
+  --popover-foreground: #15171c;
+  --secondary: #eeeff3;
+  --secondary-foreground: #666b78;
+  --muted: #eeeff3;
+  --muted-foreground: #666b78;
+  --text-tertiary: #6b7080; /* 4.6:1 on page (was #8b909c = 3.0) */
+  --border: #e3e5eb;
+  --input: #d3d6de;
+  --primary: #2f5bd6 !important;
+  --primary-foreground: #ffffff !important; /* 5.9:1 */
+  --sidebar: #fbfbfd;
+  --sidebar-foreground: #15171c;
+  --sidebar-border: #e3e5eb;
+  /* Category tiles — see :root. */
+  --cat-1: #f6cfdd;
+  --cat-1-ink: #b0335f;
+  --cat-2: #fbddb0;
+  --cat-2-ink: #a85f10;
+  --cat-3: #cfe0fa;
+  --cat-3-ink: #2d5fc4;
+  --cat-4: #edd9c2;
+  --cat-4-ink: #85532a;
+  --cat-5: #e0d3f7;
+  --cat-5-ink: #6643ba;
+  --cat-6: #d5ebcb;
+  --cat-6-ink: #3f7a2e;
+  --cat-7: #f9cfc2;
+  --cat-7-ink: #b0452b;
+  --cat-8: #c6e8e3;
+  --cat-8-ink: #1f7368;
+}
+:root[data-scheme='miere'] {
+  --background: #fbf4e6;
+  --foreground: #241b10;
+  --card: #fffcf5;
+  --card-foreground: #241b10;
+  --popover: #fffcf5;
+  --popover-foreground: #241b10;
+  --secondary: #f1e7d3;
+  --secondary-foreground: #74674f;
+  --muted: #f1e7d3;
+  --muted-foreground: #74674f;
+  --text-tertiary: #7a6d55; /* 4.6:1 on page (was #9a8c72 = 3.0) */
+  --border: #e7dcc3;
+  --input: #d8cbae;
+  --primary: #a8580d !important; /* white on it 5.2:1, on cream 4.8:1 */
+  --primary-foreground: #ffffff !important;
+  --sidebar: #fdf8ec;
+  --sidebar-foreground: #241b10;
+  --sidebar-border: #e7dcc3;
+  /* Category tiles — see :root. */
+  --cat-1: #f2c3c9;
+  --cat-1-ink: #a33445;
+  --cat-2: #f7cd8e;
+  --cat-2-ink: #9c5410;
+  --cat-3: #ccddee;
+  --cat-3-ink: #2f619b;
+  --cat-4: #e8c79e;
+  --cat-4-ink: #7f4c1c;
+  --cat-5: #e0cbe6;
+  --cat-5-ink: #7a3f92;
+  --cat-6: #d8e2ae;
+  --cat-6-ink: #5a7120;
+  --cat-7: #f5bfa0;
+  --cat-7-ink: #a6441e;
+  --cat-8: #c3dfcb;
+  --cat-8-ink: #2e7350;
+}
+:root[data-scheme='ardezie'] {
+  --background: #121619;
+  --foreground: #e9eef2;
+  --card: #1a2024;
+  --card-foreground: #e9eef2;
+  --popover: #1a2024;
+  --popover-foreground: #e9eef2;
+  --secondary: #222a30;
+  --secondary-foreground: #a3afb8;
+  --muted: #222a30;
+  --muted-foreground: #a3afb8;
+  --text-tertiary: #8f9aa3; /* 5.7:1 on card */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.14);
+  --primary: #3568de !important; /* white on it 5.02:1 */
+  --primary-foreground: #ffffff !important;
+  --sidebar: #161b1f;
+  --sidebar-foreground: #e9eef2;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  /* Category tiles — see :root. */
+  --cat-1: #4f2440;
+  --cat-1-ink: #ee9ac4;
+  --cat-2: #523a1a;
+  --cat-2-ink: #f0be75;
+  --cat-3: #1b3d63;
+  --cat-3-ink: #8fc0f5;
+  --cat-4: #43352a;
+  --cat-4-ink: #d9b48c;
+  --cat-5: #352d66;
+  --cat-5-ink: #b7a8f5;
+  --cat-6: #24452f;
+  --cat-6-ink: #9fd8a4;
+  --cat-7: #55302a;
+  --cat-7-ink: #f2a38d;
+  --cat-8: #124843;
+  --cat-8-ink: #7dd9cb;
+}
+:root[data-scheme='piper'] {
+  --background: #0f0f10;
+  --foreground: #f2efea;
+  --card: #19191b;
+  --card-foreground: #f2efea;
+  --popover: #19191b;
+  --popover-foreground: #f2efea;
+  --secondary: #242426;
+  --secondary-foreground: #a9a49c;
+  --muted: #242426;
+  --muted-foreground: #a9a49c;
+  --text-tertiary: #928e87; /* 5.4:1 on card (was #7f7b74 = 4.2) */
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.15);
+  --primary: #9c6a0b !important; /* white on it 4.7:1, 4.1:1 on the page */
+  --primary-foreground: #ffffff !important;
+  --sidebar: #141415;
+  --sidebar-foreground: #f2efea;
+  --sidebar-border: rgba(255, 255, 255, 0.09);
+  /* Category tiles — see :root. */
+  --cat-1: #5e1e36;
+  --cat-1-ink: #ff8fb5;
+  --cat-2: #613a0c;
+  --cat-2-ink: #ffb860;
+  --cat-3: #1a3966;
+  --cat-3-ink: #86b6ff;
+  --cat-4: #4f311a;
+  --cat-4-ink: #e8ae76;
+  --cat-5: #3d2566;
+  --cat-5-ink: #c1a0ff;
+  --cat-6: #2b4718;
+  --cat-6-ink: #a6de7e;
+  --cat-7: #64261a;
+  --cat-7-ink: #ff9a7a;
+  --cat-8: #0f4a42;
+  --cat-8-ink: #6edcc8;
+}
+
+/* 1.39.0 — collapsing page head + pinned pill rows (one mechanism, every list page).
+   `.page-head-collapse` (STICKY_HEAD) sticks under the 48px phone top bar and
+   slides away while scrolling DOWN; `useHeadCollapse` (dashboard layout) toggles
+   `html[data-head-hidden]` and keeps `--page-head-h` measured. `.pinned-filters`
+   (PinnedFilters) always stays pinned: under the head when it is shown, under the
+   top bar when it is hidden; at top 0 from `md` (desktop head stays static).
+   `.pinned-sub` is a second pinned strip that stacks under the first one. */
+@layer components {
+  .pinned-filters,
+  .pinned-sub {
+    position: sticky;
+    top: 0;
+    z-index: 19;
+    transition: top 220ms ease;
+  }
+  .pinned-sub {
+    top: var(--pinned-h, 0px);
+    z-index: 18;
+  }
+  @media (width < 48rem) {
+    .page-head-collapse {
+      position: sticky;
+      top: 3rem;
+      z-index: 20;
+      transition:
+        translate 220ms ease,
+        opacity 180ms ease;
+    }
+    html[data-head-hidden] .page-head-collapse {
+      translate: 0 calc(-100% - 3rem);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .pinned-filters {
+      top: calc(3rem + var(--page-head-h, 0px));
+    }
+    .pinned-sub {
+      top: calc(3rem + var(--page-head-h, 0px) + var(--pinned-h, 0px));
+    }
+    html[data-head-hidden] .pinned-filters {
+      top: 3rem;
+    }
+    html[data-head-hidden] .pinned-sub {
+      top: calc(3rem + var(--pinned-h, 0px));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-head-collapse,
+    .pinned-filters,
+    .pinned-sub {
+      transition: none;
+    }
+  }
+  /* Single-row pill strip: scrolls sideways only. A vertical drag on it does
+     nothing (no page scroll, no browser pull-to-refresh). */
+  .pill-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pill-strip::-webkit-scrollbar {
+    display: none;
+  }
+  .pill-strip > * {
+    flex-shrink: 0;
+  }
+}
+
+/* Status capsule utilities — used by lib/constants.ts color maps. */
+@layer utilities {
+  /* One-line strips that scroll sideways without showing a bar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Icon-only controls: 8px invisible halo so the tooltip opens before the cursor touches the icon. */
+  .hint-trigger {
+    position: relative;
+  }
+  .hint-trigger::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+  /* Recipe/category tile: `--tint`/`--tint-ink` point at a `--cat-N` slot
+     (set inline via tintStyle), so every scheme repaints them. Flat for pills;
+     `.tint-tile` adds a soft ink glow in the top-right corner (where the
+     category art and stock badge sit) so the tile reads lit, not flat. */
+  .tint-surface {
+    background: var(--tint, var(--muted));
+  }
+  .tint-tile {
+    background:
+      radial-gradient(
+        120% 150% at 100% 0%,
+        color-mix(in oklab, var(--tint-ink, var(--muted-foreground)) 18%, transparent) 0%,
+        transparent 62%
+      ),
+      var(--tint, var(--muted));
+  }
+  /* Card footer under a tile: a whisper of the tile so the card reads as one
+     coloured object; muted text on it stays ≥4.5:1 in every scheme. */
+  .tint-foot {
+    background: color-mix(in oklab, var(--tint, var(--muted)) 22%, var(--card));
+  }
+  .st-blue {
+    background: var(--st-blue-bg);
+    color: var(--st-blue);
+  }
+  .st-green {
+    background: var(--st-green-bg);
+    color: var(--st-green);
+  }
+  .st-orange {
+    background: var(--st-orange-bg);
+    color: var(--st-orange);
+  }
+  .st-red {
+    background: var(--st-red-bg);
+    color: var(--st-red);
+  }
+  .st-yellow {
+    background: var(--st-yellow-bg);
+    color: var(--st-yellow);
+  }
+  .st-purple {
+    background: var(--st-purple-bg);
+    color: var(--st-purple);
+  }
+  .st-indigo {
+    background: var(--st-indigo-bg);
+    color: var(--st-indigo);
+  }
+  .st-gray {
+    background: var(--st-gray-bg);
+    color: var(--st-gray);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  /* One focus system (H-7/M-12). Hand-rolled controls that carry no
+     `focus-visible:` classes get the same 3px solid accent ring the design
+     primitives draw with `ring-3 ring-ring`; components that manage their own
+     ring opt out with `outline-none` (utilities layer wins over base). The old
+     `outline-ring/50` rule only recoloured the browser's 1px auto outline. */
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+}

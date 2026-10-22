@@ -1,0 +1,55 @@
+meta {
+  name: Create Movement (Intrare)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/stock/movements
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "rawMaterialId": "{{rawMaterialId}}",
+    "movementType": "INTRARE",
+    "quantity": 100,
+    "unit": "KILOGRAME",
+    "referenceNote": "Receptie marfa - factura #1234"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("movementId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("movementType is INTRARE", function() {
+    expect(res.getBody().movementType).to.equal('INTRARE');
+  });
+  test("quantity matches", function() {
+    expect(res.getBody().quantity).to.equal(100);
+  });
+  test("unit matches", function() {
+    expect(res.getBody().unit).to.equal('KILOGRAME');
+  });
+  test("rawMaterialId matches", function() {
+    expect(res.getBody().rawMaterialId).to.equal(bru.getVar("rawMaterialId"));
+  });
+  test("performedById is set", function() {
+    expect(res.getBody().performedById).to.be.a('string');
+  });
+}

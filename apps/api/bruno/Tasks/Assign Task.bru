@@ -1,0 +1,30 @@
+meta {
+  name: Assign Task
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/tasks/{{taskId}}/assign
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "assignedToId": "{{userId}}"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("assignedToId is set", function() {
+    expect(res.getBody().assignedToId).to.be.a('string');
+  });
+}

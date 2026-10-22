@@ -1,0 +1,31 @@
+meta {
+  name: Update Consumable
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/consumables/{{consumableId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Cutii tort 35cm",
+    "minimumStock": 15
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("title updated", function() {
+    expect(res.getBody().title).to.equal('Cutii tort 35cm');
+  });
+}

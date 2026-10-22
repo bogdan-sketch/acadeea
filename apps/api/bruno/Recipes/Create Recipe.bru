@@ -1,0 +1,67 @@
+meta {
+  name: Create Recipe
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/recipes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Tort Ciocolata",
+    "unit": "BUCATI",
+    "quantityPerPiece": 1,
+    "yieldQuantity": 1,
+    "type": "FINAL",
+    "category": "TORTURI",
+    "components": [
+      {
+        "name": "Blat ciocolata",
+        "sortOrder": 1,
+        "ingredients": [
+          {
+            "rawMaterialId": "{{rawMaterialId}}",
+            "name": "Faina 000 Premium",
+            "quantity": 500,
+            "unit": "GRAME",
+            "sortOrder": 1
+          }
+        ]
+      }
+    ]
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("recipeId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("name matches", function() {
+    expect(res.getBody().name).to.equal('Tort Ciocolata');
+  });
+  test("type is FINAL", function() {
+    expect(res.getBody().type).to.equal('FINAL');
+  });
+  test("has components with ingredients", function() {
+    expect(res.getBody().components).to.be.an('array');
+    expect(res.getBody().components.length).to.equal(1);
+    expect(res.getBody().components[0].ingredients.length).to.equal(1);
+  });
+}

@@ -1,0 +1,37 @@
+meta {
+  name: Transition Cancel
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tasks/{{taskId}}/transition
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "ANULAT",
+    "reason": "Client a anulat comanda"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("status is ANULAT", function() {
+    expect(res.getBody().status).to.equal('ANULAT');
+  });
+  test("cancelledAt is set", function() {
+    expect(res.getBody().cancelledAt).to.be.a('string');
+  });
+  test("cancelReason is set", function() {
+    expect(res.getBody().cancelReason).to.equal('Client a anulat comanda');
+  });
+}

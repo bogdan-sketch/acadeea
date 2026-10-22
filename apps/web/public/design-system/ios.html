@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+<style>body{margin:0;background:#E9E7E2;font-family:'Inter',system-ui,sans-serif}
+@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes splashDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-5px)}}
+@keyframes splashFade{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes splashBar{0%{width:8%}55%{width:64%}100%{width:100%}}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+<div style="width:390px;height:844px;background:#F2F2F7;border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 20px 50px rgba(0,0,0,.18);color:#000">
+
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 28px 4px;font-size:15px;font-weight:600;flex:none;position:relative;z-index:5;color:{{ statusBarColor }}"><span>9:41</span><span style="display:flex;gap:5px;align-items:center"><i data-lucide="signal" style="width:15px;height:15px"></i><i data-lucide="wifi" style="width:15px;height:15px"></i><i data-lucide="battery-full" style="width:21px;height:21px"></i></span></div>
+
+<div style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
+
+<sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#D4527B;margin:-60px 0 0;position:relative">
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;animation:splashFade .6s ease-out both">
+<span style="width:96px;height:96px;border-radius:26px;background:#fff;display:flex;align-items:center;justify-content:center;color:#D4527B;font-size:44px;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.18);animation:splashPulse 1.6s ease-in-out infinite">A</span>
+<div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:-.3px">Acadeea</div>
+<div style="font-size:13.5px;color:rgba(255,255,255,.75)">Management de productie</div>
+</div>
+<div style="position:absolute;bottom:96px;display:flex;flex-direction:column;align-items:center;gap:14px">
+<div style="display:flex;gap:7px">
+<span style="width:8px;height:8px;border-radius:50%;background:#fff;animation:splashDot 1.2s ease-in-out infinite"></span>
+<span style="width:8px;height:8px;border-radius:50%;background:#fff;animation:splashDot 1.2s ease-in-out .15s infinite"></span>
+<span style="width:8px;height:8px;border-radius:50%;background:#fff;animation:splashDot 1.2s ease-in-out .3s infinite"></span>
+</div>
+<div style="width:140px;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden"><div style="height:4px;border-radius:2px;background:#fff;animation:splashBar 2s ease-out both"></div></div>
+<div style="font-size:11.5px;color:rgba(255,255,255,.65)">Se incarca stocul si taskurile…</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;background:#fff;margin:-4px 0 0">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:88px 32px 32px">
+<span style="width:76px;height:76px;border-radius:20px;background:#D4527B;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:700">A</span>
+<div style="font-size:26px;font-weight:700;letter-spacing:-.3px">Acadeea</div>
+<div style="font-size:14px;color:rgba(60,60,67,.6);text-align:center">Management de productie pentru cofetaria ta</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;padding:8px 24px">
+<div style="background:#F2F2F7;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px"><i data-lucide="mail" style="width:18px;height:18px;color:#8E8E93"></i><span style="font-size:16px">ana@acadeea.ro</span></div>
+<div style="background:#F2F2F7;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px"><i data-lucide="lock" style="width:18px;height:18px;color:#8E8E93"></i><span style="flex:1;font-size:16px;letter-spacing:3px">••••••••</span><i data-lucide="eye" style="width:19px;height:19px;color:#8E8E93"></i></div>
+<div style="text-align:right;font-size:14px;font-weight:500;color:#D4527B;cursor:pointer">Ai uitat parola?</div>
+<div onClick="{{ act.login }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;margin-top:8px;cursor:pointer">Autentificare</div>
+</div>
+<div style="margin-top:auto;padding:24px;text-align:center;font-size:12px;color:rgba(60,60,67,.6)">Cofetaria Acadeea SRL · v2.4.1</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 16px 4px"><div style="font-size:12px;color:rgba(60,60,67,.6);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Joi, 3 iulie</div><div style="font-size:28px;font-weight:700;margin-top:2px;letter-spacing:-.3px">Buna dimineata, Ana</div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:2px">Cofetaria Acadeea · Atelier Central</div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 4px">
+<div onClick="{{ nav.tasks }}" style="background:#fff;border-radius:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer"><i data-lucide="circle-plus" style="width:22px;height:22px;color:#D4527B"></i><span style="font-size:11px;font-weight:500">Task nou</span></div>
+<div onClick="{{ act.openMiscare }}" style="background:#fff;border-radius:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer"><i data-lucide="arrow-down-up" style="width:22px;height:22px;color:#D4527B"></i><span style="font-size:11px;font-weight:500">Miscare stoc</span></div>
+<div onClick="{{ act.openReceptie }}" style="background:#fff;border-radius:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer"><i data-lucide="truck" style="width:22px;height:22px;color:#D4527B"></i><span style="font-size:11px;font-weight:500">Receptie</span></div>
+<div onClick="{{ nav.transfers }}" style="background:#fff;border-radius:10px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer"><i data-lucide="arrow-left-right" style="width:22px;height:22px;color:#D4527B"></i><span style="font-size:11px;font-weight:500">Transfer</span></div>
+</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:16px 16px 6px 32px"><span style="font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Productia de azi</span><span onClick="{{ nav.tasks }}" style="font-size:13px;color:#D4527B;font-weight:500;padding-right:16px;cursor:pointer">Vezi tot</span></div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.taskBlat }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Blat cacao — 6 buc</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Ana M. · pana la 11:00</div></div><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></sc-if><i data-lucide="chevron-right" style="width:17px;height:17px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.taskGlaz }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Glazura oglinda — 1.2 kg</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Ana M. · Tort Ruby</div></div><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(235,195,0,.2);color:#B08F00">Blocat</span></sc-if><i data-lucide="chevron-right" style="width:17px;height:17px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Macarons zmeura — 120 buc</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Radu P. · finalizat 09:20</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></div>
+</div>
+<div style="padding:16px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Stoc critic</div>
+<div style="margin:0 16px 24px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.stockDetail }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Ciocolata neagra 54%</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">2.4 kg ramas · minim 5 kg</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">Stoc scazut</span><i data-lucide="chevron-right" style="width:17px;height:17px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.shopping }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Cutii tort 26 cm</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">0 buc ramas · minim 20 buc</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,59,48,.12);color:#FF3B30">Epuizat</span><i data-lucide="chevron-right" style="width:17px;height:17px;color:#C7C7CC"></i></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;padding:8px 16px 4px"><div style="font-size:32px;font-weight:700;letter-spacing:-.4px">Productie</div><i data-lucide="plus" style="width:26px;height:26px;color:#D4527B"></i></div>
+<div style="display:flex;gap:8px;padding:8px 16px 6px;overflow:hidden">
+<span style="padding:6px 13px;border-radius:999px;background:#D4527B;color:#fff;font-size:14px;font-weight:600;white-space:nowrap">Toate</span>
+<span style="padding:6px 13px;border-radius:999px;background:#E4E4E9;color:#000;font-size:14px;font-weight:500;white-space:nowrap">De facut</span>
+<span style="padding:6px 13px;border-radius:999px;background:#E4E4E9;color:#000;font-size:14px;font-weight:500;white-space:nowrap">In lucru</span>
+<span style="padding:6px 13px;border-radius:999px;background:#E4E4E9;color:#000;font-size:14px;font-weight:500;white-space:nowrap">Blocat</span>
+</div>
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Azi, 3 iulie</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.taskBlat }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Blat cacao</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Tort Padurea Neagra · Ana M. · pana la 11:00</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">6 buc</span><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></sc-if></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.taskGlaz }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Glazura oglinda</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Tort Ruby · Ana M. · asteapta: ciocolata alba</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">1.2 kg</span><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(235,195,0,.2);color:#B08F00">Blocat</span></sc-if></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Crema mascarpone</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Tiramisu clasic · Elena D. · pana la 12:30</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">4.5 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.trace }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Macarons zmeura</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Vitrina · Radu P. · finalizat 09:20</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">120 buc</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></div></div>
+</div>
+<div style="padding:10px 32px 24px;font-size:12px;color:rgba(60,60,67,.6)">Tap pe un task pentru detalii. Taskurile finalizate deschid fisa de trasabilitate.</div>
+</sc-if>
+
+<sc-if value="{{ isTaskBlat }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Inapoi</span><i data-lucide="ellipsis" style="width:22px;height:22px;color:#D4527B"></i></div>
+<div style="padding:8px 16px 4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px;font-weight:700;letter-spacing:-.3px">Blat cacao</span><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></sc-if></div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Tort Padurea Neagra · comanda #1047</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Detalii</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:16px">Cantitate tinta</span><span style="font-size:16px;font-weight:600">6 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:16px">Locatie productie</span><span style="font-size:16px">Atelier Central</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:16px">Termen</span><span style="font-size:16px;font-weight:600">azi 11:00</span></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Materiale necesare (x6)</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Faina 000</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 1.8 kg · stoc 42 kg</div></div><i data-lucide="circle-check" style="width:19px;height:19px;color:#34C759"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Cacao pudra</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 0.45 kg · stoc 3.2 kg</div></div><i data-lucide="circle-check" style="width:19px;height:19px;color:#34C759"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Oua</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 36 buc · stoc 240 buc</div></div><i data-lucide="circle-check" style="width:19px;height:19px;color:#34C759"></i></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Subtaskuri semipreparate</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:12px;padding:10px 16px"><div style="flex:1"><div style="font-size:15px;font-weight:500">Sirop de insiropat</div><div style="font-size:12px;color:rgba(60,60,67,.6)">0.6 kg</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></div>
+</div>
+<div style="margin:20px 16px 24px;display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.startBlat }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Incepe taskul</div></sc-if>
+<sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.finishBlat }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Finalizeaza taskul</div></sc-if>
+<sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><div onClick="{{ nav.trace }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0;border-radius:10px;background:rgba(212,82,123,.12);color:#D4527B;font-size:16px;font-weight:600;cursor:pointer"><i data-lucide="file-search" style="width:18px;height:18px"></i>Vezi fisa de trasabilitate</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTaskGlaz }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Inapoi</span></div>
+<div style="padding:8px 16px 4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px;font-weight:700;letter-spacing:-.3px">Glazura oglinda</span><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(235,195,0,.2);color:#B08F00">Blocat</span></sc-if></div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Tort Ruby · 1.2 kg</div></div>
+<sc-if value="{{ glazAlert }}" hint-placeholder-val="{{ false }}">
+<div style="margin:12px 16px 0;background:rgba(255,59,48,.08);border-radius:10px;padding:13px 16px;display:flex;gap:11px;align-items:flex-start"><i data-lucide="circle-alert" style="width:19px;height:19px;color:#FF3B30;flex:none;margin-top:1px"></i><div style="flex:1"><div style="font-size:14px;font-weight:600;color:#FF3B30">409 — Stoc insuficient</div><div style="font-size:13px;color:rgba(60,60,67,.75);margin-top:2px">Ciocolata alba: necesar 0.8 kg, disponibil 0 kg. Taskul a fost trecut pe Blocat.</div><div onClick="{{ nav.shopping }}" style="margin-top:8px;font-size:13px;font-weight:600;color:#D4527B;cursor:pointer">Deschide lista de cumparaturi</div></div></div>
+</sc-if>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Materiale necesare</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Glucoza</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 0.3 kg · stoc 2.1 kg</div></div><i data-lucide="circle-check" style="width:19px;height:19px;color:#34C759"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500;color:#FF3B30">Ciocolata alba</div><div style="font-size:12px;color:#FF3B30">necesar 0.8 kg · stoc 0 kg — insuficient</div></div><i data-lucide="triangle-alert" style="width:19px;height:19px;color:#FF3B30"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Colorant rosu</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 8 g · stoc 45 g</div></div><i data-lucide="circle-check" style="width:19px;height:19px;color:#34C759"></i></div>
+</div>
+<div style="margin:20px 16px 24px;display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.startGlaz }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Incepe taskul</div></sc-if>
+<sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><div onClick="{{ nav.transfers }}" style="text-align:center;padding:14px 0;border-radius:10px;background:rgba(212,82,123,.12);color:#D4527B;font-size:16px;font-weight:600;cursor:pointer">Cere transfer din alta locatie</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrace }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Inapoi</span><span onClick="{{ act.shareTrace }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-8px"><i data-lucide="share" style="width:21px;height:21px;color:#D4527B"></i></span></div>
+<div style="padding:8px 16px 4px"><div style="font-size:24px;font-weight:700;letter-spacing:-.3px">Trasabilitate</div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Blat cacao · 6 buc · fisa #TR-0412</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Productie</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Executant</span><span style="font-size:15px;font-weight:600">Ana M.</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Inceput / finalizat</span><span style="font-size:15px">08:05 – 10:40</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Locatie</span><span style="font-size:15px">Atelier Central</span></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Ingrediente si loturi (FIFO)</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="padding:10px 16px"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;font-weight:600">Faina 000</span><span style="font-size:15px;font-weight:600">1.8 kg</span></div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:3px">1.8 kg — lot L-102, factura FAC-118, Metro</div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="padding:10px 16px"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;font-weight:600">Ciocolata neagra 54%</span><span style="font-size:15px;font-weight:600">3 kg</span></div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:3px">2.4 kg — lot L-77, factura FAC-101, Callebaut</div><div style="font-size:12px;color:rgba(60,60,67,.6)">0.6 kg — lot L-89, factura FAC-109, Callebaut</div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="padding:10px 16px"><div style="display:flex;justify-content:space-between"><span style="font-size:15px;font-weight:600">Oua</span><span style="font-size:15px;font-weight:600">36 buc</span></div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:3px">36 buc — lot L-95, factura FAC-114, Avicola Buftea</div></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Semipreparate folosite</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:600">Sirop de insiropat</div><div style="font-size:12px;color:rgba(60,60,67,.6)">task #T-0409 · Ana M. · azi 07:40</div></div><span style="font-size:15px;font-weight:600">0.6 kg</span></div>
+</div>
+<div style="margin:20px 16px 24px"><div onClick="{{ act.shareTrace }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer"><i data-lucide="share" style="width:18px;height:18px"></i>Distribuie fisa</div></div>
+</sc-if>
+
+<sc-if value="{{ isStock }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;padding:8px 16px 4px"><div style="font-size:32px;font-weight:700;letter-spacing:-.4px">Stoc</div><span onClick="{{ act.openMiscare }}" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-8px"><i data-lucide="arrow-down-up" style="width:24px;height:24px;color:#D4527B"></i></span></div>
+<div style="padding:6px 16px"><div style="display:flex;align-items:center;gap:8px;background:#E4E4E9;border-radius:10px;padding:8px 10px;color:rgba(60,60,67,.6)"><i data-lucide="search" style="width:17px;height:17px"></i><span style="font-size:16px">Cauta articol</span></div></div>
+<div style="display:flex;gap:8px;padding:4px 16px 6px;overflow:hidden">
+<span onClick="{{ act.filtToate }}" style="padding:6px 13px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;background:{{ chipToateBg }};color:{{ chipToateColor }}">Toate</span>
+<span onClick="{{ act.filtMP }}" style="padding:6px 13px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;background:{{ chipMPBg }};color:{{ chipMPColor }}">M. prime</span>
+<span onClick="{{ act.filtAmb }}" style="padding:6px 13px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;background:{{ chipAmbBg }};color:{{ chipAmbColor }}">Ambalaje</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 16px 0">
+<div onClick="{{ nav.necesar }}" style="background:#fff;border-radius:10px;padding:12px;display:flex;align-items:center;gap:9px;cursor:pointer"><i data-lucide="calculator" style="width:20px;height:20px;color:#D4527B"></i><span style="font-size:13px;font-weight:600">Necesar MP</span></div>
+<div onClick="{{ act.openReceptie }}" style="background:#fff;border-radius:10px;padding:12px;display:flex;align-items:center;gap:9px;cursor:pointer"><i data-lucide="truck" style="width:20px;height:20px;color:#D4527B"></i><span style="font-size:13px;font-weight:600">Receptie marfa</span></div>
+</div>
+<sc-if value="{{ showMP }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Materii prime</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Faina 000</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Metro · ultima miscare azi 08:15</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">42 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Activ</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.stockDetail }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Ciocolata neagra 54%</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Callebaut · minim 5 kg</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;font-weight:600">12.4 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Activ</span></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;font-weight:600">2.4 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">Stoc scazut</span></sc-if></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Ciocolata alba</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Blocheaza: Glazura oglinda</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">0 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,59,48,.12);color:#FF3B30">Epuizat</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Unt 82%</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Metro · ultima miscare ieri 16:40</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">18.5 kg</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Activ</span></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ showAmb }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Ambalaje</div>
+<div style="margin:0 16px 24px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.shopping }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Cutii tort 26 cm</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">PackPro · minim 20 buc</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">0 buc</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,59,48,.12);color:#FF3B30">Epuizat</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Cutii prajituri mici</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">PackPro · minim 50 buc</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">180 buc</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Activ</span></div></div>
+</div>
+</sc-if>
+<div style="height:24px"></div>
+</sc-if>
+
+<sc-if value="{{ isStockDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.stock }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Stoc</span><span style="color:#D4527B;font-size:16px;font-weight:500">Editeaza</span></div>
+<div style="padding:8px 16px 4px"><div style="font-size:24px;font-weight:700;letter-spacing:-.3px">Ciocolata neagra 54%</div><div style="display:flex;align-items:center;gap:6px;margin-top:5px"><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Activ</span></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">Stoc scazut</span></sc-if><span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:#E4E4E9;color:rgba(60,60,67,.7)">M. Prime</span></div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Stoc per locatie</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Atelier Central</span><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;font-weight:600;color:#2E9E4F">12.4 kg</span></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><span style="font-size:15px;font-weight:600;color:#E07C00">2.4 kg</span></sc-if></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Dorobanti</span><span style="font-size:15px;font-weight:600">1.1 kg</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Prag minim · Furnizor</span><span style="font-size:15px;color:rgba(60,60,67,.6)">5 kg · Callebaut</span></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Istoric pret</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;padding:14px 16px">
+<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><span style="font-weight:600">Pret mediu curent</span><span style="font-weight:600;color:#D4527B">48.20 RON/kg</span></div>
+<svg width="100%" height="60" viewBox="0 0 340 60" preserveAspectRatio="none"><polyline points="0,44 48,40 96,42 144,32 192,34 240,22 288,18 340,12" fill="none" stroke="#D4527B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="340" cy="12" r="4" fill="#D4527B"></circle></svg>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(60,60,67,.6);margin-top:4px"><span>ian</span><span>mar</span><span>mai</span><span>iul</span></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Istoric intrari (loturi)</div>
+<div style="margin:0 16px 24px;background:#fff;border-radius:10px;overflow:hidden">
+<sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;padding:10px 16px;background:rgba(52,199,89,.07)"><div><div style="font-size:15px;font-weight:500">Lot L-96 · 10 kg <span style="font-size:10px;font-weight:700;color:#2E9E4F">NOU</span></div><div style="font-size:12px;color:rgba(60,60,67,.6)">FAC-121 · 47.50 RON/kg · exp. 12 dec 2026</div></div><span style="font-size:12px;color:rgba(60,60,67,.6)">azi</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+</sc-if>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Lot L-89 · 5 kg</div><div style="font-size:12px;color:rgba(60,60,67,.6)">FAC-109 · 46.80 RON/kg · exp. 14 sept 2026</div></div><span style="font-size:12px;color:rgba(60,60,67,.6)">18 iun</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Lot L-77 · 10 kg</div><div style="font-size:12px;color:rgba(60,60,67,.6)">FAC-101 · 45.10 RON/kg · exp. 2 aug 2026</div></div><span style="font-size:12px;color:rgba(60,60,67,.6)">4 iun</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isNecesar }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Stoc</span><span onClick="{{ act.exportNecesar }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-8px"><i data-lucide="share" style="width:21px;height:21px;color:#D4527B"></i></span></div>
+<div style="padding:8px 16px 4px"><div style="font-size:24px;font-weight:700;letter-spacing:-.3px">Necesar materii prime</div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Plan de productie · sambata 5 iulie</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Produse planificate</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Tort Padurea Neagra</span><span style="font-size:15px;font-weight:600">4 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Tiramisu clasic</span><span style="font-size:15px;font-weight:600">6 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Ecler vanilie</span><span style="font-size:15px;font-weight:600">120 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Macarons zmeura</span><span style="font-size:15px;font-weight:600">200 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:6px;padding:11px 16px;color:#D4527B;font-size:15px;font-weight:500;cursor:pointer"><i data-lucide="circle-plus" style="width:18px;height:18px"></i>Adauga produs</div>
+</div>
+<sc-if value="{{ necesarNotCalc }}" hint-placeholder-val="{{ false }}">
+<div style="margin:14px 16px 24px"><div onClick="{{ act.calcNecesar }}" style="text-align:center;padding:13px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Calculeaza necesarul</div></div>
+</sc-if>
+<sc-if value="{{ necesarCalc }}" hint-placeholder-val="{{ false }}">
+<div style="padding:16px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Rezultat · 14 materiale</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Faina 000</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 9.6 kg · stoc 42 kg · Metro</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:#34C759"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Ciocolata neagra 54%</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 7.2 kg · stoc 2.4 kg · Callebaut</div></div><span style="font-size:12px;font-weight:700;color:#FF3B30">De cumparat 4.8 kg</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Mascarpone</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 4.5 kg · stoc 1.2 kg · Metro</div></div><span style="font-size:12px;font-weight:700;color:#FF3B30">De cumparat 3.3 kg</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><div><div style="font-size:15px;font-weight:500">Zahar pudra</div><div style="font-size:12px;color:rgba(60,60,67,.6)">necesar 3.8 kg · stoc 9 kg · Selgros</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:#34C759"></i></div>
+</div>
+<div style="margin:16px 16px 24px;display:flex;gap:10px">
+<div onClick="{{ act.exportNecesar }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:10px;background:rgba(212,82,123,.12);color:#D4527B;font-size:15px;font-weight:600;cursor:pointer"><i data-lucide="file-spreadsheet" style="width:17px;height:17px"></i>Export Excel</div>
+<div onClick="{{ nav.shopping }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:10px;background:rgba(212,82,123,.12);color:#D4527B;font-size:15px;font-weight:600;cursor:pointer"><i data-lucide="list-checks" style="width:17px;height:17px"></i>Lista cumparaturi</div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;padding:8px 16px 4px"><div style="font-size:32px;font-weight:700;letter-spacing:-.4px">Comenzi</div><i data-lucide="plus" style="width:26px;height:26px;color:#D4527B"></i></div>
+<div style="padding:8px 16px 6px"><div style="display:flex;background:#E4E4E9;border-radius:9px;padding:2px">
+<span onClick="{{ act.ordSegAzi }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ oSegAziBg }};box-shadow:{{ oSegAziSh }};font-weight:{{ oSegAziFw }}">Azi</span>
+<span onClick="{{ act.ordSegMaine }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ oSegMaineBg }};box-shadow:{{ oSegMaineSh }};font-weight:{{ oSegMaineFw }}">Maine</span>
+<span onClick="{{ act.ordSegToate }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ oSegToateBg }};box-shadow:{{ oSegToateSh }};font-weight:{{ oSegToateFw }}">Toate</span>
+</div></div>
+<sc-if value="{{ showOrdMaine }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Livrare maine</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">#1048 · Scoala nr. 5</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Briose aniversare 80 buc · maine 13:00</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">240.00 RON</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">Noua</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">#1049 · Bianca R.</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Tort Ruby 16 portii · maine 17:00</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">245.00 RON</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">Noua</span></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ showOrdAzi }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Livrare azi</div>
+<div style="margin:0 16px 24px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.order }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">#1046 · Cafeneaua Arome</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">36 eclere, 24 macarons · azi 12:00</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">310.00 RON</span><sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">Noua</span></sc-if><sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In pregatire</span></sc-if><sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(175,82,222,.13);color:#AF52DE">Pregatita</span></sc-if><sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(88,86,214,.13);color:#5856D6">In tranzit</span></sc-if><sc-if value="{{ os4 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Livrata</span></sc-if></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">#1047 · Maria Ionescu</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Tort personalizat 24 portii · azi 14:00</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">420.00 RON</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In pregatire</span></div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">#1043 · Ioana Marin</div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">Cutie prajituri asortate · livrata 09:40</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span style="font-size:15px;font-weight:600">96.00 RON</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Livrata</span></div></div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isOrderDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.orders }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Comenzi</span></div>
+<div style="padding:8px 16px 4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px;font-weight:700;letter-spacing:-.3px">#1046</span><sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">Noua</span></sc-if><sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In pregatire</span></sc-if><sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(175,82,222,.13);color:#AF52DE">Pregatita</span></sc-if><sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(88,86,214,.13);color:#5856D6">In tranzit</span></sc-if><sc-if value="{{ os4 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Livrata</span></sc-if></div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Cafeneaua Arome · livrare azi 12:00</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Continut</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Ecler vanilie ×36</span><span style="font-size:15px;font-weight:600">216.00 RON</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px">Macarons zmeura ×24</span><span style="font-size:15px;font-weight:600">94.00 RON</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:16px;font-weight:600">Total</span><span style="font-size:16px;font-weight:700">310.00 RON</span></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Progres</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+<span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:17px;height:17px;color:#34C759"></i>Noua · ieri 14:20</span>
+<sc-if value="{{ osGte1 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:17px;height:17px;color:#34C759"></i>In pregatire</span></sc-if>
+<sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px;color:rgba(60,60,67,.4)"><i data-lucide="circle" style="width:17px;height:17px"></i>In pregatire</span></sc-if>
+<sc-if value="{{ osGte2 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:17px;height:17px;color:#AF52DE"></i>Pregatita</span></sc-if>
+<sc-if value="{{ osGte3 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:17px;height:17px;color:#5856D6"></i>In tranzit</span></sc-if>
+<sc-if value="{{ osGte4 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:17px;height:17px;color:#2E9E4F"></i>Livrata · foaie semnata</span></sc-if>
+</div>
+<div style="margin:18px 16px 24px;display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.advanceOrder }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Incepe pregatirea</div></sc-if>
+<sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.advanceOrder }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Marcheaza pregatita</div></sc-if>
+<sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.advanceOrder }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Trimite cu curierul</div></sc-if>
+<sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><div onClick="{{ act.openLivrare }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Confirma livrarea (foaie)</div></sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTransfers }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Inapoi</span><i data-lucide="plus" style="width:24px;height:24px;color:#D4527B"></i></div>
+<div style="padding:8px 16px 4px"><div style="font-size:28px;font-weight:700;letter-spacing:-.4px">Transferuri</div></div>
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Azi</div>
+<div style="margin:0 16px 24px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.transfer }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;font-size:16px;font-weight:600"><span>Atelier Central</span><i data-lucide="arrow-right" style="width:15px;height:15px;color:#8E8E93"></i><span>Baneasa</span></div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">5 articole · cerut de Mihai T. · 08:30</div></div><sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In asteptare</span></sc-if><sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">In tranzit</span></sc-if></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 16px"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;font-size:16px;font-weight:600"><span>Atelier Central</span><i data-lucide="arrow-right" style="width:15px;height:15px;color:#8E8E93"></i><span>Dorobanti</span></div><div style="font-size:12px;color:rgba(60,60,67,.6);margin-top:2px">8 articole · cerut de Elena D. · 09:12</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(52,199,89,.14);color:#2E9E4F">Finalizat</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTransferDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Transferuri</span></div>
+<div style="padding:8px 16px 4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Transfer #TF-088</span><sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(255,149,0,.14);color:#E07C00">In asteptare</span></sc-if><sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(0,122,255,.12);color:#007AFF">In tranzit</span></sc-if></div><div style="display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(60,60,67,.6);margin-top:3px"><span>Atelier Central</span><i data-lucide="arrow-right" style="width:13px;height:13px"></i><span>Baneasa</span><span>· cerut de Mihai T.</span></div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Articole · 5</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Ecler vanilie</span><span style="font-size:15px;font-weight:600">24 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Macarons zmeura</span><span style="font-size:15px;font-weight:600">40 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Tarte fructe rosii</span><span style="font-size:15px;font-weight:600">12 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:10px 16px"><span style="font-size:15px;font-weight:500">Cutii prajituri mici</span><span style="font-size:15px;font-weight:600">30 buc</span></div>
+</div>
+<sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px 32px 0;font-size:12px;color:rgba(60,60,67,.6)">La aprobare, stocul se rezerva in Atelier Central si trece pe In tranzit.</div>
+<div style="margin:18px 16px 24px;display:flex;flex-direction:column;gap:10px">
+<div onClick="{{ act.approveTransfer }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Aproba si expediaza</div>
+<div style="text-align:center;padding:14px 0;border-radius:10px;background:rgba(255,59,48,.1);color:#FF3B30;font-size:16px;font-weight:600;cursor:pointer">Respinge</div>
+</div>
+</sc-if>
+<sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}">
+<div style="margin:18px 16px 24px;background:rgba(0,122,255,.08);border-radius:10px;padding:13px 16px;display:flex;gap:10px;align-items:center"><i data-lucide="truck" style="width:19px;height:19px;color:#007AFF"></i><span style="font-size:13.5px;color:rgba(60,60,67,.85)">Transfer in tranzit — Baneasa confirma primirea la destinatie.</span></div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isMenu }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 16px 4px"><div style="font-size:32px;font-weight:700;letter-spacing:-.4px">Meniu</div></div>
+<div style="margin:12px 16px 0;background:#fff;border-radius:10px;display:flex;align-items:center;gap:12px;padding:12px 16px"><span style="width:48px;height:48px;border-radius:50%;background:#D4527B;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700">AM</span><div style="flex:1"><div style="font-size:16px;font-weight:600">Ana Marinescu</div><div style="font-size:12px;color:rgba(60,60,67,.6)">Cofetar sef · Atelier Central</div></div><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Operatiuni</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.necesar }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="calculator" style="width:19px;height:19px;color:#D4527B"></i>Necesar materii prime</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.shopping }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="list-checks" style="width:19px;height:19px;color:#D4527B"></i>Lista de cumparaturi</span><span style="display:flex;align-items:center;gap:6px"><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(255,59,48,.12);color:#FF3B30">3</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.transfers }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="arrow-left-right" style="width:19px;height:19px;color:#D4527B"></i>Transferuri</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ nav.trace }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="file-search" style="width:19px;height:19px;color:#D4527B"></i>Trasabilitate</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Aplicatie</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ nav.setari }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="settings" style="width:19px;height:19px;color:#D4527B"></i>Setari</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+</div>
+<div onClick="{{ act.logout }}" style="margin:18px 16px 24px;background:#fff;border-radius:10px;text-align:center;padding:13px 0;color:#FF3B30;font-size:16px;font-weight:600;cursor:pointer">Deconectare</div>
+</sc-if>
+
+<sc-if value="{{ isShopping }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Inapoi</span><span onClick="{{ act.exportNecesar }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-8px"><i data-lucide="share" style="width:21px;height:21px;color:#D4527B"></i></span></div>
+<div style="padding:8px 16px 4px"><div style="font-size:24px;font-weight:700;letter-spacing:-.3px">Lista de cumparaturi</div><div style="font-size:13px;color:rgba(60,60,67,.6);margin-top:3px">Generata din taskuri blocate + praguri minime</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Callebaut</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ act.toggleAlba }}" style="display:flex;align-items:center;gap:11px;padding:11px 16px;cursor:pointer"><sc-if value="{{ shopAlba }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:15px;height:15px;color:#fff"></i></span><div style="flex:1"><div style="font-size:15px;font-weight:500;text-decoration:line-through;color:rgba(60,60,67,.5)">Ciocolata alba</div><div style="font-size:12px;color:rgba(60,60,67,.5)">blocheaza: Glazura oglinda</div></div><span style="font-size:15px;font-weight:600;color:rgba(60,60,67,.5)">6 kg</span></sc-if><sc-if value="{{ shopAlbaOff }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#fff;box-shadow:inset 0 0 0 1.5px #C7C7CC;flex:none"></span><div style="flex:1"><div style="font-size:15px;font-weight:500">Ciocolata alba</div><div style="font-size:12px;color:rgba(60,60,67,.6)">blocheaza: Glazura oglinda</div></div><span style="font-size:15px;font-weight:600">6 kg</span></sc-if></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ act.toggleNeagra }}" style="display:flex;align-items:center;gap:11px;padding:11px 16px;cursor:pointer"><sc-if value="{{ shopNeagra }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:15px;height:15px;color:#fff"></i></span><div style="flex:1"><div style="font-size:15px;font-weight:500;text-decoration:line-through;color:rgba(60,60,67,.5)">Ciocolata neagra 54%</div><div style="font-size:12px;color:rgba(60,60,67,.5)">sub prag minim (2.4 / 5 kg)</div></div><span style="font-size:15px;font-weight:600;color:rgba(60,60,67,.5)">5 kg</span></sc-if><sc-if value="{{ shopNeagraOff }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#fff;box-shadow:inset 0 0 0 1.5px #C7C7CC;flex:none"></span><div style="flex:1"><div style="font-size:15px;font-weight:500">Ciocolata neagra 54%</div><div style="font-size:12px;color:rgba(60,60,67,.6)">sub prag minim (2.4 / 5 kg)</div></div><span style="font-size:15px;font-weight:600">5 kg</span></sc-if></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">PackPro</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ act.toggleCutii }}" style="display:flex;align-items:center;gap:11px;padding:11px 16px;cursor:pointer"><sc-if value="{{ shopCutii }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:15px;height:15px;color:#fff"></i></span><div style="flex:1"><div style="font-size:15px;font-weight:500;text-decoration:line-through;color:rgba(60,60,67,.5)">Cutii tort 26 cm</div><div style="font-size:12px;color:rgba(60,60,67,.5)">epuizat · minim 20 buc</div></div><span style="font-size:15px;font-weight:600;color:rgba(60,60,67,.5)">40 buc</span></sc-if><sc-if value="{{ shopCutiiOff }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;border-radius:7px;background:#fff;box-shadow:inset 0 0 0 1.5px #C7C7CC;flex:none"></span><div style="flex:1"><div style="font-size:15px;font-weight:500">Cutii tort 26 cm</div><div style="font-size:12px;color:rgba(60,60,67,.6)">epuizat · minim 20 buc</div></div><span style="font-size:15px;font-weight:600">40 buc</span></sc-if></div>
+</div>
+<div style="margin:18px 16px 24px"><div onClick="{{ act.exportNecesar }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer"><i data-lucide="share" style="width:18px;height:18px"></i>Trimite lista</div></div>
+</sc-if>
+
+<sc-if value="{{ isSetari }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 16px 4px"><span onClick="{{ nav.back }}" style="display:flex;align-items:center;gap:3px;color:#D4527B;font-size:16px;cursor:pointer"><i data-lucide="chevron-left" style="width:22px;height:22px"></i>Meniu</span></div>
+<div style="padding:8px 16px 4px"><div style="font-size:28px;font-weight:700;letter-spacing:-.4px">Setari</div></div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Organizatie (admin)</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="palette" style="width:19px;height:19px;color:#D4527B"></i>Branding si accent</span><span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:50%;background:#D4527B"></span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="tags" style="width:19px;height:19px;color:#D4527B"></i>Categorii</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px"><span style="display:flex;align-items:center;gap:10px;font-size:16px"><i data-lucide="map-pin" style="width:19px;height:19px;color:#D4527B"></i>Locatii</span><i data-lucide="chevron-right" style="width:18px;height:18px;color:#C7C7CC"></i></div>
+</div>
+<div style="padding:14px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Functii experimentale</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 16px"><div><div style="font-size:16px">Valori nutritionale</div><div style="font-size:12px;color:rgba(60,60,67,.6)">Etichete si calcul agregat pe retete</div></div><span style="width:51px;height:31px;border-radius:999px;background:#D4527B;display:flex;align-items:center;justify-content:flex-end;padding:2px"><span style="width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span></div>
+</div>
+<div onClick="{{ act.logout }}" style="margin:18px 16px 24px;background:#fff;border-radius:10px;text-align:center;padding:13px 0;color:#FF3B30;font-size:16px;font-weight:600;cursor:pointer">Deconectare</div>
+</sc-if>
+
+<!--SCREENS-->
+</div>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+<div style="flex:none;border-top:1px solid rgba(60,60,67,.12);background:#F7F7F8">
+<div style="display:flex;padding:8px 8px 2px">
+<div onClick="{{ nav.home }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;cursor:pointer;color:{{ tabHomeColor }}"><i data-lucide="house" style="width:23px;height:23px"></i>Acasa</div>
+<div onClick="{{ nav.tasks }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;cursor:pointer;color:{{ tabTasksColor }}"><i data-lucide="clipboard-list" style="width:23px;height:23px"></i>Productie</div>
+<div onClick="{{ nav.stock }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;cursor:pointer;color:{{ tabStockColor }}"><i data-lucide="package" style="width:23px;height:23px"></i>Stoc</div>
+<div onClick="{{ nav.orders }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;cursor:pointer;color:{{ tabOrdersColor }}"><i data-lucide="shopping-bag" style="width:23px;height:23px"></i>Comenzi</div>
+<div onClick="{{ nav.menu }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;cursor:pointer;color:{{ tabMenuColor }}"><i data-lucide="menu" style="width:23px;height:23px"></i>Meniu</div>
+</div>
+<div style="height:18px;display:flex;align-items:center;justify-content:center"><div style="width:134px;height:5px;border-radius:3px;background:#000"></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetRandament }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ act.closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+<div style="position:relative;background:#F2F2F7;border-radius:16px 16px 0 0;padding-bottom:28px">
+<div style="display:flex;justify-content:center;padding:8px 0 0"><div style="width:36px;height:5px;border-radius:3px;background:#C7C7CC"></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px"><span onClick="{{ act.closeSheet }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="x" style="width:24px;height:24px;color:#8E8E93"></i></span><span style="font-size:17px;font-weight:600">Captura randament</span><span onClick="{{ act.confirmRandament }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="check" style="width:24px;height:24px;color:#D4527B"></i></span></div>
+<div style="padding:6px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Rezultat productie</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:12px 16px"><span style="font-size:16px">Cantitate tinta</span><span style="font-size:16px;color:rgba(60,60,67,.6)">6 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:12px 16px"><span style="font-size:16px">Cantitate obtinuta</span><span style="font-size:16px;font-weight:600">6 buc</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ act.pickRandLoc }}" style="display:flex;justify-content:space-between;padding:12px 16px;cursor:pointer"><span style="font-size:16px">Locatie stocare</span><span style="display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ randLoc }}</span><i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:rgba(60,60,67,.6)"></i></span></div>
+</div>
+<div style="padding:8px 32px 0;font-size:12px;color:rgba(60,60,67,.6)">Stocul de semipreparat creste cu 6 buc; materialele se scad FIFO din loturi.</div>
+<div style="margin:16px 16px 0"><div onClick="{{ act.confirmRandament }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Confirma si finalizeaza</div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetLivrare }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ act.closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+<div style="position:relative;background:#F2F2F7;border-radius:16px 16px 0 0;padding-bottom:28px">
+<div style="display:flex;justify-content:center;padding:8px 0 0"><div style="width:36px;height:5px;border-radius:3px;background:#C7C7CC"></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px"><span onClick="{{ act.closeSheet }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="x" style="width:24px;height:24px;color:#8E8E93"></i></span><span style="font-size:17px;font-weight:600">Foaie de livrare</span><span onClick="{{ act.confirmLivrare }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="check" style="width:24px;height:24px;color:#D4527B"></i></span></div>
+<div style="padding:6px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Comanda #1046 · Cafeneaua Arome</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:15px">Predat de</span><span style="font-size:15px;font-weight:600">Mihai T. (curier)</span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="font-size:15px">Primit de</span><span style="font-size:15px;font-weight:600">Dana V.</span></div>
+</div>
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Semnatura client</div>
+<div onClick="{{ act.sign }}" style="margin:0 16px;background:#fff;border-radius:10px;height:130px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<sc-if value="{{ signed }}" hint-placeholder-val="{{ false }}"><svg width="220" height="90" viewBox="0 0 220 90"><path d="M18 62 C 40 20, 58 22, 66 48 C 72 68, 84 66, 96 40 C 104 24, 118 26, 122 44 C 126 60, 140 58, 152 38 C 160 26, 178 30, 198 52" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ notSigned }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px;color:rgba(60,60,67,.45)">Atinge pentru a semna</span></sc-if>
+</div>
+<div style="margin:16px 16px 0"><div onClick="{{ act.confirmLivrare }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Confirma livrarea</div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetMiscare }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ act.closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+<div style="position:relative;background:#F2F2F7;border-radius:16px 16px 0 0;padding-bottom:28px">
+<div style="display:flex;justify-content:center;padding:8px 0 0"><div style="width:36px;height:5px;border-radius:3px;background:#C7C7CC"></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px"><span onClick="{{ act.closeSheet }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="x" style="width:24px;height:24px;color:#8E8E93"></i></span><span style="font-size:17px;font-weight:600">Miscare stoc</span><span onClick="{{ act.confirmMiscare }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="check" style="width:24px;height:24px;color:#D4527B"></i></span></div>
+<div style="padding:6px 16px 4px"><div style="display:flex;background:#E4E4E9;border-radius:9px;padding:2px">
+<span onClick="{{ act.tipIntrare }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ segIntrareBg }};box-shadow:{{ segIntrareSh }};font-weight:{{ segIntrareFw }}">Intrare</span>
+<span onClick="{{ act.tipIesire }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ segIesireBg }};box-shadow:{{ segIesireSh }};font-weight:{{ segIesireFw }}">Iesire</span>
+<span onClick="{{ act.tipAjustare }}" style="flex:1;text-align:center;padding:5px 0;border-radius:7px;font-size:13px;cursor:pointer;background:{{ segAjustBg }};box-shadow:{{ segAjustSh }};font-weight:{{ segAjustFw }}">Ajustare</span>
+</div></div>
+<div style="margin:12px 16px 0;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ act.pickArticol }}" style="display:flex;justify-content:space-between;padding:12px 16px;cursor:pointer"><span style="font-size:16px">Articol</span><span style="display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ miscArticol }}</span><i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:rgba(60,60,67,.6)"></i></span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px"><span style="font-size:16px">Cantitate</span><span style="display:flex;align-items:center;gap:10px"><span onClick="{{ act.cantMinus }}" style="width:30px;height:30px;border-radius:8px;background:#E4E4E9;display:flex;align-items:center;justify-content:center;cursor:pointer"><i data-lucide="minus" style="width:16px;height:16px"></i></span><span style="font-size:16px;font-weight:600;min-width:64px;text-align:center">{{ miscCant }} kg</span><span onClick="{{ act.cantPlus }}" style="width:30px;height:30px;border-radius:8px;background:#E4E4E9;display:flex;align-items:center;justify-content:center;cursor:pointer"><i data-lucide="plus" style="width:16px;height:16px"></i></span></span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div onClick="{{ act.pickMotiv }}" style="display:flex;justify-content:space-between;padding:12px 16px;cursor:pointer"><span style="font-size:16px">Motiv</span><span style="display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ miscMotiv }}</span><i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:rgba(60,60,67,.6)"></i></span></div>
+</div>
+<div style="padding:8px 32px 0;font-size:12px;color:rgba(60,60,67,.6)">Stoc rezultat: {{ miscRezultat }}</div>
+<div style="margin:14px 16px 0"><div onClick="{{ act.confirmMiscare }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Salveaza miscarea</div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ sheetReceptie }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ act.closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+<div style="position:relative;background:#F2F2F7;border-radius:16px 16px 0 0;padding-bottom:28px">
+<div style="display:flex;justify-content:center;padding:8px 0 0"><div style="width:36px;height:5px;border-radius:3px;background:#C7C7CC"></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px"><span onClick="{{ act.closeSheet }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="x" style="width:24px;height:24px;color:#8E8E93"></i></span><span style="font-size:17px;font-weight:600">Receptie marfa</span><span onClick="{{ act.confirmReceptie }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="check" style="width:24px;height:24px;color:#D4527B"></i></span></div>
+<div style="margin:6px 16px 0;background:#fff;border-radius:10px;overflow:hidden">
+<div onClick="{{ act.pickFurnizor }}" style="display:flex;justify-content:space-between;padding:12px 16px;cursor:pointer"><span style="font-size:16px">Furnizor</span><span style="display:flex;align-items:center;gap:4px"><span style="font-size:16px">{{ recFurnizor }}</span><i data-lucide="chevrons-up-down" style="width:15px;height:15px;color:rgba(60,60,67,.6)"></i></span></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;justify-content:space-between;padding:12px 16px"><span style="font-size:16px">Nr. factura</span><span style="font-size:16px;font-weight:600">FAC-121</span></div>
+</div>
+<div style="padding:12px 32px 6px;font-size:13px;color:rgba(60,60,67,.6);text-transform:uppercase;letter-spacing:.3px">Materiale · 1</div>
+<div style="margin:0 16px;background:#fff;border-radius:10px;overflow:hidden">
+<div style="padding:12px 16px"><div style="font-size:16px;font-weight:600">Ciocolata neagra 54%</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;font-size:13px">
+<span style="background:#F2F2F7;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:rgba(60,60,67,.6)">Cantitate</span><b>10 kg</b></span>
+<span style="background:#F2F2F7;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:rgba(60,60,67,.6)">Lot</span><b>L-96</b></span>
+<span style="background:#F2F2F7;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:rgba(60,60,67,.6)">Pret</span><b>47.50 RON/kg</b></span>
+<span style="background:#F2F2F7;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:rgba(60,60,67,.6)">Expira</span><b>12 dec 2026</b></span>
+</div></div>
+<div style="height:1px;background:rgba(60,60,67,.15);margin-left:16px"></div>
+<div style="display:flex;align-items:center;gap:6px;padding:12px 16px;color:#D4527B;font-size:15px;font-weight:500;cursor:pointer"><i data-lucide="circle-plus" style="width:18px;height:18px"></i>Adauga material</div>
+</div>
+<div style="margin:14px 16px 0"><div onClick="{{ act.confirmReceptie }}" style="text-align:center;padding:14px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:16px;font-weight:600;cursor:pointer">Salveaza receptia · 475.00 RON</div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;z-index:10">
+<div onClick="{{ act.closePicker }}" style="position:absolute;inset:0;background:rgba(0,0,0,.35)"></div>
+<div style="position:relative;background:#F2F2F7;border-radius:16px 16px 0 0;padding-bottom:28px">
+<div style="display:flex;justify-content:center;padding:8px 0 0"><div style="width:36px;height:5px;border-radius:3px;background:#C7C7CC"></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px"><span onClick="{{ act.closePicker }}" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:-6px"><i data-lucide="x" style="width:24px;height:24px;color:#8E8E93"></i></span><span style="font-size:17px;font-weight:600">{{ pickerTitle }}</span><span style="width:24px"></span></div>
+<div style="margin:6px 16px 0;background:#fff;border-radius:10px;overflow:hidden">
+<sc-for list="{{ pickerOptions }}" as="opt" hint-placeholder-count="3">
+<div onClick="{{ opt.onPick }}" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;border-bottom:1px solid rgba(60,60,67,.1)">
+<span style="font-size:16px">{{ opt.label }}</span>
+<sc-if value="{{ opt.sel }}" hint-placeholder-val="{{ false }}"><i data-lucide="check" style="width:19px;height:19px;color:#D4527B"></i></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!--SHEETS-->
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:24px;right:24px;bottom:110px;background:rgba(28,28,30,.94);color:#fff;border-radius:12px;padding:12px 16px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 6px 20px rgba(0,0,0,.25)"><i data-lucide="circle-check" style="width:17px;height:17px;color:#30D158"></i>{{ toastMsg }}</div>
+</sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:940}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'splash', stack: [],
+    blat: 'DE_FACUT', glaz: 'DE_FACUT', glazAlert: false,
+    orderStep: 0, transfer: 'IN_ASTEPTARE',
+    sheet: null, toast: null,
+    necesarCalc: false, receptionDone: false, signed: false,
+    shop: { alba: false, neagra: false, cutii: false },
+    picker: null,
+    misc: { tip: 'Intrare', articol: 'Faina 000', motiv: 'Receptie furnizor', cant: 12.5 },
+    randLoc: 'Atelier Central', recFurnizor: 'Callebaut',
+    ordSeg: 'azi', stockFilter: 'toate'
+  };
+  fmt(n) { return (Math.round(n * 100) / 100).toString(); }
+  pickerOptions() {
+    const s = this.state;
+    if (!s.picker) return [];
+    const defs = {
+      articol: { opts: ['Faina 000', 'Ciocolata neagra 54%', 'Unt 82%', 'Zahar pudra'], cur: s.misc.articol, set: v => this.setState(st => ({ misc: Object.assign({}, st.misc, { articol: v }), picker: null })) },
+      motiv: { opts: ['Receptie furnizor', 'Consum productie', 'Pierdere / rebut', 'Corectie inventar'], cur: s.misc.motiv, set: v => this.setState(st => ({ misc: Object.assign({}, st.misc, { motiv: v }), picker: null })) },
+      randLoc: { opts: ['Atelier Central', 'Dorobanti', 'Baneasa'], cur: s.randLoc, set: v => this.setState({ randLoc: v, picker: null }) },
+      furnizor: { opts: ['Callebaut', 'Metro', 'Selgros', 'PackPro'], cur: s.recFurnizor, set: v => this.setState({ recFurnizor: v, picker: null }) }
+    };
+    const d = defs[s.picker.kind];
+    if (!d) return [];
+    return d.opts.map(o => ({ label: o, sel: o === d.cur, notSel: o !== d.cur, onPick: () => d.set(o) }));
+  }
+  stocBaza(a) { return ({ 'Faina 000': 42, 'Ciocolata neagra 54%': 2.4, 'Unt 82%': 18.5, 'Zahar pudra': 9 })[a] || 0; }
+  componentDidMount() {
+    this.icons();
+    this._splash = setTimeout(() => { if (this.state.screen === 'splash') this.setState({ screen: 'login' }); }, 2300);
+  }
+  componentWillUnmount() { clearTimeout(this._splash); clearTimeout(this._t); }
+  componentDidUpdate() { this.icons(); }
+  icons() { if (window.lucide) window.lucide.createIcons(); }
+  go(s) { this.setState(st => ({ screen: s, stack: st.stack.concat([st.screen]), sheet: null })); }
+  tab(s) { this.setState({ screen: s, stack: [], sheet: null }); }
+  pop() { this.setState(st => { const stack = st.stack.slice(); const prev = stack.pop() || 'home'; return { screen: prev, stack }; }); }
+  say(msg) { clearTimeout(this._t); this.setState({ toast: msg }); this._t = setTimeout(() => this.setState({ toast: null }), 2400); }
+  renderVals() {
+    const s = this.state;
+    const is = k => s.screen === k;
+    const accent = '#D4527B', gray = '#8E8E93';
+    return {
+      isSplash: is('splash'), isLogin: is('login'), isHome: is('home'), isTasks: is('tasks'),
+      isTaskBlat: is('taskBlat'), isTaskGlaz: is('taskGlaz'), isTrace: is('trace'),
+      isStock: is('stock'), isStockDetail: is('stockDetail'), isNecesar: is('necesar'),
+      isOrders: is('orders'), isOrderDetail: is('orderDetail'),
+      isTransfers: is('transfers'), isTransferDetail: is('transferDetail'),
+      isMenu: is('menu'), isShopping: is('shopping'), isSetari: is('setari'),
+      showTabs: !is('login') && !is('splash'),
+      statusBarColor: is('splash') ? '#fff' : '#000',
+      tabHomeColor: is('home') ? accent : gray,
+      tabTasksColor: (is('tasks') || is('taskBlat') || is('taskGlaz') || is('trace')) ? accent : gray,
+      tabStockColor: (is('stock') || is('stockDetail') || is('necesar')) ? accent : gray,
+      tabOrdersColor: (is('orders') || is('orderDetail')) ? accent : gray,
+      tabMenuColor: (is('menu') || is('shopping') || is('setari')) ? accent : gray,
+      blatTodo: s.blat === 'DE_FACUT', blatWip: s.blat === 'IN_LUCRU', blatDone: s.blat === 'FINALIZAT',
+      glazTodo: s.glaz === 'DE_FACUT', glazBlocked: s.glaz === 'BLOCAT', glazAlert: s.glazAlert,
+      os0: s.orderStep === 0, os1: s.orderStep === 1, os2: s.orderStep === 2, os3: s.orderStep === 3, os4: s.orderStep === 4,
+      osGte1: s.orderStep >= 1, osGte2: s.orderStep >= 2, osGte3: s.orderStep >= 3, osGte4: s.orderStep >= 4,
+      orderCanAdvance: s.orderStep < 3, orderInTransit: s.orderStep === 3, orderDelivered: s.orderStep === 4,
+      trWaiting: s.transfer === 'IN_ASTEPTARE', trTransit: s.transfer === 'IN_TRANZIT',
+      sheetRandament: s.sheet === 'randament', sheetLivrare: s.sheet === 'livrare',
+      sheetMiscare: s.sheet === 'miscare', sheetReceptie: s.sheet === 'receptie',
+      hasToast: !!s.toast, toastMsg: s.toast || '',
+      miscArticol: s.misc.articol, miscMotiv: s.misc.motiv, miscCant: this.fmt(s.misc.cant),
+      miscRezultat: this.fmt(this.stocBaza(s.misc.articol) + (s.misc.tip === 'Iesire' ? -s.misc.cant : s.misc.cant)) + ' kg',
+      segIntrareBg: s.misc.tip === 'Intrare' ? '#fff' : 'transparent',
+      segIntrareSh: s.misc.tip === 'Intrare' ? '0 1px 2px rgba(0,0,0,.12)' : 'none',
+      segIntrareFw: s.misc.tip === 'Intrare' ? '600' : '500',
+      segIesireBg: s.misc.tip === 'Iesire' ? '#fff' : 'transparent',
+      segIesireSh: s.misc.tip === 'Iesire' ? '0 1px 2px rgba(0,0,0,.12)' : 'none',
+      segIesireFw: s.misc.tip === 'Iesire' ? '600' : '500',
+      segAjustBg: s.misc.tip === 'Ajustare' ? '#fff' : 'transparent',
+      segAjustSh: s.misc.tip === 'Ajustare' ? '0 1px 2px rgba(0,0,0,.12)' : 'none',
+      segAjustFw: s.misc.tip === 'Ajustare' ? '600' : '500',
+      randLoc: s.randLoc, recFurnizor: s.recFurnizor,
+      ordAzi: s.ordSeg === 'azi', ordMaine: s.ordSeg === 'maine', ordToate: s.ordSeg === 'toate',
+      showOrdAzi: s.ordSeg !== 'maine', showOrdMaine: s.ordSeg !== 'azi',
+      oSegAziBg: s.ordSeg === 'azi' ? '#fff' : 'transparent', oSegAziSh: s.ordSeg === 'azi' ? '0 1px 2px rgba(0,0,0,.12)' : 'none', oSegAziFw: s.ordSeg === 'azi' ? '600' : '500',
+      oSegMaineBg: s.ordSeg === 'maine' ? '#fff' : 'transparent', oSegMaineSh: s.ordSeg === 'maine' ? '0 1px 2px rgba(0,0,0,.12)' : 'none', oSegMaineFw: s.ordSeg === 'maine' ? '600' : '500',
+      oSegToateBg: s.ordSeg === 'toate' ? '#fff' : 'transparent', oSegToateSh: s.ordSeg === 'toate' ? '0 1px 2px rgba(0,0,0,.12)' : 'none', oSegToateFw: s.ordSeg === 'toate' ? '600' : '500',
+      chipToateBg: s.stockFilter === 'toate' ? '#D4527B' : '#E4E4E9', chipToateColor: s.stockFilter === 'toate' ? '#fff' : '#000',
+      chipMPBg: s.stockFilter === 'mp' ? '#D4527B' : '#E4E4E9', chipMPColor: s.stockFilter === 'mp' ? '#fff' : '#000',
+      chipAmbBg: s.stockFilter === 'amb' ? '#D4527B' : '#E4E4E9', chipAmbColor: s.stockFilter === 'amb' ? '#fff' : '#000',
+      showMP: s.stockFilter !== 'amb', showAmb: s.stockFilter !== 'mp',
+      pickerOpen: !!s.picker, pickerTitle: s.picker ? s.picker.title : '',
+      pickerOptions: this.pickerOptions(),
+      necesarCalc: s.necesarCalc, necesarNotCalc: !s.necesarCalc,
+      receptionDone: s.receptionDone, noReception: !s.receptionDone, signed: s.signed, notSigned: !s.signed,
+      shopAlba: s.shop.alba, shopAlbaOff: !s.shop.alba, shopNeagra: s.shop.neagra, shopNeagraOff: !s.shop.neagra, shopCutii: s.shop.cutii, shopCutiiOff: !s.shop.cutii,
+      nav: {
+        home: () => this.tab('home'), tasks: () => this.tab('tasks'), stock: () => this.tab('stock'),
+        orders: () => this.tab('orders'), menu: () => this.tab('menu'),
+        taskBlat: () => this.go('taskBlat'), taskGlaz: () => this.go('taskGlaz'), trace: () => this.go('trace'),
+        stockDetail: () => this.go('stockDetail'), necesar: () => this.go('necesar'),
+        order: () => this.go('orderDetail'), transfers: () => this.go('transfers'), transfer: () => this.go('transferDetail'),
+        shopping: () => this.go('shopping'), setari: () => this.go('setari'),
+        back: () => this.pop()
+      },
+      act: {
+        login: () => this.setState({ screen: 'home', stack: [] }),
+        logout: () => this.setState({ screen: 'login', stack: [], sheet: null }),
+        startBlat: () => { this.setState({ blat: 'IN_LUCRU' }); this.say('Task pornit — materialele au fost rezervate'); },
+        finishBlat: () => this.setState({ sheet: 'randament' }),
+        confirmRandament: () => { this.setState({ blat: 'FINALIZAT', sheet: null }); this.say('Stoc semipreparat: Blat cacao +6 buc'); },
+        startGlaz: () => { this.setState({ glaz: 'BLOCAT', glazAlert: true }); },
+        approveTransfer: () => { this.setState({ transfer: 'IN_TRANZIT' }); this.say('Transfer aprobat — stoc rezervat'); },
+        advanceOrder: () => this.setState(st => ({ orderStep: Math.min(st.orderStep + 1, 3) })),
+        openLivrare: () => this.setState({ sheet: 'livrare' }),
+        sign: () => this.setState({ signed: true }),
+        confirmLivrare: () => { this.setState(st => st.signed ? { orderStep: 4, sheet: null, signed: false } : {}); if (this.state.signed) this.say('Comanda #1046 livrata'); else this.say('Semnatura clientului este necesara'); },
+        openMiscare: () => this.setState({ sheet: 'miscare' }),
+        confirmMiscare: () => { const m = this.state.misc; this.setState({ sheet: null }); this.say('Miscare salvata: ' + (m.tip === 'Iesire' ? '-' : '+') + this.fmt(m.cant) + ' kg ' + m.articol); },
+        openReceptie: () => this.setState({ sheet: 'receptie' }),
+        confirmReceptie: () => { this.setState({ receptionDone: true, sheet: null, screen: 'stockDetail' }); this.say('Receptie salvata — lot L-96 adaugat'); },
+        calcNecesar: () => this.setState({ necesarCalc: true }),
+        exportNecesar: () => this.say('Necesar_MP_5iul.xlsx exportat'),
+        shareTrace: () => this.say('Fisa TR-0412 distribuita'),
+        closeSheet: () => this.setState({ sheet: null }),
+        toggleAlba: () => this.setState(st => ({ shop: Object.assign({}, st.shop, { alba: !st.shop.alba }) })),
+        toggleNeagra: () => this.setState(st => ({ shop: Object.assign({}, st.shop, { neagra: !st.shop.neagra }) })),
+        toggleCutii: () => this.setState(st => ({ shop: Object.assign({}, st.shop, { cutii: !st.shop.cutii }) })),
+        closePicker: () => this.setState({ picker: null }),
+        pickArticol: () => this.setState({ picker: { kind: 'articol', title: 'Selecteaza articol' } }),
+        pickMotiv: () => this.setState({ picker: { kind: 'motiv', title: 'Selecteaza motiv' } }),
+        pickRandLoc: () => this.setState({ picker: { kind: 'randLoc', title: 'Locatie stocare' } }),
+        pickFurnizor: () => this.setState({ picker: { kind: 'furnizor', title: 'Selecteaza furnizor' } }),
+        tipIntrare: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Intrare' }) })),
+        tipIesire: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Iesire' }) })),
+        tipAjustare: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Ajustare' }) })),
+        cantMinus: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { cant: Math.max(0.5, st.misc.cant - 0.5) }) })),
+        cantPlus: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { cant: st.misc.cant + 0.5 }) })),
+        ordSegAzi: () => this.setState({ ordSeg: 'azi' }),
+        ordSegMaine: () => this.setState({ ordSeg: 'maine' }),
+        ordSegToate: () => this.setState({ ordSeg: 'toate' }),
+        filtToate: () => this.setState({ stockFilter: 'toate' }),
+        filtMP: () => this.setState({ stockFilter: 'mp' }),
+        filtAmb: () => this.setState({ stockFilter: 'amb' })
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

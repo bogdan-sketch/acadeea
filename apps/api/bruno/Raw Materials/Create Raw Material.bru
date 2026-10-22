@@ -1,0 +1,54 @@
+meta {
+  name: Create Raw Material
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/raw-materials
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Faina 000",
+    "producer": "Baneasa",
+    "unit": "KILOGRAME",
+    "quantityPerPiece": 25,
+    "pieceType": "SAC",
+    "storageType": "WARM",
+    "minimumStock": 5
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("rawMaterialId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("title matches", function() {
+    expect(res.getBody().title).to.equal('Faina 000');
+  });
+  test("unit matches", function() {
+    expect(res.getBody().unit).to.equal('KILOGRAME');
+  });
+  test("storageType matches", function() {
+    expect(res.getBody().storageType).to.equal('WARM');
+  });
+  test("status is ACTIVE", function() {
+    expect(res.getBody().status).to.equal('ACTIVE');
+  });
+}

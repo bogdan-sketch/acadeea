@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  # ──────────────────────────────────────────────
+  # PostgreSQL 16
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: acadeea-postgres
+    environment:
+      POSTGRES_USER: acadeea
+      POSTGRES_PASSWORD: acadeea_dev
+      POSTGRES_DB: acadeea
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acadeea -d acadeea"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # Redis 7
+  # ──────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: acadeea-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # MinIO (S3-compatible object storage)
+  # ──────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: acadeea-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - acadeea-network
+
+networks:
+  acadeea-network:
+    driver: bridge

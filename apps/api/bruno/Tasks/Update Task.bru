@@ -1,0 +1,35 @@
+meta {
+  name: Update Task
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/tasks/{{taskId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "title": "Productie Tort Ciocolata - Lot 1 (Urgent)",
+    "priority": 5,
+    "notes": "Comanda client VIP - livrare maine"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("title updated", function() {
+    expect(res.getBody().title).to.equal('Productie Tort Ciocolata - Lot 1 (Urgent)');
+  });
+  test("priority updated", function() {
+    expect(res.getBody().priority).to.equal(5);
+  });
+}

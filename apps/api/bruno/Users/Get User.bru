@@ -1,0 +1,30 @@
+meta {
+  name: Get User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{userId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has correct id", function() {
+    expect(res.getBody().id).to.equal(bru.getVar("userId"));
+  });
+  test("has email", function() {
+    expect(res.getBody().email).to.be.a('string');
+  });
+  test("has role", function() {
+    expect(res.getBody().role).to.be.a('string');
+  });
+}

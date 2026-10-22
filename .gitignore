@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.turbo/
+.next/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
+docker/.env.production
+docker/.env.acadeea
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+
+# Prisma
+apps/api/src/prisma/generated/
+
+# iOS
+apps/ios/Acadeea.xcworkspace/xcuserdata/
+apps/ios/Acadeea.xcodeproj/xcuserdata/
+apps/ios/Acadeea.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcuserstate
+apps/ios/DerivedData/
+apps/ios/Pods/
+# Real observability secrets (Sentry DSN / PostHog key). The *.example.xcconfig is committed.
+apps/ios/Config/Observability.xcconfig
+
+# APNs auth keys — the .p8 is mounted on the server as a Docker secret file,
+# never committed and never baked into the image.
+*.p8
+
+# Android
+apps/android/.gradle/
+apps/android/build/
+apps/android/app/build/
+apps/android/local.properties
+
+# Keys
+*.pem
+*.key
+!*.key.example
+
+# Docker
+docker/data/
+
+# S3/MinIO
+docker/minio-data/
+
+# Local DB backups
+.backups/
+docker/.env.test
+.vercel/
+
+# never commit real env or signing keys
+docker/.env.test
+apps/api/keys/

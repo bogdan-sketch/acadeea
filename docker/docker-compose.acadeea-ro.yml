@@ -1,0 +1,206 @@
+# Standalone Acadeea stack (api.acadeea.ro) on its own VPS (152.53.246.168,
+# netcup). Same code as Horae, separate server, database and keys — the Horae
+# prod copy of the acadeea org is left untouched as an archive.
+# Explicit project name — compose would otherwise name it "docker".
+name: acadeea-ro
+
+# Usage: docker compose -f docker/docker-compose.acadeea-ro.yml --env-file docker/.env.acadeea up -d --build
+
+services:
+  # ──────────────────────────────────────────────
+  # PostgreSQL 16
+  # Host ports are loopback-only: Docker-published ports bypass UFW.
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: acadeea-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=768MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "log_min_duration_statement=500"
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # Redis 7
+  # Port 6380 on host to avoid conflict
+  # ──────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: acadeea-redis
+    restart: always
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # MinIO (S3-compatible object storage)
+  # Ports 9002/9003 on host to avoid conflict
+  # ──────────────────────────────────────────────
+  minio:
+    # minio/minio is gone from Docker Hub and this box is arm64: pgsty/minio is
+    # a maintained drop-in fork (same binary, CLI and `mc`), multi-arch.
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    container_name: acadeea-minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:9002:9000"
+      - "127.0.0.1:9003:9001"
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # Horae API
+  # Port 3001 on host → 3000 in container
+  # ──────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: acadeea-api
+    # Raw logs go to journald so they SURVIVE redeploys (json-file logs die
+    # with the container). Read: journalctl CONTAINER_TAG=acadeea-api --since "1h ago"
+    # (or plain `docker logs`). Server journald caps: 1G total, 7 days.
+    logging:
+      driver: journald
+      options:
+        tag: acadeea-api
+    restart: always
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_PRIVATE_KEY_PATH: /app/keys/jwt-private.pem
+      JWT_PUBLIC_KEY_PATH: /app/keys/jwt-public.pem
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY}
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      S3_REGION: us-east-1
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      FRONTEND_URL: ${FRONTEND_URL}
+      BRAND_NAME: Acadeea
+      BASE_DOMAIN: ${BASE_DOMAIN:-}
+      APPLE_AUDIENCES: ${APPLE_AUDIENCES:-}
+      # Scădere stoc din vânzări — on in prod since 16.10.2026 (owner's call).
+      FEATURE_SALES_DEDUCTIONS: "true"
+      GOOGLE_AUDIENCES: ${GOOGLE_AUDIENCES:-}
+      # APNs push (iOS). Blank ⇒ PushSender no-ops. The .p8 auth key is mounted
+      # as a read-only file from the host (never baked into the image); the key
+      # dir is bind-mounted below and this path points at the mounted .p8.
+      APNS_KEY_ID: ${APNS_KEY_ID:-}
+      APNS_TEAM_ID: ${APNS_TEAM_ID:-}
+      APNS_BUNDLE_ID: ${APNS_BUNDLE_ID:-}
+      APNS_ENV: ${APNS_ENV:-}
+      APNS_AUTH_KEY_PATH: ${APNS_AUTH_KEY_PATH:-}
+    volumes:
+      - jwt-keys:/app/keys:ro
+      - db-backups:/app/backups
+      # APNs .p8 auth key (chmod 600, owned by uid 1000 so the container `node`
+      # user can read it). Host dir is gitignored + outside the synced repo tree.
+      - /opt/acadeea-apns:/app/secrets:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - acadeea-network
+
+  # ──────────────────────────────────────────────
+  # Web (Next.js) — app.acadeea.ro, bound to the acadeea org (standalone)
+  # Port 3010 on host (loopback) → 3000 in container
+  # ──────────────────────────────────────────────
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: https://api.acadeea.ro
+        NEXT_PUBLIC_STANDALONE_ORG: acadeea
+        NEXT_PUBLIC_BRAND_NAME: Acadeea
+    container_name: acadeea-web
+    restart: always
+    logging:
+      driver: journald
+      options:
+        tag: acadeea-web
+    ports:
+      - "127.0.0.1:3010:3000"
+    networks:
+      - acadeea-network
+
+volumes:
+  postgres-data:
+    name: acadeea-postgres-data
+  redis-data:
+    name: acadeea-redis-data
+  minio-data:
+    name: acadeea-minio-data
+  jwt-keys:
+    name: acadeea-jwt-keys
+    external: true
+  db-backups:
+    name: acadeea-db-backups
+
+networks:
+  acadeea-network:
+    name: acadeea-network
+    driver: bridge

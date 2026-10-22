@@ -1,0 +1,31 @@
+meta {
+  name: List Recipes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes?page=1&limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has data array", function() {
+    expect(res.getBody().data).to.be.an('array');
+  });
+  test("has total", function() {
+    expect(res.getBody().total).to.be.a('number');
+  });
+  test("has pagination", function() {
+    expect(res.getBody().page).to.equal(1);
+    expect(res.getBody().totalPages).to.be.a('number');
+  });
+}

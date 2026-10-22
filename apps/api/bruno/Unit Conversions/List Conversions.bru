@@ -1,0 +1,24 @@
+meta {
+  name: List Conversions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/unit-conversions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("response is array", function() {
+    expect(res.getBody()).to.be.an('array');
+  });
+}

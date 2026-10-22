@@ -1,0 +1,40 @@
+node_modules
+.git
+.github
+.husky
+.vscode
+.idea
+
+# Docker data volumes
+docker/data
+
+# Local env files
+.env
+.env.local
+apps/api/.env
+apps/api/keys
+docker/.env.production
+
+# Build artifacts
+dist
+*.tsbuildinfo
+.turbo
+
+# Test
+coverage
+*.spec.ts
+*.e2e-spec.ts
+test
+
+# Documentation
+*.md
+!pnpm-workspace.yaml
+LICENSE
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Native apps — not part of any image
+apps/ios
+apps/android

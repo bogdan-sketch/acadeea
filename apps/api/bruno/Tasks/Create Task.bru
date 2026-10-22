@@ -1,0 +1,53 @@
+meta {
+  name: Create Task
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tasks
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "recipeId": "{{recipeId}}",
+    "title": "Productie Tort Ciocolata - Lot 1",
+    "targetQuantity": 5,
+    "targetUnit": "BUCATI",
+    "priority": 1,
+    "notes": "Comanda client VIP"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("taskId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("title matches", function() {
+    expect(res.getBody().title).to.equal('Productie Tort Ciocolata - Lot 1');
+  });
+  test("status is DE_FACUT", function() {
+    expect(res.getBody().status).to.equal('DE_FACUT');
+  });
+  test("targetQuantity matches", function() {
+    expect(res.getBody().targetQuantity).to.equal(5);
+  });
+  test("targetUnit matches", function() {
+    expect(res.getBody().targetUnit).to.equal('BUCATI');
+  });
+}

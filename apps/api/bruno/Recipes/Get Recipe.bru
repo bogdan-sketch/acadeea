@@ -1,0 +1,36 @@
+meta {
+  name: Get Recipe
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/recipes/{{recipeId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has correct id", function() {
+    expect(res.getBody().id).to.equal(bru.getVar("recipeId"));
+  });
+  test("has name", function() {
+    expect(res.getBody().name).to.be.a('string');
+  });
+  test("has components array", function() {
+    expect(res.getBody().components).to.be.an('array');
+  });
+  test("has equipment array", function() {
+    expect(res.getBody().equipment).to.be.an('array');
+  });
+  test("has workSteps array", function() {
+    expect(res.getBody().workSteps).to.be.an('array');
+  });
+}

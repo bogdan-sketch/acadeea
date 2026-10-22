@@ -1,0 +1,33 @@
+meta {
+  name: Get Movement
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/stock/movements/{{movementId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has correct id", function() {
+    expect(res.getBody().id).to.equal(bru.getVar("movementId"));
+  });
+  test("has movementType", function() {
+    expect(res.getBody().movementType).to.be.a('string');
+  });
+  test("has quantity", function() {
+    expect(res.getBody().quantity).to.be.a('number');
+  });
+  test("has unit", function() {
+    expect(res.getBody().unit).to.be.a('string');
+  });
+}

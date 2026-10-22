@@ -1,0 +1,17 @@
+{
+  "name": "@horae/shared-types",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "@horae/eslint-config": "workspace:*",
+    "@horae/tsconfig": "workspace:*",
+    "eslint": "^8.57.0",
+    "typescript": "^5.7.2"
+  }
+}

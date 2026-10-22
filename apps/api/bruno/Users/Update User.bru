@@ -1,0 +1,34 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/users/{{createdUserId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "firstName": "Updated",
+    "lastName": "UserName"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("firstName updated", function() {
+    expect(res.getBody().firstName).to.equal('Updated');
+  });
+  test("lastName updated", function() {
+    expect(res.getBody().lastName).to.equal('UserName');
+  });
+}

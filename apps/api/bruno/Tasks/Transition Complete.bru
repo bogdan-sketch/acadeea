@@ -1,0 +1,33 @@
+meta {
+  name: Transition Complete
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tasks/{{taskId}}/transition
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "status": "FINALIZAT"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("status is FINALIZAT", function() {
+    expect(res.getBody().status).to.equal('FINALIZAT');
+  });
+  test("completedAt is set", function() {
+    expect(res.getBody().completedAt).to.be.a('string');
+  });
+}

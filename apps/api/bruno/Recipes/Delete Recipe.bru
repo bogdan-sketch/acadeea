@@ -1,0 +1,24 @@
+meta {
+  name: Delete Recipe
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/recipes/{{recipeId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.equal(bru.getVar("recipeId"));
+  });
+}

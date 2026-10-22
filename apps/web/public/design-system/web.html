@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+<style>body{margin:0;background:#E9E7E2;font-family:'Inter',system-ui,sans-serif}
+@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes splashDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-5px)}}
+@keyframes logoWrite{0%{width:0}100%{width:320px}}</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 18px 44px rgba(0,0,0,.16)">
+<div style="{{ varsStyle }}">
+
+<sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;background:#FDFBFA;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;z-index:30">
+<canvas ref="{{ penCanvasRef }}" width="460" height="150" style="width:340px;height:111px;display:block"></canvas>
+<div style="display:flex;gap:7px">
+<span style="width:8px;height:8px;border-radius:50%;background:#D4527B;animation:splashDot 1.2s ease-in-out infinite"></span>
+<span style="width:8px;height:8px;border-radius:50%;background:#D4527B;animation:splashDot 1.2s ease-in-out .15s infinite"></span>
+<span style="width:8px;height:8px;border-radius:50%;background:#D4527B;animation:splashDot 1.2s ease-in-out .3s infinite"></span>
+</div>
+<div style="font-size:12px;color:rgba(60,60,67,.55)">Se incarca stocul si taskurile…</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--bg,#F5F5F7);display:flex;align-items:center;justify-content:center;z-index:25">
+<div style="width:400px;background:var(--card,#fff);border-radius:16px;padding:40px 36px;display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 30px rgba(0,0,0,.08)">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:8px">
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNjAiIGhlaWdodD0iMTAwIj48dGV4dCB4PSIwIiB5PSI3MiIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjY0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRDQ1MjdCIiBmb250LXN0eWxlPSJpdGFsaWMiPkFjYWRlZWE8L3RleHQ+PC9zdmc+" alt="Acadeea" style="width:190px;display:block;filter:var(--logoFilter,none)">
+<div style="font-size:13px;color:var(--gray,#8E8E93)">Panou de administrare</div>
+</div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px"><i data-lucide="mail" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i><span style="font-size:14px">ana@acadeea.ro</span></div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px"><i data-lucide="lock" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i><span style="flex:1;font-size:14px;letter-spacing:3px">••••••••</span><i data-lucide="eye" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></div>
+<div style="text-align:right;font-size:13px;font-weight:500;color:#D4527B;cursor:pointer">Ai uitat parola?</div>
+<div onClick="{{ act.login }}" style="text-align:center;padding:13px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer">Autentificare</div>
+</div>
+</div>
+</sc-if>
+
+<div style="width:224px;flex:none;background:var(--card,#fff);display:flex;flex-direction:column;padding:18px 12px;gap:2px">
+<div style="display:flex;align-items:center;gap:10px;padding:4px 12px 16px"><div style="display:flex;flex-direction:column;gap:3px"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNjAiIGhlaWdodD0iMTAwIj48dGV4dCB4PSIwIiB5PSI3MiIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjY0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRDQ1MjdCIiBmb250LXN0eWxlPSJpdGFsaWMiPkFjYWRlZWE8L3RleHQ+PC9zdmc+" alt="Acadeea" style="width:118px;display:block;filter:var(--logoFilter,none)"><div style="font-size:11px;color:var(--gray,#8E8E93);padding-left:2px">Atelier Central</div></div></div>
+<div onClick="{{ nav.home }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbHomeBg }};color:{{ sbHomeColor }};font-weight:{{ sbHomeFw }}"><i data-lucide="layout-dashboard" style="width:18px;height:18px"></i>Dashboard</div>
+<div onClick="{{ nav.tasks }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbTasksBg }};color:{{ sbTasksColor }};font-weight:{{ sbTasksFw }}"><i data-lucide="clipboard-list" style="width:18px;height:18px"></i>Productie</div>
+<div onClick="{{ nav.recipes }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbRecipesBg }};color:{{ sbRecipesColor }};font-weight:{{ sbRecipesFw }}"><i data-lucide="book-open" style="width:18px;height:18px"></i>Retete</div>
+<div onClick="{{ nav.stock }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbStockBg }};color:{{ sbStockColor }};font-weight:{{ sbStockFw }}"><i data-lucide="package" style="width:18px;height:18px"></i>Stoc</div>
+<div onClick="{{ nav.necesar }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbNecesarBg }};color:{{ sbNecesarColor }};font-weight:{{ sbNecesarFw }}"><i data-lucide="calculator" style="width:18px;height:18px"></i>Necesar MP</div>
+<div onClick="{{ nav.orders }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbOrdersBg }};color:{{ sbOrdersColor }};font-weight:{{ sbOrdersFw }}"><i data-lucide="shopping-bag" style="width:18px;height:18px"></i>Comenzi</div>
+<div onClick="{{ nav.transfers }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbTransfersBg }};color:{{ sbTransfersColor }};font-weight:{{ sbTransfersFw }}"><i data-lucide="arrow-left-right" style="width:18px;height:18px"></i>Transferuri</div>
+<div onClick="{{ nav.shopping }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbShoppingBg }};color:{{ sbShoppingColor }};font-weight:{{ sbShoppingFw }}"><i data-lucide="list-checks" style="width:18px;height:18px"></i>Lista cumparaturi</div>
+<div onClick="{{ nav.setari }}" style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;background:{{ sbSetariBg }};color:{{ sbSetariColor }};font-weight:{{ sbSetariFw }}"><i data-lucide="settings" style="width:18px;height:18px"></i>Setari</div>
+<div onClick="{{ act.logout }}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;cursor:pointer;color:var(--red,#FF3B30)"><i data-lucide="log-out" style="width:18px;height:18px"></i>Deconectare</div>
+</div>
+
+<div style="flex:1;min-width:0;overflow-y:auto;padding:24px 28px">
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Dashboard</div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Joi, 3 iulie · Atelier Central</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px">
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray,#8E8E93)"><i data-lucide="clipboard-list" style="width:15px;height:15px;color:#D4527B"></i>Taskuri azi</div><div style="font-size:26px;font-weight:700;margin-top:4px">9</div><div style="font-size:12px;color:var(--green,#2E9E4F);margin-top:2px">3 finalizate</div></div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray,#8E8E93)"><i data-lucide="shopping-bag" style="width:15px;height:15px;color:#D4527B"></i>Vanzari azi</div><div style="font-size:26px;font-weight:700;margin-top:4px">2861 <span style="font-size:14px;font-weight:600;color:var(--gray,#8E8E93)">RON</span></div><div style="font-size:12px;color:var(--gray,#8E8E93);margin-top:2px">6 comenzi</div></div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray,#8E8E93)"><i data-lucide="package" style="width:15px;height:15px;color:#D4527B"></i>Stoc critic</div><div style="font-size:26px;font-weight:700;margin-top:4px;color:var(--orange,#E07C00)">3</div><div style="font-size:12px;color:var(--gray,#8E8E93);margin-top:2px">1 epuizat</div></div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px"><div style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray,#8E8E93)"><i data-lucide="arrow-left-right" style="width:15px;height:15px;color:#D4527B"></i>Transferuri</div><div style="font-size:26px;font-weight:700;margin-top:4px">2</div><div style="font-size:12px;color:var(--orange,#E07C00);margin-top:2px">1 in asteptare</div></div>
+</div>
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:14px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px"><span style="font-size:14px;font-weight:700">Productia de azi</span><span onClick="{{ nav.tasks }}" style="font-size:12.5px;color:#D4527B;font-weight:600;cursor:pointer">Vezi tot</span></div>
+<div onClick="{{ nav.taskBlat }}" style="display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Blat cacao — 6 buc</div><div style="font-size:12px;color:var(--gray,#8E8E93);margin-top:1px">Ana M. · pana la 11:00</div></div><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></sc-if></div>
+<div onClick="{{ nav.taskGlaz }}" style="display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Glazura oglinda — 1.2 kg</div><div style="font-size:12px;color:var(--gray,#8E8E93);margin-top:1px">Ana M. · Tort Ruby</div></div><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--yellowBg,rgba(235,195,0,.2));color:var(--yellow,#B08F00)">Blocat</span></sc-if></div>
+<div onClick="{{ nav.trace }}" style="display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Macarons zmeura — 120 buc</div><div style="font-size:12px;color:var(--gray,#8E8E93);margin-top:1px">Radu P. · finalizat 09:20</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Stoc critic</div>
+<div onClick="{{ nav.stockDetail }}" style="display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13px;font-weight:600">Ciocolata neagra 54%</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">2.4 / 5 kg minim</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">Stoc scazut</span></div>
+<div onClick="{{ nav.shopping }}" style="display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13px;font-weight:600">Cutii tort 26 cm</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">0 / 20 buc minim</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--redBg,rgba(255,59,48,.12));color:var(--red,#FF3B30)">Epuizat</span></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:14px 18px">
+<div style="font-size:14px;font-weight:700;margin-bottom:10px">Actiuni rapide</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div onClick="{{ act.openMiscare }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(212,82,123,.08);color:#D4527B;font-size:12.5px;font-weight:600;cursor:pointer"><i data-lucide="arrow-down-up" style="width:16px;height:16px"></i>Miscare stoc</div>
+<div onClick="{{ act.openReceptie }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(212,82,123,.08);color:#D4527B;font-size:12.5px;font-weight:600;cursor:pointer"><i data-lucide="truck" style="width:16px;height:16px"></i>Receptie</div>
+<div onClick="{{ nav.necesar }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(212,82,123,.08);color:#D4527B;font-size:12.5px;font-weight:600;cursor:pointer"><i data-lucide="calculator" style="width:16px;height:16px"></i>Necesar MP</div>
+<div onClick="{{ nav.transfers }}" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(212,82,123,.08);color:#D4527B;font-size:12.5px;font-weight:600;cursor:pointer"><i data-lucide="arrow-left-right" style="width:16px;height:16px"></i>Transfer</div>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Productie</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Azi, 3 iulie · 4 taskuri</div></div><span style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="plus" style="width:15px;height:15px"></i>Task nou</span></div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:16px">
+<div style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 110px 130px;column-gap:16px;padding:12px 20px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Task</span><span>Produs</span><span>Responsabil</span><span style="text-align:right">Cantitate</span><span>Status</span></div>
+<div onClick="{{ nav.taskBlat }}" style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Blat cacao</span><span style="color:var(--tx2,#636366)">Tort Padurea Neagra</span><span style="color:var(--tx2,#636366)">Ana M.</span><span style="text-align:right;font-weight:600">6 buc</span><span><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></sc-if></span></div>
+<div onClick="{{ nav.taskGlaz }}" style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Glazura oglinda</span><span style="color:var(--tx2,#636366)">Tort Ruby</span><span style="color:var(--tx2,#636366)">Ana M.</span><span style="text-align:right;font-weight:600">1.2 kg</span><span><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--yellowBg,rgba(235,195,0,.2));color:var(--yellow,#B08F00)">Blocat</span></sc-if></span></div>
+<div style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Crema mascarpone</span><span style="color:var(--tx2,#636366)">Tiramisu clasic</span><span style="color:var(--tx2,#636366)">Elena D.</span><span style="text-align:right;font-weight:600">4.5 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></span></div>
+<div onClick="{{ nav.trace }}" style="display:grid;grid-template-columns:1.6fr 1.4fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Macarons zmeura</span><span style="color:var(--tx2,#636366)">Vitrina</span><span style="color:var(--tx2,#636366)">Radu P.</span><span style="text-align:right;font-weight:600">120 buc</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTaskBlat }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ nav.back }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Inapoi</span>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Blat cacao</span><sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In lucru</span></sc-if><sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></sc-if></div>
+<div style="display:flex;gap:8px">
+<sc-if value="{{ blatTodo }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.startBlat }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="play" style="width:15px;height:15px"></i>Incepe taskul</span></sc-if>
+<sc-if value="{{ blatWip }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.finishBlat }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="check" style="width:15px;height:15px"></i>Finalizeaza</span></sc-if>
+<sc-if value="{{ blatDone }}" hint-placeholder-val="{{ false }}"><span onClick="{{ nav.trace }}" style="display:flex;align-items:center;gap:7px;background:rgba(212,82,123,.1);color:#D4527B;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="file-search" style="width:15px;height:15px"></i>Trasabilitate</span></sc-if>
+</div></div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Tort Padurea Neagra · comanda #1047 · termen azi 11:00</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Materiale necesare (x6)</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Faina 000</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">necesar 1.8 kg · stoc 42 kg</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:var(--greenIcon,#34C759)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Cacao pudra</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">necesar 0.45 kg · stoc 3.2 kg</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:var(--greenIcon,#34C759)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Oua</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">necesar 36 buc · stoc 240 buc</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:var(--greenIcon,#34C759)"></i></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Subtaskuri semipreparate</div>
+<div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="flex:1"><div style="font-size:13px;font-weight:600">Sirop de insiropat</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">0.6 kg</div></div><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Istoric statusuri</div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:12.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span><b style="color:var(--blue,#007AFF)">De facut</b> · creat de Radu P.</span><span style="color:var(--gray,#8E8E93)">ieri 17:30</span></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTaskGlaz }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ nav.back }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Inapoi</span>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Glazura oglinda</span><sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">De facut</span></sc-if><sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--yellowBg,rgba(235,195,0,.2));color:var(--yellow,#B08F00)">Blocat</span></sc-if></div>
+<sc-if value="{{ glazTodo }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.startGlaz }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="play" style="width:15px;height:15px"></i>Incepe taskul</span></sc-if>
+<sc-if value="{{ glazBlocked }}" hint-placeholder-val="{{ false }}"><span onClick="{{ nav.transfers }}" style="display:flex;align-items:center;gap:7px;background:rgba(212,82,123,.1);color:#D4527B;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="arrow-left-right" style="width:15px;height:15px"></i>Cere transfer</span></sc-if>
+</div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Tort Ruby · 1.2 kg</div>
+<sc-if value="{{ glazAlert }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:14px;background:var(--redBg2,rgba(255,59,48,.07));border-radius:10px;padding:14px 18px;display:flex;gap:11px;align-items:flex-start"><i data-lucide="circle-alert" style="width:18px;height:18px;color:var(--red,#FF3B30);flex:none;margin-top:1px"></i><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--red,#FF3B30)">409 — Stoc insuficient</div><div style="font-size:13px;color:var(--tx2b,#48484A);margin-top:2px">Ciocolata alba: necesar 0.8 kg, disponibil 0 kg. Taskul a fost trecut pe Blocat.</div><span onClick="{{ nav.shopping }}" style="display:inline-block;margin-top:8px;font-size:12.5px;font-weight:600;color:#D4527B;cursor:pointer">Deschide lista de cumparaturi</span></div></div>
+</sc-if>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:14px;max-width:620px">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Materiale necesare</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Glucoza</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">necesar 0.3 kg · stoc 2.1 kg</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:var(--greenIcon,#34C759)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600;color:var(--red,#FF3B30)">Ciocolata alba</div><div style="font-size:11.5px;color:var(--red,#FF3B30)">necesar 0.8 kg · stoc 0 kg — insuficient</div></div><i data-lucide="triangle-alert" style="width:18px;height:18px;color:var(--red,#FF3B30)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Colorant rosu</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">necesar 8 g · stoc 45 g</div></div><i data-lucide="circle-check" style="width:18px;height:18px;color:var(--greenIcon,#34C759)"></i></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTrace }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><span onClick="{{ nav.back }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Inapoi</span><span onClick="{{ act.shareTrace }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="share" style="width:15px;height:15px"></i>Distribuie fisa</span></div>
+<div style="font-size:22px;font-weight:700;letter-spacing:-.3px;margin-top:10px">Trasabilitate</div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Blat cacao · 6 buc · fisa #TR-0412 · Ana M. · 08:05–10:40 · Atelier Central</div>
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:16px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Ingrediente si loturi (FIFO)</div>
+<div style="padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Faina 000</b><b>1.8 kg</b></div><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:2px">1.8 kg — lot L-102, factura FAC-118, Metro</div></div>
+<div style="padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Ciocolata neagra 54%</b><b>3 kg</b></div><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:2px">2.4 kg — lot L-77, factura FAC-101, Callebaut</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">0.6 kg — lot L-89, factura FAC-109, Callebaut</div></div>
+<div style="padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Oua</b><b>36 buc</b></div><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:2px">36 buc — lot L-95, factura FAC-114, Avicola Buftea</div></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Semipreparate folosite</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Sirop de insiropat</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">task #T-0409 · azi 07:40</div></div><b style="font-size:13px">0.6 kg</b></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStock }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Stoc</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Atelier Central · 38 articole</div></div><div style="display:flex;gap:8px">
+<span onClick="{{ act.openMiscare }}" style="display:flex;align-items:center;gap:7px;background:var(--card,#fff);color:var(--tx,#1C1C1E);border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="arrow-down-up" style="width:15px;height:15px"></i>Miscare stoc</span>
+<span onClick="{{ act.openReceptie }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="truck" style="width:15px;height:15px"></i>Receptie marfa</span>
+</div></div>
+<div style="display:flex;gap:8px;margin-top:14px">
+<span onClick="{{ act.filtToate }}" style="padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ chipToateBg }};color:{{ chipToateColor }}">Toate</span>
+<span onClick="{{ act.filtMP }}" style="padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ chipMPBg }};color:{{ chipMPColor }}">M. prime</span>
+<span onClick="{{ act.filtAmb }}" style="padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{ chipAmbBg }};color:{{ chipAmbColor }}">Ambalaje</span>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:14px">
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:12px 20px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Denumire</span><span>Categorie</span><span>Furnizor</span><span style="text-align:right">Stoc</span><span>Status</span></div>
+<sc-if value="{{ showMP }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Faina 000</span><span style="color:var(--tx2,#636366)">M. Prime</span><span style="color:var(--tx2,#636366)">Metro</span><span style="text-align:right;font-weight:600">42 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Activ</span></span></div>
+<div onClick="{{ nav.stockDetail }}" style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Ciocolata neagra 54%</span><span style="color:var(--tx2,#636366)">M. Prime</span><span style="color:var(--tx2,#636366)">Callebaut</span><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><span style="text-align:right;font-weight:600">12.4 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Activ</span></span></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><span style="text-align:right;font-weight:600">2.4 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">Stoc scazut</span></span></sc-if></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Ciocolata alba</span><span style="color:var(--tx2,#636366)">M. Prime</span><span style="color:var(--tx2,#636366)">Callebaut</span><span style="text-align:right;font-weight:600">0 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--redBg,rgba(255,59,48,.12));color:var(--red,#FF3B30)">Epuizat</span></span></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Unt 82%</span><span style="color:var(--tx2,#636366)">M. Prime</span><span style="color:var(--tx2,#636366)">Metro</span><span style="text-align:right;font-weight:600">18.5 kg</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Activ</span></span></div>
+</sc-if>
+<sc-if value="{{ showAmb }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ nav.shopping }}" style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Cutii tort 26 cm</span><span style="color:var(--tx2,#636366)">Ambalaje</span><span style="color:var(--tx2,#636366)">PackPro</span><span style="text-align:right;font-weight:600">0 buc</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--redBg,rgba(255,59,48,.12));color:var(--red,#FF3B30)">Epuizat</span></span></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 110px 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Cutii prajituri mici</span><span style="color:var(--tx2,#636366)">Ambalaje</span><span style="color:var(--tx2,#636366)">PackPro</span><span style="text-align:right;font-weight:600">180 buc</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Activ</span></span></div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStockDetail }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ nav.stock }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Stoc</span>
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Ciocolata neagra 54%</span><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Activ</span></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">Stoc scazut</span></sc-if><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--field2,#E4E4E9);color:var(--tx2,#636366)">M. Prime</span></div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Callebaut · prag minim 5 kg</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Stoc per locatie</div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Atelier Central</span><sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}"><b style="color:var(--green,#2E9E4F)">12.4 kg</b></sc-if><sc-if value="{{ noReception }}" hint-placeholder-val="{{ false }}"><b style="color:var(--orange,#E07C00)">2.4 kg</b></sc-if></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Dorobanti</span><b>1.1 kg</b></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:14px 18px">
+<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><b>Istoric pret</b><b style="color:#D4527B">48.20 RON/kg</b></div>
+<svg width="100%" height="64" viewBox="0 0 340 64" preserveAspectRatio="none"><polyline points="0,48 48,43 96,45 144,34 192,36 240,24 288,19 340,12" fill="none" stroke="#D4527B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline><circle cx="340" cy="12" r="4" fill="#D4527B"></circle></svg>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray,#8E8E93);margin-top:4px"><span>ian</span><span>mar</span><span>mai</span><span>iul</span></div>
+</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Istoric intrari (loturi)</div>
+<sc-if value="{{ receptionDone }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;padding:10px 18px;background:var(--greenBg2,rgba(52,199,89,.07));border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Lot L-96 · 10 kg <span style="font-size:10px;font-weight:700;color:var(--green,#2E9E4F)">NOU</span></div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">FAC-121 · 47.50 RON/kg · exp. 12 dec 2026</div></div><span style="font-size:12px;color:var(--gray,#8E8E93)">azi</span></div>
+</sc-if>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Lot L-89 · 5 kg</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">FAC-109 · 46.80 RON/kg · exp. 14 sept 2026</div></div><span style="font-size:12px;color:var(--gray,#8E8E93)">18 iun</span></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13px;font-weight:600">Lot L-77 · 10 kg</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">FAC-101 · 45.10 RON/kg · exp. 2 aug 2026</div></div><span style="font-size:12px;color:var(--gray,#8E8E93)">4 iun</span></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isNecesar }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Necesar materii prime</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Plan de productie · sambata 5 iulie</div></div><div style="display:flex;gap:8px"><span onClick="{{ act.exportNecesar }}" style="display:flex;align-items:center;gap:7px;background:var(--card,#fff);color:var(--tx,#1C1C1E);border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="file-spreadsheet" style="width:15px;height:15px"></i>Export Excel</span><span onClick="{{ nav.shopping }}" style="display:flex;align-items:center;gap:7px;background:var(--card,#fff);color:var(--tx,#1C1C1E);border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="list-checks" style="width:15px;height:15px"></i>Lista cumparaturi</span></div></div>
+<div style="display:grid;grid-template-columns:1fr 1.5fr;gap:12px;margin-top:16px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Produse planificate</div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Tort Padurea Neagra</span><b>4 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Tiramisu clasic</span><b>6 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Ecler vanilie</span><b>120 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Macarons zmeura</span><b>200 buc</b></div>
+<div style="display:flex;align-items:center;gap:6px;padding:11px 18px;color:#D4527B;font-size:13px;font-weight:600;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><i data-lucide="circle-plus" style="width:16px;height:16px"></i>Adauga produs</div>
+<sc-if value="{{ necesarNotCalc }}" hint-placeholder-val="{{ false }}">
+<div style="padding:12px 18px 16px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div onClick="{{ act.calcNecesar }}" style="text-align:center;padding:11px 0;border-radius:8px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer">Calculeaza necesarul</div></div>
+</sc-if>
+</div>
+<sc-if value="{{ necesarCalc }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;column-gap:14px;padding:12px 18px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Material</span><span style="text-align:right">Necesar</span><span style="text-align:right">Stoc</span><span style="text-align:right">De cumparat</span></div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;column-gap:14px;padding:12px 18px;font-size:13px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Faina 000</span><span style="text-align:right">9.6 kg</span><span style="text-align:right">42 kg</span><span style="text-align:right;color:var(--green,#2E9E4F);font-weight:600">—</span></div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;column-gap:14px;padding:12px 18px;font-size:13px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Ciocolata neagra 54%</span><span style="text-align:right">7.2 kg</span><span style="text-align:right">2.4 kg</span><span style="text-align:right;color:var(--red,#FF3B30);font-weight:700">4.8 kg</span></div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;column-gap:14px;padding:12px 18px;font-size:13px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Mascarpone</span><span style="text-align:right">4.5 kg</span><span style="text-align:right">1.2 kg</span><span style="text-align:right;color:var(--red,#FF3B30);font-weight:700">3.3 kg</span></div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;column-gap:14px;padding:12px 18px;font-size:13px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Zahar pudra</span><span style="text-align:right">3.8 kg</span><span style="text-align:right">9 kg</span><span style="text-align:right;color:var(--green,#2E9E4F);font-weight:600">—</span></div>
+</div>
+</sc-if>
+<sc-if value="{{ necesarNotCalc }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--card,#fff);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:48px 24px;align-self:start"><i data-lucide="calculator" style="width:34px;height:34px;color:var(--gray2,#C7C7CC)"></i><div style="font-size:15px;font-weight:600">Niciun calcul inca</div><div style="font-size:12.5px;color:var(--gray,#8E8E93);text-align:center">Adauga produsele si apasa "Calculeaza necesarul"</div></div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Comenzi</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Total zi: 2861.00 RON</div></div><span style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="plus" style="width:15px;height:15px"></i>Comanda noua</span></div>
+<div style="display:flex;background:var(--field2,#E4E4E9);border-radius:9px;padding:2px;margin-top:14px;max-width:320px">
+<span onClick="{{ act.ordSegAzi }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ oSegAziBg }};box-shadow:{{ oSegAziSh }};font-weight:{{ oSegAziFw }}">Azi</span>
+<span onClick="{{ act.ordSegMaine }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ oSegMaineBg }};box-shadow:{{ oSegMaineSh }};font-weight:{{ oSegMaineFw }}">Maine</span>
+<span onClick="{{ act.ordSegToate }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ oSegToateBg }};box-shadow:{{ oSegToateSh }};font-weight:{{ oSegToateFw }}">Toate</span>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:14px">
+<div style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:12px 20px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Comanda</span><span>Client</span><span>Continut</span><span>Livrare</span><span>Status</span><span style="text-align:right">Total</span></div>
+<sc-if value="{{ showOrdAzi }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ nav.order }}" style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#1046</span><span>Cafeneaua Arome</span><span style="color:var(--tx2,#636366)">36 eclere, 24 macarons</span><span>azi 12:00</span><span><sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Noua</span></sc-if><sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In pregatire</span></sc-if><sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Pregatita</span></sc-if><sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--indigoBg,rgba(88,86,214,.13));color:var(--indigo,#5856D6)">In tranzit</span></sc-if><sc-if value="{{ os4 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Livrata</span></sc-if></span><span style="text-align:right;font-weight:600">310.00 RON</span></div>
+<div style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#1047</span><span>Maria Ionescu</span><span style="color:var(--tx2,#636366)">Tort personalizat 24 portii</span><span>azi 14:00</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In pregatire</span></span><span style="text-align:right;font-weight:600">420.00 RON</span></div>
+<div style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#1043</span><span>Ioana Marin</span><span style="color:var(--tx2,#636366)">Cutie prajituri asortate</span><span>livrata 09:40</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Livrata</span></span><span style="text-align:right;font-weight:600">96.00 RON</span></div>
+</sc-if>
+<sc-if value="{{ showOrdMaine }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#1048</span><span>Scoala nr. 5</span><span style="color:var(--tx2,#636366)">Briose aniversare 80 buc</span><span>maine 13:00</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Noua</span></span><span style="text-align:right;font-weight:600">240.00 RON</span></div>
+<div style="display:grid;grid-template-columns:90px 1.3fr 1.7fr 130px 130px 110px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#1049</span><span>Bianca R.</span><span style="color:var(--tx2,#636366)">Tort Ruby 16 portii</span><span>maine 17:00</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Noua</span></span><span style="text-align:right;font-weight:600">245.00 RON</span></div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isOrderDetail }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ nav.orders }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Comenzi</span>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">#1046 · Cafeneaua Arome</span><sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Noua</span></sc-if><sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In pregatire</span></sc-if><sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Pregatita</span></sc-if><sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--indigoBg,rgba(88,86,214,.13));color:var(--indigo,#5856D6)">In tranzit</span></sc-if><sc-if value="{{ os4 }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Livrata</span></sc-if></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.advanceOrder }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer">Incepe pregatirea</span></sc-if>
+<sc-if value="{{ os1 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.advanceOrder }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer">Marcheaza pregatita</span></sc-if>
+<sc-if value="{{ os2 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.advanceOrder }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer">Trimite cu curierul</span></sc-if>
+<sc-if value="{{ os3 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.advanceOrder }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="check" style="width:15px;height:15px"></i>Marcheaza livrata</span></sc-if>
+<sc-if value="{{ orderCancelable }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.cancelOrder }}" style="display:flex;align-items:center;gap:7px;background:var(--redBg,rgba(255,59,48,.12));color:var(--red,#FF3B30);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer">Anuleaza</span></sc-if>
+</div></div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Dana V. · 0722 114 358 · Str. Arcului 12 · livrare azi 12:00, curier propriu</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px"><span style="font-size:14px;font-weight:700">Produse · {{ orderCount }}</span><sc-if value="{{ orderEditable }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.openAddItem }}" style="display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#D4527B;cursor:pointer"><i data-lucide="plus" style="width:14px;height:14px"></i>Adauga</span></sc-if></div>
+<sc-for list="{{ orderItems }}" as="it" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="flex:1"><span style="font-weight:600">{{ it.name }}</span> <span style="color:var(--gray,#8E8E93)">×{{ it.qty }}</span></span><b>{{ it.total }} RON</b><sc-if value="{{ it.editable }}" hint-placeholder-val="{{ false }}"><span onClick="{{ it.remove }}" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--red,#FF3B30)"><i data-lucide="trash-2" style="width:15px;height:15px"></i></span></sc-if></div>
+</sc-for>
+<div style="display:flex;justify-content:space-between;padding:11px 18px;font-size:14px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><b>Total</b><b>{{ orderTotal }} RON</b></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:14px 18px;align-self:start">
+<div style="font-size:14px;font-weight:700;margin-bottom:10px">Progres</div>
+<div style="display:flex;flex-direction:column;gap:9px;font-size:13px">
+<span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:16px;height:16px;color:var(--greenIcon,#34C759)"></i>Noua · ieri 14:20</span>
+<sc-if value="{{ osGte1 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:16px;height:16px;color:var(--greenIcon,#34C759)"></i>In pregatire</span></sc-if>
+<sc-if value="{{ os0 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px;color:var(--gray2,#C7C7CC)"><i data-lucide="circle" style="width:16px;height:16px"></i>In pregatire</span></sc-if>
+<sc-if value="{{ osGte2 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:16px;height:16px;color:var(--purple,#AF52DE)"></i>Pregatita</span></sc-if>
+<sc-if value="{{ osGte3 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:16px;height:16px;color:var(--indigo,#5856D6)"></i>In tranzit</span></sc-if>
+<sc-if value="{{ osGte4 }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="circle-check" style="width:16px;height:16px;color:var(--green,#2E9E4F)"></i>Livrata · foaie semnata</span></sc-if>
+</div>
+</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:12px;max-width:760px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px"><span style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700"><i data-lucide="file-text" style="width:16px;height:16px;color:#D4527B"></i>Aviz de livrare</span><sc-if value="{{ avizExists }}" hint-placeholder-val="{{ false }}"><span onClick="{{ act.printAviz }}" style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--tx,#1C1C1E);cursor:pointer"><i data-lucide="printer" style="width:15px;height:15px"></i>Printeaza aviz</span></sc-if></div>
+<sc-if value="{{ avizNone }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 16px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div onClick="{{ act.generateAviz }}" style="display:inline-flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px">Genereaza aviz</div></div>
+</sc-if>
+<sc-if value="{{ avizExists }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Serie</span><b>AV-1046</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Creat</span><b>3 iul 2026, 12:10</b></div>
+<sc-if value="{{ avizSigned }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Semnat de</span><b>{{ avizNameLabel }}</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Data semnarii</span><b>3 iul 2026, 12:24</b></div>
+<div style="padding:10px 18px 14px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-bottom:6px">Semnatura</div><div style="background:#fff;border:1px solid var(--sep,rgba(60,60,67,.14));border-radius:8px;height:96px;display:flex;align-items:center;justify-content:center"><svg width="220" height="80" viewBox="0 0 220 90"><path d="M18 62 C 40 20, 58 22, 66 48 C 72 68, 84 66, 96 40 C 104 24, 118 26, 122 44 C 126 60, 140 58, 152 38 C 160 26, 178 30, 198 52" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"></path></svg></div></div>
+</sc-if>
+<sc-if value="{{ avizUnsigned }}" hint-placeholder-val="{{ false }}">
+<div style="padding:10px 18px 16px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div onClick="{{ act.openSign }}" style="display:inline-flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="pen-line" style="width:15px;height:15px"></i>Semneaza</div></div>
+</sc-if>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTransfers }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Transferuri</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Intre locatii</div></div><span onClick="{{ nav.transferNou }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="plus" style="width:15px;height:15px"></i>Transfer nou</span></div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:16px">
+<div style="display:grid;grid-template-columns:110px 1.6fr 1fr 1fr 130px;column-gap:16px;padding:12px 20px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Transfer</span><span>Ruta</span><span>Articole</span><span>Cerut de</span><span>Status</span></div>
+<div onClick="{{ nav.transfer }}" style="display:grid;grid-template-columns:110px 1.6fr 1fr 1fr 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#TF-088</span><span style="display:flex;align-items:center;gap:6px">Atelier Central<i data-lucide="arrow-right" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i>Baneasa</span><span style="color:var(--tx2,#636366)">5 articole</span><span style="color:var(--tx2,#636366)">Mihai T. · 08:30</span><span><sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In asteptare</span></sc-if><sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">In tranzit</span></sc-if></span></div>
+<div style="display:grid;grid-template-columns:110px 1.6fr 1fr 1fr 130px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">#TF-087</span><span style="display:flex;align-items:center;gap:6px">Atelier Central<i data-lucide="arrow-right" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i>Dorobanti</span><span style="color:var(--tx2,#636366)">8 articole</span><span style="color:var(--tx2,#636366)">Elena D. · 09:12</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTransferDetail }}" hint-placeholder-val="{{ false }}">
+<span onClick="{{ nav.transfers }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Transferuri</span>
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Transfer #TF-088</span><sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--orangeBg,rgba(255,149,0,.14));color:var(--orange,#E07C00)">In asteptare</span></sc-if><sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">In tranzit</span></sc-if><sc-if value="{{ trDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Finalizat</span></sc-if><sc-if value="{{ trCancelled }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--redBg,rgba(255,59,48,.12));color:var(--red,#FF3B30)">Anulat</span></sc-if></div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Atelier Central → Baneasa · cerut de Mihai T. · 08:30</div>
+<sc-if value="{{ trWaiting }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+<span onClick="{{ act.approveTransfer }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="check" style="width:15px;height:15px"></i>Aproba</span>
+<span onClick="{{ act.rejectTransfer }}" style="display:flex;align-items:center;gap:7px;background:var(--card,#fff);color:var(--tx,#1C1C1E);border:1px solid var(--sep,rgba(60,60,67,.14));border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="x" style="width:15px;height:15px"></i>Respinge</span>
+<span onClick="{{ act.openTransit }}" style="display:flex;align-items:center;gap:7px;background:var(--field2,#E4E4E9);color:var(--tx,#1C1C1E);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="truck" style="width:15px;height:15px"></i>Marcheaza in tranzit</span>
+<span onClick="{{ act.cancelTransfer }}" style="display:flex;align-items:center;gap:7px;color:var(--red,#FF3B30);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="ban" style="width:15px;height:15px"></i>Anuleaza</span>
+</div>
+</sc-if>
+<sc-if value="{{ trTransit }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+<span onClick="{{ act.finalizeTransfer }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="circle-check" style="width:15px;height:15px"></i>Finalizeaza</span>
+<span onClick="{{ act.cancelTransfer }}" style="display:flex;align-items:center;gap:7px;color:var(--red,#FF3B30);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="ban" style="width:15px;height:15px"></i>Anuleaza</span>
+</div>
+</sc-if>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;max-width:760px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Locatii</div>
+<div style="display:flex;gap:11px;padding:11px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><i data-lucide="arrow-up-right" style="width:19px;height:19px;color:var(--orange,#E07C00);flex:none;margin-top:1px"></i><div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">De la</div><div style="font-size:13.5px;font-weight:600">Atelier Central</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">Str. Fabricii 8, Sector 6</div></div></div>
+<div style="display:flex;gap:11px;padding:11px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><i data-lucide="arrow-down-left" style="width:19px;height:19px;color:var(--green,#2E9E4F);flex:none;margin-top:1px"></i><div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">Catre</div><div style="font-size:13.5px;font-weight:600">Baneasa</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">Sos. Bucuresti-Ploiesti 42</div></div></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Informatii</div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Creat de</span><b>Mihai T.</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Transport</span><b>{{ trTransporter }}</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Data creare</span><b>3 iul 2026, 08:30</b></div>
+<sc-if value="{{ trDone }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Finalizat</span><b>3 iul 2026, 10:15</b></div></sc-if>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Note</span><b>Livrare vitrina de weekend</b></div>
+</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:12px;max-width:760px">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Produse · 4</div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Ecler vanilie</span><b>24 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Macarons zmeura</span><b>40 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Fraisier</span><b>6 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Cutii prajituri mici</span><b>30 buc</b></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isShopping }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Lista de cumparaturi</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Generata din taskuri blocate + praguri minime</div></div><span onClick="{{ act.exportNecesar }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="share" style="width:15px;height:15px"></i>Trimite lista</span></div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:16px;max-width:640px">
+<div style="padding:14px 18px 8px;font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px">Callebaut</div>
+<div onClick="{{ act.toggleAlba }}" style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><sc-if value="{{ shopAlba }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:14px;height:14px;color:#fff"></i></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600;text-decoration:line-through;color:var(--gray,#8E8E93)">Ciocolata alba</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">blocheaza: Glazura oglinda</div></div><b style="font-size:13px;color:var(--gray,#8E8E93)">6 kg</b></sc-if><sc-if value="{{ shopAlbaOff }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:var(--card,#fff);box-shadow:inset 0 0 0 1.5px var(--gray2,#C7C7CC);flex:none"></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Ciocolata alba</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">blocheaza: Glazura oglinda</div></div><b style="font-size:13px">6 kg</b></sc-if></div>
+<div onClick="{{ act.toggleNeagra }}" style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><sc-if value="{{ shopNeagra }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:14px;height:14px;color:#fff"></i></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600;text-decoration:line-through;color:var(--gray,#8E8E93)">Ciocolata neagra 54%</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">sub prag minim (2.4 / 5 kg)</div></div><b style="font-size:13px;color:var(--gray,#8E8E93)">5 kg</b></sc-if><sc-if value="{{ shopNeagraOff }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:var(--card,#fff);box-shadow:inset 0 0 0 1.5px var(--gray2,#C7C7CC);flex:none"></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Ciocolata neagra 54%</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">sub prag minim (2.4 / 5 kg)</div></div><b style="font-size:13px">5 kg</b></sc-if></div>
+<div style="padding:14px 18px 8px;font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;border-top:1px solid var(--sep,rgba(60,60,67,.08))">PackPro</div>
+<div onClick="{{ act.toggleCutii }}" style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><sc-if value="{{ shopCutii }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:#D4527B;display:flex;align-items:center;justify-content:center;flex:none"><i data-lucide="check" style="width:14px;height:14px;color:#fff"></i></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600;text-decoration:line-through;color:var(--gray,#8E8E93)">Cutii tort 26 cm</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">epuizat · minim 20 buc</div></div><b style="font-size:13px;color:var(--gray,#8E8E93)">40 buc</b></sc-if><sc-if value="{{ shopCutiiOff }}" hint-placeholder-val="{{ false }}"><span style="width:22px;height:22px;border-radius:6px;background:var(--card,#fff);box-shadow:inset 0 0 0 1.5px var(--gray2,#C7C7CC);flex:none"></span><div style="flex:1"><div style="font-size:13.5px;font-weight:600">Cutii tort 26 cm</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">epuizat · minim 20 buc</div></div><b style="font-size:13px">40 buc</b></sc-if></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSetari }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Setari</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;max-width:900px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Organizatie (admin)</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="palette" style="width:17px;height:17px;color:#D4527B"></i>Branding si accent</span><span style="width:20px;height:20px;border-radius:50%;background:#D4527B"></span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="tags" style="width:17px;height:17px;color:#D4527B"></i>Categorii</span><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--gray2,#C7C7CC)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="map-pin" style="width:17px;height:17px;color:#D4527B"></i>Locatii</span><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--gray2,#C7C7CC)"></i></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:9px"><i data-lucide="users" style="width:17px;height:17px;color:#D4527B"></i>Utilizatori si roluri</span><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--gray2,#C7C7CC)"></i></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Aspect</div>
+<div onClick="{{ act.toggleDark }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:9px;font-size:13.5px"><i data-lucide="moon" style="width:17px;height:17px;color:#D4527B"></i>Mod intunecat</span><span style="font-size:13px;font-weight:600;color:#D4527B">{{ aspectLabel }}</span></div>
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700;border-top:1px solid var(--sep,rgba(60,60,67,.08))">Functii experimentale</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><div><div style="font-size:13.5px;font-weight:600">Valori nutritionale</div><div style="font-size:11.5px;color:var(--gray,#8E8E93)">Etichete si calcul agregat pe retete</div></div><span style="width:44px;height:26px;border-radius:999px;background:#D4527B;display:flex;align-items:center;justify-content:flex-end;padding:2px"><span style="width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Integrari</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>eBriza (POS)</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--greenBg,rgba(52,199,89,.14));color:var(--green,#2E9E4F)">Conectat</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>WooCommerce</span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(142,142,147,.16);color:var(--gray,#8E8E93)">Neconectat</span></div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isReceptie }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Receptie marfa</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Inregistreaza mai multe materii prime dintr-o singura intrare</div></div><span onClick="{{ nav.stock }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Inapoi</span></div>
+<div style="max-width:760px">
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px 18px;margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Locatie destinatie</div><div onClick="{{ act.pickRecLoc }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px;cursor:pointer"><b>{{ recLoc }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Nr. factura furnizor (optional)</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">FF-1042</div></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:16px 18px;margin-top:12px">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px">Material #1</span><span onClick="{{ act.rmReceptieRow }}" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--red,#FF3B30);cursor:pointer"><i data-lucide="trash-2" style="width:14px;height:14px"></i>Sterge</span></div>
+<div style="margin-top:12px"><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Material</div><div onClick="{{ act.pickRecMaterial }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px;cursor:pointer"><b>{{ recMaterial }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px">
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Cantitate</div><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">10</div><span style="font-size:13px;color:var(--gray,#8E8E93)">kg</span></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Pret achizitie (RON, optional)</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">47.50</div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Nr. lot (optional)</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">L-2026-091</div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Data expirarii</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">12 dec 2026</div></div>
+</div>
+</div>
+<div onClick="{{ act.addReceptieRow }}" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--card,#fff);border:1px dashed var(--sep,rgba(60,60,67,.2));border-radius:10px;padding:11px 0;margin-top:12px;font-size:13px;font-weight:600;color:#D4527B;cursor:pointer"><i data-lucide="plus" style="width:16px;height:16px"></i>Adauga material</div>
+</div>
+<div style="position:sticky;bottom:0;margin-top:14px;padding:12px 0;background:var(--bg,#F5F5F7);border-top:1px solid var(--sep,rgba(60,60,67,.1));max-width:760px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:13px;color:var(--gray,#8E8E93)">1 material de receptionat</span><span onClick="{{ act.submitReceptie }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:10px 18px;font-size:13.5px;font-weight:600;cursor:pointer">Inregistreaza receptia</span></div>
+</sc-if>
+
+<sc-if value="{{ isTransferNou }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px"><span onClick="{{ nav.transfers }}" style="display:inline-flex;align-items:center;color:#D4527B;cursor:pointer"><i data-lucide="chevron-left" style="width:20px;height:20px"></i></span><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Transfer nou</span></div>
+<div style="max-width:660px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:16px">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">De la (locatie sursa)</div>
+<div style="padding:0 18px 16px"><div onClick="{{ act.pickTransSursa }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;font-size:13.5px;cursor:pointer"><b>{{ transSource }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:12px">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Ce transferi?</div>
+<div style="padding:0 18px 16px">
+<sc-if value="{{ transHasSel }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+<sc-for list="{{ transSelected }}" as="it" hint-placeholder-count="1">
+<div style="display:flex;align-items:center;gap:10px;border:1px solid var(--sep,rgba(60,60,67,.12));border-radius:10px;padding:10px 12px"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px"><span style="font-size:13.5px;font-weight:600">{{ it.name }}</span><sc-if value="{{ it.product }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Produs</span></sc-if></div><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:1px">disponibil {{ it.avail }} {{ it.unit }}</div></div><div style="width:66px;text-align:right;background:var(--field,#F2F2F7);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600">{{ it.qty }}</div><span style="font-size:12px;color:var(--gray,#8E8E93);width:26px">{{ it.unit }}</span><span onClick="{{ it.remove }}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray,#8E8E93)"><i data-lucide="trash-2" style="width:15px;height:15px"></i></span></div>
+</sc-for>
+</div>
+</sc-if>
+<div style="display:flex;align-items:center;gap:8px;background:var(--field,#F2F2F7);border-radius:10px;padding:9px 12px;margin-bottom:8px"><i data-lucide="search" style="width:15px;height:15px;color:var(--gray,#8E8E93)"></i><span style="font-size:13px;color:var(--gray,#8E8E93)">Cauta produs...</span></div>
+<sc-if value="{{ transHasAvail }}" hint-placeholder-val="{{ false }}">
+<div style="border:1px solid var(--sep,rgba(60,60,67,.12));border-radius:10px;padding:8px;max-height:280px;overflow-y:auto">
+<sc-if value="{{ transMPShow }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;padding:4px 6px">Materii prime</div>
+<sc-for list="{{ transAvailMP }}" as="it" hint-placeholder-count="2">
+<div onClick="{{ it.add }}" style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer"><span style="flex:1;font-size:13.5px">{{ it.name }}</span><span style="font-size:12px;color:var(--gray,#8E8E93)">{{ it.avail }} {{ it.unit }}</span><i data-lucide="plus" style="width:16px;height:16px;color:#D4527B"></i></div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ transProdShow }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;padding:4px 6px;margin-top:4px">Produse</div>
+<sc-for list="{{ transAvailProd }}" as="it" hint-placeholder-count="2">
+<div onClick="{{ it.add }}" style="display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:8px;cursor:pointer"><span style="font-size:13.5px">{{ it.name }}</span><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Produs</span><span style="flex:1"></span><span style="font-size:12px;color:var(--gray,#8E8E93)">{{ it.avail }} {{ it.unit }}</span><i data-lucide="plus" style="width:16px;height:16px;color:#D4527B"></i></div>
+</sc-for>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ transNoAvail }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:14px;font-size:13px;color:var(--gray,#8E8E93)">Niciun produs disponibil.</div>
+</sc-if>
+</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:12px">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Destinatie si transport</div>
+<div style="padding:0 18px 16px;display:flex;flex-direction:column;gap:12px">
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Catre (destinatie) *</div><div onClick="{{ act.pickTransDest }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;font-size:13.5px;cursor:pointer"><b>{{ transDestLabel }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Transport (optional)</div><div onClick="{{ act.pickTransporter }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;font-size:13.5px;cursor:pointer"><b>{{ transTransporter }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div><div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:5px">Persoana care duce transferul. Obligatorie pentru a-l pune in tranzit.</div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Note</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;font-size:13.5px;color:var(--gray,#8E8E93)">Note optionale...</div></div>
+</div>
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px"><span onClick="{{ nav.transfers }}" style="padding:10px 16px;border-radius:8px;background:var(--card,#fff);border:1px solid var(--sep,rgba(60,60,67,.14));font-size:13px;font-weight:600;cursor:pointer">Anuleaza</span><span onClick="{{ act.createTransfer }}" style="padding:10px 18px;border-radius:8px;background:{{ transSubmitBg }};color:#fff;font-size:13px;font-weight:600;cursor:pointer">Creeaza transfer</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRecipes }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:22px;font-weight:700;letter-spacing:-.3px">Retete</div><div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Produse finale si semipreparate</div></div><span onClick="{{ act.newRecipe }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="plus" style="width:15px;height:15px"></i>Reteta noua</span></div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;margin-top:16px">
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 120px;column-gap:16px;padding:12px 20px;font-size:11px;font-weight:600;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px"><span>Denumire</span><span>Tip</span><span>Categorie</span><span style="text-align:right">Randament</span></div>
+<div onClick="{{ nav.recipeDetail }}" style="display:grid;grid-template-columns:1.6fr 1fr 1fr 120px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Fraisier</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Produs final</span></span><span style="color:var(--tx2,#636366)">Torturi</span><span style="text-align:right;font-weight:600">1 buc</span></div>
+<div onClick="{{ nav.recipeDetail }}" style="display:grid;grid-template-columns:1.6fr 1fr 1fr 120px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;cursor:pointer;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Cheesecake</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Produs final</span></span><span style="color:var(--tx2,#636366)">Prajituri</span><span style="text-align:right;font-weight:600">12 buc</span></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 120px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Crema mousseline</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Semipreparat</span></span><span style="color:var(--tx2,#636366)">Creme</span><span style="text-align:right;font-weight:600">2.4 kg</span></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 120px;column-gap:16px;padding:13px 20px;font-size:13.5px;align-items:center;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="font-weight:600">Blat cacao</span><span><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Semipreparat</span></span><span style="color:var(--tx2,#636366)">Blaturi</span><span style="text-align:right;font-weight:600">6 buc</span></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRecipeDetail }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between"><span onClick="{{ nav.recipes }}" style="display:inline-flex;align-items:center;gap:4px;color:#D4527B;font-size:13.5px;font-weight:600;cursor:pointer"><i data-lucide="chevron-left" style="width:17px;height:17px"></i>Retete</span><span onClick="{{ nav.recipeEdit }}" style="display:flex;align-items:center;gap:7px;background:#D4527B;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="pencil" style="width:15px;height:15px"></i>Editeaza</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px"><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Fraisier</span><span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--blueBg,rgba(0,122,255,.12));color:var(--blue,#007AFF)">Produs final</span><span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--field2,#E4E4E9);color:var(--tx2,#636366)">Torturi</span></div>
+<div style="font-size:13px;color:var(--gray,#8E8E93);margin-top:2px">Randament 1 buc · pierdere estimata 5%</div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-top:16px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Blat Genoise</div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Faina 000</span><b>120 g</b></div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Oua</span><b>6 buc</b></div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Zahar</span><b>100 g</b></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Crema mousseline</div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Unt 82%</span><b>200 g</b></div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>Lapte</span><b>250 ml</b></div>
+<div style="display:flex;justify-content:space-between;padding:9px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="display:flex;align-items:center;gap:6px">Sirop de insiropat<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--purpleBg,rgba(175,82,222,.13));color:var(--purple,#AF52DE)">Semiprep.</span></span><b>60 ml</b></div>
+</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;overflow:hidden;align-self:start">
+<div style="padding:14px 18px 10px;font-size:14px;font-weight:700">Cost productie</div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Cost materiale</span><b>38.40 RON</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Pret vanzare</span><b>55.00 RON</b></div>
+<div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:13px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span style="color:var(--gray,#8E8E93)">Marja</span><b style="color:var(--green,#2E9E4F)">30%</b></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isRecipeEdit }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px"><span onClick="{{ nav.recipeDetail }}" style="display:inline-flex;align-items:center;color:#D4527B;cursor:pointer"><i data-lucide="chevron-left" style="width:20px;height:20px"></i></span><span style="font-size:22px;font-weight:700;letter-spacing:-.3px">Editeaza reteta</span></div>
+<div style="max-width:720px">
+<div style="background:var(--card,#fff);border-radius:10px;padding:18px;margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Nume *</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">Fraisier</div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Tip</div><div style="display:flex;background:var(--field2,#E4E4E9);border-radius:9px;padding:2px"><span style="flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:12.5px;background:var(--card,#fff);box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600">Produs final</span><span style="flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:12.5px;color:var(--gray,#8E8E93)">Semipreparat</span></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Unitate</div><div style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">buc<i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Randament</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">1</div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Categorie</div><div style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">Torturi<i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div></div>
+<div><div style="font-size:12.5px;font-weight:500;color:var(--tx2,#636366);margin-bottom:6px">Pierderi estimate (%)</div><div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px">5</div></div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:18px;margin-top:12px">
+<div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:600">Blat Genoise</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+<div style="display:flex;background:var(--field2,#E4E4E9);border-radius:8px;padding:2px;flex:none"><span style="padding:6px 10px;border-radius:6px;font-size:12px;background:var(--card,#fff);box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600">Materie</span><span style="padding:6px 10px;border-radius:6px;font-size:12px;color:var(--gray,#8E8E93)">Semiprep.</span></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px">Faina 000<i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></div>
+<div style="width:70px;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px;text-align:right">120</div>
+<div style="width:64px;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 9px;font-size:13px">g<i data-lucide="chevrons-up-down" style="width:12px;height:12px;color:var(--gray,#8E8E93)"></i></div>
+<span onClick="{{ act.rmIngredient }}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray,#8E8E93)"><i data-lucide="trash-2" style="width:15px;height:15px"></i></span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+<div style="display:flex;background:var(--field2,#E4E4E9);border-radius:8px;padding:2px;flex:none"><span style="padding:6px 10px;border-radius:6px;font-size:12px;background:var(--card,#fff);box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600">Materie</span><span style="padding:6px 10px;border-radius:6px;font-size:12px;color:var(--gray,#8E8E93)">Semiprep.</span></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px">Oua<i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></div>
+<div style="width:70px;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px;text-align:right">6</div>
+<div style="width:64px;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 9px;font-size:13px">buc<i data-lucide="chevrons-up-down" style="width:12px;height:12px;color:var(--gray,#8E8E93)"></i></div>
+<span onClick="{{ act.rmIngredient }}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray,#8E8E93)"><i data-lucide="trash-2" style="width:15px;height:15px"></i></span>
+</div>
+<div onClick="{{ act.addIngredient }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 12px;border-radius:8px;background:var(--card,#fff);border:1px solid var(--sep,rgba(60,60,67,.14));font-size:12.5px;font-weight:600;color:#D4527B;cursor:pointer"><i data-lucide="plus" style="width:14px;height:14px"></i>Ingredient</div>
+</div>
+<div style="background:var(--card,#fff);border-radius:10px;padding:18px;margin-top:12px">
+<div style="background:var(--field,#F2F2F7);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:600">Crema mousseline</div>
+<div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+<div style="display:flex;background:var(--field2,#E4E4E9);border-radius:8px;padding:2px;flex:none"><span style="padding:6px 10px;border-radius:6px;font-size:12px;color:var(--gray,#8E8E93)">Materie</span><span style="padding:6px 10px;border-radius:6px;font-size:12px;background:var(--card,#fff);box-shadow:0 1px 2px rgba(0,0,0,.12);font-weight:600">Semiprep.</span></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px">Sirop de insiropat<i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></div>
+<div style="width:70px;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 11px;font-size:13px;text-align:right">60</div>
+<div style="width:64px;display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:8px;padding:8px 9px;font-size:13px">ml<i data-lucide="chevrons-up-down" style="width:12px;height:12px;color:var(--gray,#8E8E93)"></i></div>
+<span onClick="{{ act.rmIngredient }}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray,#8E8E93)"><i data-lucide="trash-2" style="width:15px;height:15px"></i></span>
+</div>
+<div onClick="{{ act.addIngredient }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 12px;border-radius:8px;background:var(--card,#fff);border:1px solid var(--sep,rgba(60,60,67,.14));font-size:12.5px;font-weight:600;color:#D4527B;cursor:pointer"><i data-lucide="plus" style="width:14px;height:14px"></i>Ingredient</div>
+</div>
+<div onClick="{{ act.addComponent }}" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:9px 14px;border-radius:8px;background:var(--card,#fff);border:1px solid var(--sep,rgba(60,60,67,.14));font-size:13px;font-weight:600;color:#D4527B;cursor:pointer"><i data-lucide="plus" style="width:15px;height:15px"></i>Componenta</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px"><span onClick="{{ nav.recipeDetail }}" style="padding:10px 16px;border-radius:8px;background:var(--card,#fff);border:1px solid var(--sep,rgba(60,60,67,.14));font-size:13px;font-weight:600;cursor:pointer">Anuleaza</span><span onClick="{{ act.saveRecipe }}" style="padding:10px 18px;border-radius:8px;background:#D4527B;color:#fff;font-size:13px;font-weight:600;cursor:pointer">Salveaza modificarile</span></div>
+</div>
+</sc-if>
+
+<!--VIEWS-->
+</div>
+
+<sc-if value="{{ modalRandament }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:440px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Captura randament</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="font-size:12.5px;color:var(--gray,#8E8E93);margin-top:2px">Blat cacao · task #T-0412</div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;overflow:hidden;margin-top:14px">
+<div style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px"><span>Cantitate tinta</span><span style="color:var(--gray,#8E8E93)">6 buc</span></div>
+<div style="height:1px;background:var(--sep,rgba(60,60,67,.1));margin-left:14px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px"><span>Cantitate obtinuta</span><b>6 buc</b></div>
+<div style="height:1px;background:var(--sep,rgba(60,60,67,.1));margin-left:14px"></div>
+<div onClick="{{ act.pickRandLoc }}" style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px;cursor:pointer"><span>Locatie stocare</span><span style="display:flex;align-items:center;gap:4px"><b>{{ randLoc }}</b><i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></span></div>
+</div>
+<div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:8px">Stocul de semipreparat creste cu 6 buc; materialele se scad FIFO din loturi.</div>
+<div onClick="{{ act.confirmRandament }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Confirma si finalizeaza</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalLivrare }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:460px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Foaie de livrare</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="font-size:12.5px;color:var(--gray,#8E8E93);margin-top:2px">Comanda #1046 · Cafeneaua Arome · predat de Mihai T., primit de Dana V.</div>
+<div style="font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;margin-top:14px">Semnatura client</div>
+<div onClick="{{ act.sign }}" style="margin-top:8px;background:var(--field,#F2F2F7);border-radius:10px;height:140px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<sc-if value="{{ signed }}" hint-placeholder-val="{{ false }}"><svg width="220" height="90" viewBox="0 0 220 90"><path d="M18 62 C 40 20, 58 22, 66 48 C 72 68, 84 66, 96 40 C 104 24, 118 26, 122 44 C 126 60, 140 58, 152 38 C 160 26, 178 30, 198 52" fill="none" stroke="var(--tx,#1C1C1E)" stroke-width="2.4" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ notSigned }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--gray,#8E8E93)">Click pentru a semna</span></sc-if>
+</div>
+<div onClick="{{ act.confirmLivrare }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Confirma livrarea</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalMiscare }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:440px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Miscare stoc</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="display:flex;background:var(--field2,#E4E4E9);border-radius:9px;padding:2px;margin-top:14px">
+<span onClick="{{ act.tipIntrare }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ segIntrareBg }};box-shadow:{{ segIntrareSh }};font-weight:{{ segIntrareFw }}">Intrare</span>
+<span onClick="{{ act.tipIesire }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ segIesireBg }};box-shadow:{{ segIesireSh }};font-weight:{{ segIesireFw }}">Iesire</span>
+<span onClick="{{ act.tipAjustare }}" style="flex:1;text-align:center;padding:6px 0;border-radius:7px;font-size:12.5px;cursor:pointer;background:{{ segAjustBg }};box-shadow:{{ segAjustSh }};font-weight:{{ segAjustFw }}">Ajustare</span>
+</div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;overflow:hidden;margin-top:12px">
+<div onClick="{{ act.pickArticol }}" style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px;cursor:pointer"><span>Articol</span><span style="display:flex;align-items:center;gap:4px"><b>{{ miscArticol }}</b><i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="height:1px;background:var(--sep,rgba(60,60,67,.1));margin-left:14px"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-size:13.5px"><span>Cantitate</span><span style="display:flex;align-items:center;gap:10px"><span onClick="{{ act.cantMinus }}" style="width:26px;height:26px;border-radius:7px;background:var(--card,#fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1)"><i data-lucide="minus" style="width:14px;height:14px"></i></span><b style="min-width:58px;text-align:center">{{ miscCant }} kg</b><span onClick="{{ act.cantPlus }}" style="width:26px;height:26px;border-radius:7px;background:var(--card,#fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1)"><i data-lucide="plus" style="width:14px;height:14px"></i></span></span></div>
+<div style="height:1px;background:var(--sep,rgba(60,60,67,.1));margin-left:14px"></div>
+<div onClick="{{ act.pickMotiv }}" style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px;cursor:pointer"><span>Motiv</span><span style="display:flex;align-items:center;gap:4px"><b>{{ miscMotiv }}</b><i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></span></div>
+</div>
+<div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:8px">Stoc rezultat: {{ miscRezultat }}</div>
+<div onClick="{{ act.confirmMiscare }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Salveaza miscarea</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalReceptie }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:470px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Receptie marfa</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;overflow:hidden;margin-top:14px">
+<div onClick="{{ act.pickFurnizor }}" style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px;cursor:pointer"><span>Furnizor</span><span style="display:flex;align-items:center;gap:4px"><b>{{ recFurnizor }}</b><i data-lucide="chevrons-up-down" style="width:13px;height:13px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="height:1px;background:var(--sep,rgba(60,60,67,.1));margin-left:14px"></div>
+<div style="display:flex;justify-content:space-between;padding:11px 14px;font-size:13.5px"><span>Nr. factura</span><b>FAC-121</b></div>
+</div>
+<div style="font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;margin-top:14px">Materiale · 1</div>
+<div style="background:var(--field,#F2F2F7);border-radius:10px;padding:12px 14px;margin-top:8px">
+<div style="font-size:13.5px;font-weight:700">Ciocolata neagra 54%</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;font-size:12px">
+<span style="background:#fff;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:var(--gray,#8E8E93)">Cantitate</span><b>10 kg</b></span>
+<span style="background:#fff;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:var(--gray,#8E8E93)">Lot</span><b>L-96</b></span>
+<span style="background:#fff;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:var(--gray,#8E8E93)">Pret</span><b>47.50 RON/kg</b></span>
+<span style="background:#fff;border-radius:7px;padding:7px 10px;display:flex;justify-content:space-between"><span style="color:var(--gray,#8E8E93)">Expira</span><b>12 dec 2026</b></span>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:10px;color:#D4527B;font-size:13px;font-weight:600;cursor:pointer"><i data-lucide="circle-plus" style="width:16px;height:16px"></i>Adauga material</div>
+<div onClick="{{ act.confirmReceptie }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Salveaza receptia · 475.00 RON</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:38">
+<div onClick="{{ act.closePicker }}" style="position:absolute;inset:0;background:rgba(0,0,0,.25)"></div>
+<div style="position:relative;width:340px;background:var(--card,#fff);border-radius:14px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.25)">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px"><span style="font-size:14px;font-weight:700">{{ pickerTitle }}</span><span onClick="{{ act.closePicker }}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:7px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:15px;height:15px;color:var(--gray,#8E8E93)"></i></span></div>
+<sc-for list="{{ pickerOptions }}" as="opt" hint-placeholder-count="3">
+<div onClick="{{ opt.onPick }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;cursor:pointer;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))">
+<span>{{ opt.label }}</span>
+<sc-if value="{{ opt.sel }}" hint-placeholder-val="{{ false }}"><i data-lucide="check" style="width:17px;height:17px;color:#D4527B"></i></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalAddItem }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:420px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Adauga produs</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="font-size:12.5px;color:var(--gray,#8E8E93);margin-top:2px">Produs (reteta finala)</div>
+<div style="display:flex;align-items:center;gap:8px;background:var(--field,#F2F2F7);border-radius:10px;padding:9px 12px;margin-top:12px"><i data-lucide="search" style="width:15px;height:15px;color:var(--gray,#8E8E93)"></i><span style="font-size:13px;color:var(--gray,#8E8E93)">Cauta reteta...</span></div>
+<div style="border:1px solid var(--sep,rgba(60,60,67,.12));border-radius:10px;overflow:hidden;margin-top:10px">
+<sc-for list="{{ addableRecipes }}" as="r" hint-placeholder-count="3">
+<div onClick="{{ r.add }}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;font-size:13.5px;border-top:1px solid var(--sep,rgba(60,60,67,.08))"><span>{{ r.name }}</span><span style="font-size:12px;color:var(--gray,#8E8E93)">{{ r.price }} RON</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalAviz }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:460px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Semneaza avizul</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="font-size:12.5px;color:var(--gray,#8E8E93);margin-top:2px">Aviz AV-1046 · comanda #1046</div>
+<div style="font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;margin-top:14px">Nume semnatar</div>
+<div onClick="{{ act.pickAvizName }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;margin-top:8px;font-size:13.5px;cursor:pointer"><b>{{ avizName }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div>
+<div style="font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;margin-top:14px">Semnatura</div>
+<div onClick="{{ act.drawAviz }}" style="margin-top:8px;background:var(--field,#F2F2F7);border-radius:10px;height:140px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+<sc-if value="{{ avizDraw }}" hint-placeholder-val="{{ false }}"><svg width="220" height="90" viewBox="0 0 220 90"><path d="M18 62 C 40 20, 58 22, 66 48 C 72 68, 84 66, 96 40 C 104 24, 118 26, 122 44 C 126 60, 140 58, 152 38 C 160 26, 178 30, 198 52" fill="none" stroke="var(--tx,#1C1C1E)" stroke-width="2.4" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{ avizNoDraw }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:var(--gray,#8E8E93)">Click pentru a semna</span></sc-if>
+</div>
+<div onClick="{{ act.confirmAviz }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Semneaza</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ modalTransit }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35">
+<div onClick="{{ act.closeModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.4)"></div>
+<div style="position:relative;width:420px;background:var(--card,#fff);border-radius:16px;padding:22px 24px;box-shadow:0 16px 48px rgba(0,0,0,.22)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:16px;font-weight:700">Asigneaza transport</span><span onClick="{{ act.closeModal }}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;background:var(--field,#F2F2F7)"><i data-lucide="x" style="width:17px;height:17px;color:var(--gray,#8E8E93)"></i></span></div>
+<div style="font-size:12px;font-weight:700;color:var(--gray,#8E8E93);text-transform:uppercase;letter-spacing:.4px;margin-top:14px">Persoana transport *</div>
+<div onClick="{{ act.pickTransporter }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--field,#F2F2F7);border-radius:10px;padding:11px 12px;margin-top:8px;font-size:13.5px;cursor:pointer"><b>{{ transTransporter }}</b><i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--gray,#8E8E93)"></i></div>
+<div style="font-size:11.5px;color:var(--gray,#8E8E93);margin-top:8px">Un transfer nu poate intra in tranzit fara o persoana care il transporta.</div>
+<div onClick="{{ act.confirmTransit }}" style="text-align:center;padding:12px 0;border-radius:10px;background:#D4527B;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:14px">Pune in tranzit</div>
+</div>
+</div>
+</sc-if>
+
+<!--MODALS-->
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;right:24px;bottom:24px;background:rgba(28,28,30,.94);color:#fff;border-radius:12px;padding:13px 18px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:40"><i data-lucide="circle-check" style="width:17px;height:17px;color:#30D158"></i>{{ toastMsg }}</div>
+</sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:840}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'splash', stack: [],
+    blat: 'DE_FACUT', glaz: 'DE_FACUT', glazAlert: false,
+    orderStep: 0, transfer: 'IN_ASTEPTARE',
+    modal: null, toast: null, picker: null,
+    necesarCalc: false, receptionDone: false, signed: false,
+    shop: { alba: false, neagra: false, cutii: false },
+    misc: { tip: 'Intrare', articol: 'Faina 000', motiv: 'Receptie furnizor', cant: 12.5 },
+    randLoc: 'Atelier Central', recFurnizor: 'Callebaut',
+    ordSeg: 'azi', stockFilter: 'toate', dark: false,
+    orderItems: [{ name: 'Ecler vanilie', qty: 36, total: 216 }, { name: 'Macarons zmeura', qty: 24, total: 94 }],
+    aviz: 'none', avizName: 'Dana Vasilescu', avizDraw: false,
+    recLoc: 'Atelier Central', recMaterial: 'Ciocolata neagra 54%',
+    transSource: 'Atelier Central', transDest: '', transTransporter: 'Neasignat', transSel: {}
+  };
+  transCatalog() {
+    return [
+      { id: 'faina', name: 'Faina 000', cat: 'mp', unit: 'kg', avail: '42', qtyDef: 5 },
+      { id: 'unt', name: 'Unt 82%', cat: 'mp', unit: 'kg', avail: '18.5', qtyDef: 3 },
+      { id: 'cioc', name: 'Ciocolata neagra 54%', cat: 'mp', unit: 'kg', avail: '2.4', qtyDef: 1 },
+      { id: 'ecler', name: 'Ecler vanilie', cat: 'prod', unit: 'buc', avail: '48', qtyDef: 24 },
+      { id: 'macarons', name: 'Macarons zmeura', cat: 'prod', unit: 'buc', avail: '120', qtyDef: 40 },
+      { id: 'fraisier', name: 'Fraisier', cat: 'prod', unit: 'buc', avail: '12', qtyDef: 6 }
+    ];
+  }
+  addableList() {
+    return [
+      { name: 'Fraisier', price: 55 }, { name: 'Cheesecake', price: 42 },
+      { name: 'Tort Ruby', price: 245 }, { name: 'Ecler vanilie', price: 6 }
+    ];
+  }
+  darkVars() {
+    return {
+      '--bg': '#111113', '--card': '#1C1C1E', '--tx': '#E6E1E5', '--tx2': '#CAC4D0', '--tx2b': '#CAC4D0',
+      '--tx3': 'rgba(235,235,245,.4)', '--gray': '#98989D', '--gray2': '#48484A',
+      '--sep': 'rgba(84,84,88,.4)', '--field': '#2C2C2E', '--field2': '#2C2C2E',
+      '--blue': '#0A84FF', '--blueBg': 'rgba(10,132,255,.2)', '--blueBg2': 'rgba(10,132,255,.12)',
+      '--orange': '#FF9F0A', '--orangeBg': 'rgba(255,159,10,.2)',
+      '--yellow': '#FFD60A', '--yellowBg': 'rgba(255,214,10,.18)',
+      '--green': '#30D158', '--greenBg': 'rgba(48,209,88,.2)', '--greenBg2': 'rgba(48,209,88,.1)',
+      '--red': '#FF453A', '--redBg': 'rgba(255,69,58,.2)', '--redBg2': 'rgba(255,69,58,.12)',
+      '--purple': '#BF5AF2', '--purpleBg': 'rgba(191,90,242,.2)',
+      '--indigo': '#7D7AFF', '--indigoBg': 'rgba(94,92,230,.22)',
+      '--greenIcon': '#30D158', '--logoFilter': 'invert(1)'
+    };
+  }
+  componentDidMount() {
+    this.icons();
+    this._splash = setTimeout(() => { if (this.state.screen === 'splash') this.setState({ screen: 'login' }); }, 3300);
+  }
+  componentWillUnmount() { clearTimeout(this._splash); clearTimeout(this._t); }
+  componentDidUpdate() { this.icons(); }
+  icons() { if (window.lucide) window.lucide.createIcons(); this.maybeStartPen(); }
+  maybeStartPen() {
+    if (this.state.screen !== 'splash') return;
+    const cv = this.penRef && this.penRef.current;
+    if (!cv || cv.__penRunning) return;
+    cv.__penRunning = true;
+    const img = new Image();
+    img.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNjAiIGhlaWdodD0iMTAwIj48dGV4dCB4PSIwIiB5PSI3MiIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjY0IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjRDQ1MjdCIiBmb250LXN0eWxlPSJpdGFsaWMiPkFjYWRlZWE8L3RleHQ+PC9zdmc+';
+    img.onload = () => {
+      const strokes = [
+        [[75,28],[40,105]], [[75,28],[116,105]], [[56,82],[96,82]],
+        [[160,63],[140,55],[127,66],[125,82],[131,97],[148,105],[162,98]],
+        [[206,62],[186,54],[172,66],[172,84],[178,99],[196,105],[207,93]], [[208,58],[208,105]],
+        [[260,62],[240,54],[226,66],[226,84],[232,99],[250,105],[261,93]], [[263,32],[263,105]],
+        [[281,82],[312,79],[313,64],[298,54],[283,62],[275,76],[278,93],[292,103],[307,101],[314,93]],
+        [[326,82],[357,79],[358,64],[343,54],[328,62],[320,76],[323,93],[337,103],[352,101],[359,93]],
+        [[413,62],[393,54],[379,66],[379,84],[385,99],[403,105],[414,93]],
+        [[415,58],[414,98],[418,106],[428,107],[434,100]]
+      ];
+      const segs = [];
+      let total = 0;
+      strokes.forEach(pts => {
+        for (let i = 1; i < pts.length; i++) {
+          const dx = pts[i][0] - pts[i-1][0], dy = pts[i][1] - pts[i-1][1];
+          const len = Math.sqrt(dx*dx + dy*dy);
+          segs.push({ a: pts[i-1], b: pts[i], len, start: total });
+          total += len;
+        }
+      });
+      const mask = document.createElement('canvas');
+      mask.width = 460; mask.height = 150;
+      const mctx = mask.getContext('2d');
+      mctx.lineWidth = 38; mctx.lineCap = 'round'; mctx.lineJoin = 'round'; mctx.strokeStyle = '#fff';
+      const ctx = cv.getContext('2d');
+      const dur = 2100, t0 = performance.now();
+      const tick = now => {
+        const p = Math.min(1, (now - t0) / dur);
+        const target = p * total;
+        mctx.clearRect(0, 0, 460, 150);
+        mctx.beginPath();
+        segs.forEach(sg => {
+          if (sg.start >= target) return;
+          const f = Math.min(1, (target - sg.start) / sg.len);
+          mctx.moveTo(sg.a[0], sg.a[1]);
+          mctx.lineTo(sg.a[0] + (sg.b[0] - sg.a[0]) * f, sg.a[1] + (sg.b[1] - sg.a[1]) * f);
+        });
+        mctx.stroke();
+        ctx.clearRect(0, 0, 460, 150);
+        if (p >= 1) {
+          ctx.drawImage(img, 0, 0, 460, 150);
+        } else {
+          ctx.drawImage(mask, 0, 0);
+          ctx.globalCompositeOperation = 'source-in';
+          ctx.drawImage(img, 0, 0, 460, 150);
+          ctx.globalCompositeOperation = 'source-over';
+        }
+        if (p < 1 && this.state.screen === 'splash') requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+  }
+  go(s) { this.setState(st => ({ screen: s, stack: st.stack.concat([st.screen]), modal: null })); }
+  pop() { this.setState(st => { const stack = st.stack.slice(); const prev = stack.pop() || 'home'; return { screen: prev, stack }; }); }
+  say(msg) { clearTimeout(this._t); this.setState({ toast: msg }); this._t = setTimeout(() => this.setState({ toast: null }), 2400); }
+  fmt(n) { return (Math.round(n * 100) / 100).toString(); }
+  money(n) { return n.toFixed(2); }
+  stocBaza(a) { return ({ 'Faina 000': 42, 'Ciocolata neagra 54%': 2.4, 'Unt 82%': 18.5, 'Zahar pudra': 9 })[a] || 0; }
+  pickerOptions() {
+    const s = this.state;
+    if (!s.picker) return [];
+    const defs = {
+      articol: { opts: ['Faina 000', 'Ciocolata neagra 54%', 'Unt 82%', 'Zahar pudra'], cur: s.misc.articol, set: v => this.setState(st => ({ misc: Object.assign({}, st.misc, { articol: v }), picker: null })) },
+      motiv: { opts: ['Receptie furnizor', 'Consum productie', 'Pierdere / rebut', 'Corectie inventar'], cur: s.misc.motiv, set: v => this.setState(st => ({ misc: Object.assign({}, st.misc, { motiv: v }), picker: null })) },
+      randLoc: { opts: ['Atelier Central', 'Dorobanti', 'Baneasa'], cur: s.randLoc, set: v => this.setState({ randLoc: v, picker: null }) },
+      furnizor: { opts: ['Callebaut', 'Metro', 'Selgros', 'PackPro'], cur: s.recFurnizor, set: v => this.setState({ recFurnizor: v, picker: null }) },
+      recLoc: { opts: ['Atelier Central', 'Dorobanti', 'Baneasa'], cur: s.recLoc, set: v => this.setState({ recLoc: v, picker: null }) },
+      recMaterial: { opts: ['Ciocolata neagra 54%', 'Faina 000', 'Unt 82%', 'Zahar pudra'], cur: s.recMaterial, set: v => this.setState({ recMaterial: v, picker: null }) },
+      transSursa: { opts: ['Atelier Central', 'Dorobanti', 'Baneasa'], cur: s.transSource, set: v => this.setState({ transSource: v, transSel: {}, transDest: (s.transDest === v ? '' : s.transDest), picker: null }) },
+      transDest: { opts: ['Atelier Central', 'Dorobanti', 'Baneasa'].filter(o => o !== s.transSource), cur: s.transDest, set: v => this.setState({ transDest: v, picker: null }) },
+      transportator: { opts: ['Neasignat', 'Mihai Toma', 'Andrei Stan', 'Elena Dima'], cur: s.transTransporter, set: v => this.setState({ transTransporter: v, picker: null }) },
+      avizName: { opts: ['Dana Vasilescu', 'Ana Marinescu', 'Mihai Toma'], cur: s.avizName, set: v => this.setState({ avizName: v, picker: null }) }
+    };
+    const d = defs[s.picker.kind];
+    if (!d) return [];
+    return d.opts.map(o => ({ label: o, sel: o === d.cur, onPick: () => d.set(o) }));
+  }
+  sb(keys) {
+    const on = keys.indexOf(this.state.screen) >= 0;
+    return { bg: on ? 'rgba(212,82,123,.1)' : 'transparent', color: on ? '#D4527B' : 'var(--tx2b,#48484A)', fw: on ? '600' : '500' };
+  }
+  renderVals() {
+    const s = this.state;
+    const is = k => s.screen === k;
+    const segSel = s.dark ? '#636366' : '#fff';
+    const seg = on => ({ bg: on ? segSel : 'transparent', sh: on ? '0 1px 2px rgba(0,0,0,.12)' : 'none', fw: on ? '600' : '500' });
+    const sbH = this.sb(['home']), sbT = this.sb(['tasks', 'taskBlat', 'taskGlaz', 'trace']), sbS = this.sb(['stock', 'stockDetail', 'receptie']),
+      sbN = this.sb(['necesar']), sbO = this.sb(['orders', 'orderDetail']), sbTr = this.sb(['transfers', 'transferDetail', 'transferNou']),
+      sbSh = this.sb(['shopping']), sbSe = this.sb(['setari']), sbR = this.sb(['recipes', 'recipeDetail', 'recipeEdit']);
+    const sI = seg(s.misc.tip === 'Intrare'), sE = seg(s.misc.tip === 'Iesire'), sA = seg(s.misc.tip === 'Ajustare');
+    const oA = seg(s.ordSeg === 'azi'), oM = seg(s.ordSeg === 'maine'), oT = seg(s.ordSeg === 'toate');
+    const orderEditable = s.orderStep <= 1;
+    // Order sheet total: the template reads {{ orderTotal }} (QA m19 — was never defined).
+    const orderTotal = this.money(s.orderItems.reduce((sum, it) => sum + (it.total || 0), 0));
+    const orderItems = s.orderItems.map((it, i) => ({
+      name: it.name, qty: it.qty, total: this.money(it.total), editable: orderEditable,
+      remove: () => { this.setState(st => ({ orderItems: st.orderItems.filter((_, j) => j !== i) })); this.say('Produs eliminat'); }
+    }));
+    const addableRecipes = this.addableList().map(r => ({
+      name: r.name, price: this.money(r.price),
+      add: () => { this.setState(st => ({ orderItems: st.orderItems.concat([{ name: r.name, qty: 1, total: r.price }]), modal: null })); this.say('Produs adaugat'); }
+    }));
+    const cat = this.transCatalog();
+    const selIds = Object.keys(s.transSel);
+    const transSelected = selIds.map(id => {
+      const it = cat.find(c => c.id === id);
+      return {
+        name: it.name, unit: it.unit, avail: it.avail, product: it.cat === 'prod', qty: this.fmt(s.transSel[id]),
+        remove: () => this.setState(st => { const m = Object.assign({}, st.transSel); delete m[id]; return { transSel: m }; })
+      };
+    });
+    const mkAvail = c => ({
+      name: c.name, unit: c.unit, avail: c.avail, product: c.cat === 'prod',
+      add: () => this.setState(st => { const m = Object.assign({}, st.transSel); m[c.id] = c.qtyDef; return { transSel: m }; })
+    });
+    const availItems = cat.filter(c => !(c.id in s.transSel));
+    const transAvailMP = availItems.filter(c => c.cat === 'mp').map(mkAvail);
+    const transAvailProd = availItems.filter(c => c.cat === 'prod').map(mkAvail);
+    const transCanCreate = !!s.transDest && selIds.length > 0;
+    return {
+      isSplash: is('splash'), isLogin: is('login'), isHome: is('home'), isTasks: is('tasks'),
+      isTaskBlat: is('taskBlat'), isTaskGlaz: is('taskGlaz'), isTrace: is('trace'),
+      isStock: is('stock'), isStockDetail: is('stockDetail'), isNecesar: is('necesar'),
+      isOrders: is('orders'), isOrderDetail: is('orderDetail'),
+      isTransfers: is('transfers'), isTransferDetail: is('transferDetail'), isTransferNou: is('transferNou'),
+      isReceptie: is('receptie'), isRecipes: is('recipes'), isRecipeDetail: is('recipeDetail'), isRecipeEdit: is('recipeEdit'),
+      isShopping: is('shopping'), isSetari: is('setari'),
+      sbHomeBg: sbH.bg, sbHomeColor: sbH.color, sbHomeFw: sbH.fw,
+      sbTasksBg: sbT.bg, sbTasksColor: sbT.color, sbTasksFw: sbT.fw,
+      sbStockBg: sbS.bg, sbStockColor: sbS.color, sbStockFw: sbS.fw,
+      sbNecesarBg: sbN.bg, sbNecesarColor: sbN.color, sbNecesarFw: sbN.fw,
+      sbOrdersBg: sbO.bg, sbOrdersColor: sbO.color, sbOrdersFw: sbO.fw,
+      sbTransfersBg: sbTr.bg, sbTransfersColor: sbTr.color, sbTransfersFw: sbTr.fw,
+      sbRecipesBg: sbR.bg, sbRecipesColor: sbR.color, sbRecipesFw: sbR.fw,
+      sbShoppingBg: sbSh.bg, sbShoppingColor: sbSh.color, sbShoppingFw: sbSh.fw,
+      sbSetariBg: sbSe.bg, sbSetariColor: sbSe.color, sbSetariFw: sbSe.fw,
+      blatTodo: s.blat === 'DE_FACUT', blatWip: s.blat === 'IN_LUCRU', blatDone: s.blat === 'FINALIZAT',
+      glazTodo: s.glaz === 'DE_FACUT', glazBlocked: s.glaz === 'BLOCAT', glazAlert: s.glazAlert,
+      os0: s.orderStep === 0, os1: s.orderStep === 1, os2: s.orderStep === 2, os3: s.orderStep === 3, os4: s.orderStep === 4,
+      osGte1: s.orderStep >= 1, osGte2: s.orderStep >= 2, osGte3: s.orderStep >= 3, osGte4: s.orderStep >= 4,
+      trWaiting: s.transfer === 'IN_ASTEPTARE', trTransit: s.transfer === 'IN_TRANZIT',
+      trDone: s.transfer === 'FINALIZAT', trCancelled: s.transfer === 'ANULAT', trTransporter: s.transTransporter,
+      modalRandament: s.modal === 'randament', modalLivrare: s.modal === 'livrare',
+      modalMiscare: s.modal === 'miscare', modalReceptie: s.modal === 'receptie',
+      modalAddItem: s.modal === 'addItem', modalAviz: s.modal === 'aviz', modalTransit: s.modal === 'transit',
+      orderCount: s.orderItems.length, orderItems: orderItems, orderTotal: orderTotal,
+      orderEditable: orderEditable, orderCancelable: s.orderStep <= 2,
+      avizExists: s.aviz !== 'none', avizNone: s.aviz === 'none', avizSigned: s.aviz === 'signed', avizUnsigned: s.aviz === 'created',
+      avizNameLabel: s.avizName, avizName: s.avizName, avizDraw: s.avizDraw, avizNoDraw: !s.avizDraw, addableRecipes: addableRecipes,
+      recLoc: s.recLoc, recMaterial: s.recMaterial,
+      transSource: s.transSource, transDestLabel: s.transDest || 'Selecteaza destinatia', transTransporter: s.transTransporter,
+      transSelected: transSelected, transHasSel: selIds.length > 0,
+      transAvailMP: transAvailMP, transAvailProd: transAvailProd,
+      transMPShow: transAvailMP.length > 0, transProdShow: transAvailProd.length > 0,
+      transHasAvail: availItems.length > 0, transNoAvail: availItems.length === 0,
+      transSubmitBg: transCanCreate ? '#D4527B' : 'rgba(212,82,123,.45)',
+      hasToast: !!s.toast, toastMsg: s.toast || '',
+      necesarCalc: s.necesarCalc, necesarNotCalc: !s.necesarCalc,
+      receptionDone: s.receptionDone, noReception: !s.receptionDone, signed: s.signed, notSigned: !s.signed,
+      shopAlba: s.shop.alba, shopAlbaOff: !s.shop.alba, shopNeagra: s.shop.neagra, shopNeagraOff: !s.shop.neagra, shopCutii: s.shop.cutii, shopCutiiOff: !s.shop.cutii,
+      miscArticol: s.misc.articol, miscMotiv: s.misc.motiv, miscCant: this.fmt(s.misc.cant),
+      miscRezultat: this.fmt(this.stocBaza(s.misc.articol) + (s.misc.tip === 'Iesire' ? -s.misc.cant : s.misc.cant)) + ' kg',
+      segIntrareBg: sI.bg, segIntrareSh: sI.sh, segIntrareFw: sI.fw,
+      segIesireBg: sE.bg, segIesireSh: sE.sh, segIesireFw: sE.fw,
+      segAjustBg: sA.bg, segAjustSh: sA.sh, segAjustFw: sA.fw,
+      randLoc: s.randLoc, recFurnizor: s.recFurnizor,
+      showOrdAzi: s.ordSeg !== 'maine', showOrdMaine: s.ordSeg !== 'azi',
+      oSegAziBg: oA.bg, oSegAziSh: oA.sh, oSegAziFw: oA.fw,
+      oSegMaineBg: oM.bg, oSegMaineSh: oM.sh, oSegMaineFw: oM.fw,
+      oSegToateBg: oT.bg, oSegToateSh: oT.sh, oSegToateFw: oT.fw,
+      chipToateBg: s.stockFilter === 'toate' ? '#D4527B' : 'var(--card,#fff)', chipToateColor: s.stockFilter === 'toate' ? '#fff' : 'var(--tx,#1C1C1E)',
+      chipMPBg: s.stockFilter === 'mp' ? '#D4527B' : 'var(--card,#fff)', chipMPColor: s.stockFilter === 'mp' ? '#fff' : 'var(--tx,#1C1C1E)',
+      chipAmbBg: s.stockFilter === 'amb' ? '#D4527B' : 'var(--card,#fff)', chipAmbColor: s.stockFilter === 'amb' ? '#fff' : 'var(--tx,#1C1C1E)',
+      showMP: s.stockFilter !== 'amb', showAmb: s.stockFilter !== 'mp',
+      pickerOpen: !!s.picker, pickerTitle: s.picker ? s.picker.title : '',
+      pickerOptions: this.pickerOptions(),
+      varsStyle: Object.assign({ display: 'flex', height: '100%', background: 'var(--bg,#F5F5F7)', color: 'var(--tx,#1C1C1E)' }, s.dark ? this.darkVars() : {}),
+      aspectLabel: s.dark ? 'Activat' : 'Dezactivat',
+      penCanvasRef: this.penRef || (this.penRef = React.createRef()),
+      nav: {
+        home: () => this.go('home'), tasks: () => this.go('tasks'), stock: () => this.go('stock'),
+        orders: () => this.go('orders'), necesar: () => this.go('necesar'),
+        taskBlat: () => this.go('taskBlat'), taskGlaz: () => this.go('taskGlaz'), trace: () => this.go('trace'),
+        stockDetail: () => this.go('stockDetail'), order: () => this.go('orderDetail'),
+        transfers: () => this.go('transfers'), transfer: () => this.go('transferDetail'),
+        transferNou: () => this.go('transferNou'), receptie: () => this.go('receptie'),
+        recipes: () => this.go('recipes'), recipeDetail: () => this.go('recipeDetail'), recipeEdit: () => this.go('recipeEdit'),
+        shopping: () => this.go('shopping'), setari: () => this.go('setari'),
+        back: () => this.pop()
+      },
+      act: {
+        login: () => this.setState({ screen: 'home', stack: [] }),
+        logout: () => this.setState({ screen: 'login', stack: [], modal: null }),
+        startBlat: () => { this.setState({ blat: 'IN_LUCRU' }); this.say('Task pornit — materialele au fost rezervate'); },
+        finishBlat: () => this.setState({ modal: 'randament' }),
+        confirmRandament: () => { this.setState({ blat: 'FINALIZAT', modal: null }); this.say('Stoc semipreparat: Blat cacao +6 buc'); },
+        startGlaz: () => this.setState({ glaz: 'BLOCAT', glazAlert: true }),
+        approveTransfer: () => { this.setState({ transfer: 'IN_TRANZIT' }); this.say('Transfer aprobat — stoc rezervat'); },
+        advanceOrder: () => this.setState(st => ({ orderStep: Math.min(st.orderStep + 1, 4) })),
+        openLivrare: () => this.setState({ modal: 'livrare' }),
+        sign: () => this.setState({ signed: true }),
+        confirmLivrare: () => { if (this.state.signed) { this.setState({ orderStep: 4, modal: null, signed: false }); this.say('Comanda #1046 livrata'); } else { this.say('Semnatura clientului este necesara'); } },
+        openMiscare: () => this.setState({ modal: 'miscare' }),
+        confirmMiscare: () => { const m = this.state.misc; this.setState({ modal: null }); this.say('Miscare salvata: ' + (m.tip === 'Iesire' ? '-' : '+') + this.fmt(m.cant) + ' kg ' + m.articol); },
+        openReceptie: () => this.go('receptie'),
+        confirmReceptie: () => { this.setState({ receptionDone: true, modal: null, screen: 'stockDetail' }); this.say('Receptie salvata — lot L-96 adaugat'); },
+        submitReceptie: () => { this.setState({ receptionDone: true }); this.go('stockDetail'); this.say('Receptie inregistrata'); },
+        addReceptieRow: () => this.say('Rand de material adaugat'),
+        rmReceptieRow: () => this.say('Material scos din receptie'),
+        pickRecLoc: () => this.setState({ picker: { kind: 'recLoc', title: 'Locatie destinatie' } }),
+        pickRecMaterial: () => this.setState({ picker: { kind: 'recMaterial', title: 'Selecteaza material' } }),
+        pickTransSursa: () => this.setState({ picker: { kind: 'transSursa', title: 'Locatie sursa' } }),
+        pickTransDest: () => this.setState({ picker: { kind: 'transDest', title: 'Selecteaza destinatia' } }),
+        pickTransporter: () => this.setState({ picker: { kind: 'transportator', title: 'Persoana transport' } }),
+        createTransfer: () => { const st = this.state; if (!st.transDest || Object.keys(st.transSel).length === 0) { this.say('Alege destinatia si cel putin un produs'); return; } this.setState({ transfer: 'IN_ASTEPTARE' }); this.go('transferDetail'); this.say('Transfer creat cu succes'); },
+        rejectTransfer: () => { this.setState({ transfer: 'ANULAT' }); this.say('Transfer respins'); },
+        openTransit: () => this.setState({ modal: 'transit' }),
+        confirmTransit: () => { if (this.state.transTransporter === 'Neasignat') { this.say('Alege o persoana pentru transport'); return; } this.setState({ transfer: 'IN_TRANZIT', modal: null }); this.say('Transfer in tranzit'); },
+        finalizeTransfer: () => { this.setState({ transfer: 'FINALIZAT' }); this.say('Transfer finalizat'); },
+        cancelTransfer: () => { this.setState({ transfer: 'ANULAT' }); this.say('Transfer anulat'); },
+        openAddItem: () => this.setState({ modal: 'addItem' }),
+        cancelOrder: () => { this.go('orders'); this.say('Comanda anulata'); },
+        generateAviz: () => { this.setState({ aviz: 'created' }); this.say('Aviz de livrare creat'); },
+        printAviz: () => this.say('Aviz AV-1046 trimis la imprimanta'),
+        openSign: () => this.setState({ modal: 'aviz', avizDraw: false }),
+        drawAviz: () => this.setState({ avizDraw: true }),
+        confirmAviz: () => { if (!this.state.avizDraw) { this.say('Semnatura clientului este necesara'); return; } this.setState({ aviz: 'signed', modal: null }); this.say('Aviz semnat'); },
+        pickAvizName: () => this.setState({ picker: { kind: 'avizName', title: 'Nume semnatar' } }),
+        newRecipe: () => this.say('Formular reteta noua'),
+        addIngredient: () => this.say('Ingredient adaugat'),
+        rmIngredient: () => this.say('Ingredient sters'),
+        addComponent: () => this.say('Componenta adaugata'),
+        saveRecipe: () => { this.go('recipeDetail'); this.say('Reteta actualizata'); },
+        calcNecesar: () => this.setState({ necesarCalc: true }),
+        exportNecesar: () => this.say('Necesar_MP_5iul.xlsx exportat'),
+        shareTrace: () => this.say('Fisa TR-0412 distribuita'),
+        closeModal: () => this.setState({ modal: null }),
+        closePicker: () => this.setState({ picker: null }),
+        pickArticol: () => this.setState({ picker: { kind: 'articol', title: 'Selecteaza articol' } }),
+        pickMotiv: () => this.setState({ picker: { kind: 'motiv', title: 'Selecteaza motiv' } }),
+        pickRandLoc: () => this.setState({ picker: { kind: 'randLoc', title: 'Locatie stocare' } }),
+        pickFurnizor: () => this.setState({ picker: { kind: 'furnizor', title: 'Selecteaza furnizor' } }),
+        tipIntrare: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Intrare' }) })),
+        tipIesire: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Iesire' }) })),
+        tipAjustare: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { tip: 'Ajustare' }) })),
+        cantMinus: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { cant: Math.max(0.5, st.misc.cant - 0.5) }) })),
+        cantPlus: () => this.setState(st => ({ misc: Object.assign({}, st.misc, { cant: st.misc.cant + 0.5 }) })),
+        ordSegAzi: () => this.setState({ ordSeg: 'azi' }),
+        ordSegMaine: () => this.setState({ ordSeg: 'maine' }),
+        ordSegToate: () => this.setState({ ordSeg: 'toate' }),
+        toggleDark: () => this.setState(st => ({ dark: !st.dark })),
+        filtToate: () => this.setState({ stockFilter: 'toate' }),
+        filtMP: () => this.setState({ stockFilter: 'mp' }),
+        filtAmb: () => this.setState({ stockFilter: 'amb' })
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

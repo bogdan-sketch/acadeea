@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acadeea — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F5F7;color:#1C1C1E;font-family:Inter,system-ui,sans-serif;line-height:1.55}
+main{max-width:860px;margin:0 auto;padding:40px 24px 80px}
+h1{font-size:26px;letter-spacing:-.3px} h2{font-size:19px;margin-top:36px;border-bottom:1px solid rgba(60,60,67,.12);padding-bottom:6px}
+h3{font-size:15px;margin-top:24px} p,li{font-size:14px} blockquote{color:#636366;border-left:3px solid #D4527B;margin:12px 0;padding:4px 14px;font-size:13.5px;background:#fff;border-radius:0 8px 8px 0}
+code{background:rgba(212,82,123,.09);color:#B03A60;border-radius:5px;padding:1px 5px;font-size:12.5px}
+table{border-collapse:collapse;width:100%;background:#fff;border-radius:10px;overflow:hidden;font-size:13px;margin:10px 0}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:#8E8E93;padding:10px 14px}
+td{padding:9px 14px;border-top:1px solid rgba(60,60,67,.08)}
+li{margin:3px 0} pre{background:#1C1C1E;color:#E6E1E5;border-radius:10px;padding:14px;overflow-x:auto;font-size:12.5px}
+</style></head><body><main><h1>Acadeea — Design System (extras din aplicația iOS existentă)</h1>
+
+<blockquote>Sursă: <code>apps/ios/Acadeea</code> (SwiftUI, iOS 17+) — <code>Core/Theme/AppTheme.swift</code>,</blockquote>
+<blockquote><code>Core/Branding/BrandingManager.swift</code> și pattern-urile de UI din Features/.</blockquote>
+<blockquote>Folosit ca referință pentru orice design nou (Stitch / Claude Design / web),</blockquote>
+<blockquote>ca ecranele noi să arate ca aplicația reală.</blockquote>
+
+<h2>1. Identitate</h2>
+
+<li><strong>Produs:</strong> platformă de management de producție pentru o cofetărie (rețete,</li>
+<p>  taskuri de producție, stoc, comenzi, livrări, transferuri între locații).</p>
+<li><strong>Ton vizual:</strong> iOS nativ, curat, utilitar, cald. NU e un dashboard corporate —</li>
+<p>  e o unealtă de atelier folosită de cofetari pe telefon, cu mâinile ocupate.</p>
+<li><strong>Limbă:</strong> toate textele în <strong>română, fără diacritice în iOS</strong> (ex. &quot;Selecteaza</li>
+<p>  articol&quot;, &quot;Miscare stoc&quot;, &quot;Lista de cumparaturi&quot;).</p>
+<li><strong>White-label:</strong> culoarea de accent vine din setările organizației</li>
+<p>  (default <strong>#D4527B — roz Acadeea</strong>). Tot ce e &quot;brand&quot; trebuie să funcționeze</p>
+<p>  dacă accentul se schimbă.</p>
+
+<h2>2. Culori</h2>
+
+<h3>Accent &amp; neutre</h3>
+
+<table>
+<tr><th>Token</th><th>Valoare</th><th>Utilizare</th></tr>
+<tr><td><code>primary</code> / accent</td><td><code>#D4527B</code></td><td>butoane primare, link-uri, selecții, tint</td></tr>
+<tr><td>background</td><td>iOS <code>systemBackground</code> (alb / negru)</td><td>fundal ecran</td></tr>
+<tr><td>secondaryBackground</td><td>iOS <code>secondarySystemBackground</code></td><td>carduri, rânduri</td></tr>
+<tr><td>groupedBackground</td><td>iOS <code>systemGroupedBackground</code></td><td>fundal liste insetGrouped</td></tr>
+<tr><td>label / secondaryLabel</td><td>iOS semantic</td><td>text primar / secundar</td></tr>
+<tr><td>destructive</td><td>roșu sistem</td><td>ștergeri, erori</td></tr>
+<tr><td>success</td><td>verde sistem</td><td>confirmare, stoc suficient</td></tr>
+<tr><td>warning</td><td>portocaliu sistem</td><td>atenționări, stoc scăzut</td></tr>
+</table>
+
+<p>Light + dark mode obligatoriu — folosim exclusiv culori semantice, niciodată</p>
+<p>hex hardcodat pentru fundal/text.</p>
+
+<h3>Culori de status (semantica domeniului — NU se schimbă)</h3>
+
+<li><strong>Task:</strong> DE_FACUT albastru · BLOCAT galben · IN_LUCRU portocaliu · FINALIZAT verde · ANULAT roșu</li>
+<li><strong>Material:</strong> ACTIVE verde · LOW_STOCK portocaliu · OUT_OF_STOCK roșu · DISCONTINUED gri</li>
+<li><strong>Transfer:</strong> IN_ASTEPTARE portocaliu · IN_TRANZIT albastru · FINALIZAT verde · ANULAT roșu</li>
+<li><strong>Comandă:</strong> NOUA albastru · IN_PREGATIRE portocaliu · PREGATITA mov · IN_TRANZIT indigo · LIVRATA verde · ANULATA roșu</li>
+<li><strong>Tip rețetă:</strong> FINAL albastru · SEMIPREPARAT mov</li>
+<li><strong>Marjă:</strong> ≥30% verde · ≥15% portocaliu · &lt;15% roșu</li>
+
+<h3>Paleta de categorii (presets alese de admin)</h3>
+
+<p><code>#D4527B #E91E63 #9C27B0 #673AB7 #3F51B5 #2196F3 #009688 #4CAF50 #FF9800 #795548 #607D8B #F44336</code></p>
+
+<h2>3. Tipografie</h2>
+
+<p>Font: <strong>SF Pro (sistem iOS)</strong> — echivalent web: <strong>Inter</strong>. Scala = iOS text styles:</p>
+
+<table>
+<tr><th>Nivel</th><th>Mărime / greutate</th><th>Utilizare</th></tr>
+<tr><td>largeTitle</td><td>34 / bold</td><td>titluri de ecran mari (rar)</td></tr>
+<tr><td>title2–3</td><td>22–20 / semibold</td><td>titluri de secțiune importante</td></tr>
+<tr><td>headline</td><td>17 / semibold</td><td>titluri de card/rând</td></tr>
+<tr><td>body</td><td>17 / regular</td><td>conținut</td></tr>
+<tr><td>subheadline</td><td>15 / regular–semibold</td><td>valori în rânduri, metadate importante</td></tr>
+<tr><td>caption / caption2</td><td>12 / 11</td><td>etichete secundare, tag-uri, detalii</td></tr>
+</table>
+
+<p>Numere: cantități cu 1–2 zecimale fără zerouri finale (&quot;310&quot;, &quot;1.2&quot;, &quot;0.95&quot;);</p>
+<p>prețuri &quot;24.50 RON&quot;; procente &quot;12.5%&quot;.</p>
+
+<h2>4. Spațiere &amp; forme</h2>
+
+<li><strong>Spacing scale:</strong> 2 (xxs) · 4 (xs) · 8 (sm) · 12 (md) · 16 (lg) · 24 (xl) · 32 (xxl)</li>
+<li><strong>Corner radius:</strong> 6 (sm) · 10 (md — carduri, rânduri) · 16 (lg — sheet-uri, carduri mari)</li>
+<li>Chips/badge-uri: <strong>capsulă</strong> (rotunjire completă).</li>
+
+<h2>5. Componente &amp; pattern-uri (cum arată aplicația azi)</h2>
+
+<li><strong>Liste:</strong> <code>List</code> insetGrouped cu <code>Section(&quot;Titlu&quot;)</code> — majoritatea ecranelor</li>
+<p>  sunt formulare sau liste secționate, nu grid-uri.</p>
+<li><strong>Rânduri de listă:</strong> titlu (headline/body) + metadate pe caption dedesubt;</li>
+<p>  valoarea numerică aliniată dreapta (subheadline semibold); tag-uri mici</p>
+<p>  capsulă gri (<code>caption2</code>) pentru tip (&quot;M. Prime&quot;, &quot;Consumabil&quot;).</p>
+<li><strong>Status badge:</strong> capsulă colorată cu textul statusului în română.</li>
+<li><strong>Filtre:</strong> chips orizontale scrollabile (capsule; selectat = fundal accent,</li>
+<p>  text alb; neselectat = fundal gri deschis).</p>
+<li><strong>Formulare:</strong> <code>Form</code> cu secțiuni titrate; câmpuri cu label deasupra sau</li>
+<p>  <code>LabeledContent</code>; toggle-uri iOS; pickers segmentate pentru 2–3 opțiuni;</p>
+<p>  <code>Menu</code> dropdown pentru selecții lungi (cu chevron.up.chevron.down).</p>
+<li><strong>Toolbar:</strong> acțiune de confirmare = iconă ✓ dreapta-sus; anulare = ✗ stânga-sus.</li>
+<li><strong>Empty states:</strong> <code>ContentUnavailableView</code> cu SF Symbol + titlu + subtitlu.</li>
+<li><strong>Quick actions:</strong> rând de butoane-card cu iconă SF Symbol + label scurt.</li>
+<li><strong>Grafice:</strong> linie simplă pentru evoluție preț/stoc, culoare accent.</li>
+<li><strong>Icoane:</strong> exclusiv <strong>SF Symbols</strong> (web: Lucide, echivalent apropiat).</li>
+<li><strong>Share:</strong> ecranele de raport (trasabilitate, listă cumpărături) au buton</li>
+<p>  share (square.and.arrow.up) care exportă text/fișier.</p>
+
+<h2>6. Do / Don&#x27;t</h2>
+
+<p><strong>Do:</strong> păstrează aspectul iOS nativ; folosește culorile de status exact ca în</p>
+<p>tabel; totul în română; light+dark; densitate moderată — un ecran = o treabă.</p>
+
+<p><strong>Don&#x27;t:</strong> nu introduce borduri 1px peste tot (iOS separă prin fundal și</p>
+<p>spațiu); nu folosi alt accent decât cel al organizației; nu engleza în UI; nu</p>
+<p>umbre grele — elevația vine din straturi de fundal.</p></main></body></html>

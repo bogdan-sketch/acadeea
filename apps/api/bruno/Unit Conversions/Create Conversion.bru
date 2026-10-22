@@ -1,0 +1,47 @@
+meta {
+  name: Create Conversion
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/unit-conversions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "fromUnit": "LINGURI",
+    "toUnit": "GRAME",
+    "factor": 15
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("conversionId", res.getBody().id);
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has id", function() {
+    expect(res.getBody().id).to.be.a('string');
+  });
+  test("fromUnit matches", function() {
+    expect(res.getBody().fromUnit).to.equal('LINGURI');
+  });
+  test("toUnit matches", function() {
+    expect(res.getBody().toUnit).to.equal('GRAME');
+  });
+  test("factor matches", function() {
+    expect(res.getBody().factor).to.equal(15);
+  });
+}

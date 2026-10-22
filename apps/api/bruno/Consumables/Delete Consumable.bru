@@ -1,0 +1,24 @@
+meta {
+  name: Delete Consumable
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/consumables/{{consumableId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("status is DISCONTINUED", function() {
+    expect(res.getBody().status).to.equal('DISCONTINUED');
+  });
+}

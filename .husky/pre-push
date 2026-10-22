@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+# Guard 1: no direct pushes to main. Prod changes go through a PR from dev → main.
+# Real hotfix escape hatch: git push --no-verify
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "✖ Direct push to main is blocked — open a PR from dev → main."
+    echo "  Emergency hotfix only: git push --no-verify"
+    exit 1
+  fi
+done
+
+# Guard 2: fast typecheck (api + web) so type errors never reach CI.
+# The full smoke e2e runs in CI (needs a database).
+echo "pre-push: typecheck api..."
+pnpm --filter @horae/api exec tsc --noEmit -p tsconfig.json || {
+  echo "✖ API typecheck failed."; exit 1;
+}
+echo "pre-push: typecheck web..."
+pnpm --filter web exec tsc --noEmit || {
+  echo "✖ Web typecheck failed."; exit 1;
+}
+exit 0
