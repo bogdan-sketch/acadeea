@@ -1,0 +1,220 @@
+name: Acadeea
+options:
+  bundleIdPrefix: ro.acadeea
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+# Acadeea on-prem: ONE app (ro.acadeea.app) on api.acadeea.ro — no test env.
+configs:
+  Debug: debug
+  Release: release
+
+packages:
+  swift-openapi-generator:
+    url: https://github.com/apple/swift-openapi-generator
+    from: "1.6.0"
+  swift-openapi-runtime:
+    url: https://github.com/apple/swift-openapi-runtime
+    from: "1.7.0"
+  swift-openapi-urlsession:
+    url: https://github.com/apple/swift-openapi-urlsession
+    from: "1.0.2"
+  KeychainAccess:
+    url: https://github.com/kishikawakatsumi/KeychainAccess
+    from: "4.2.2"
+  socket-io-client-swift:
+    url: https://github.com/socketio/socket.io-client-swift
+    from: "16.1.1"
+  sentry-cocoa:
+    url: https://github.com/getsentry/sentry-cocoa
+    from: "8.0.0"
+  posthog-ios:
+    url: https://github.com/PostHog/posthog-ios
+    from: "3.0.0"
+  # Native Google Sign-In (SPM). Provides GIDSignIn used by GoogleSignInManager.
+  # Config is read from Info.plist `GIDClientID` + a reversed-client-id URL
+  # scheme (see the `info:` block below) — both are placeholders until the owner
+  # fills in the real iOS OAuth client id.
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: "7.1.0"
+
+targets:
+  Horae:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Horae
+    # Base xcconfig feeds observability vars (SENTRY_DSN / POSTHOG_KEY /
+    # POSTHOG_HOST) into the build, which the explicit Info.plist below pulls in.
+    # The real file (Config/Observability.xcconfig) is git-ignored; copy it from
+    # Config/Observability.example.xcconfig. If it's missing the vars resolve to
+    # empty (= SDKs disabled), which still builds.
+    configFiles:
+      Debug: Config/Observability.xcconfig
+      Release: Config/Observability.xcconfig
+    # Explicit Info.plist (XcodeGen-generated) so we can declare the three custom
+    # observability keys fed by the xcconfig. GENERATE_INFOPLIST_FILE is off.
+    info:
+      path: Horae/Info.plist
+      properties:
+        CFBundleDisplayName: $(BUNDLE_DISPLAY_NAME)
+        # Without this the generated plist hardcodes 1.0 and MARKETING_VERSION
+        # (bumped by scripts/bump-version.sh) never reaches TestFlight.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleIconName: AppIcon
+        UIApplicationSupportsIndirectInputEvents: true
+        # Remote push notifications (silent + user-facing) can wake the app.
+        UIBackgroundModes:
+          - remote-notification
+        UILaunchScreen: {}
+        # Bundled OFL fonts (Resources/Fonts) for the redesign: DM Sans = body/UI,
+        # Fraunces = titles + big numbers. Variable TTFs; weights are picked by
+        # their named-instance PostScript names (see AppFont).
+        UIAppFonts:
+          - DMSans-Variable.ttf
+          - Fraunces-Variable.ttf
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Observability config (read at runtime by ObservabilityConfig).
+        SENTRY_DSN: $(SENTRY_DSN)
+        POSTHOG_KEY: $(POSTHOG_KEY)
+        POSTHOG_HOST: $(POSTHOG_HOST)
+        # Standalone (single-org, on-prem) builds set these; empty = Horae
+        # defaults (read by AppConfig).
+        API_BASE_URL: https://api.acadeea.ro
+        BRAND_NAME: Acadeea
+    # Push Notifications capability — the aps-environment entitlement. Shared by
+    # both schemes (Horae + Horae Test). Real delivery needs an APNs key on the
+    # server; the client wiring is complete regardless.
+    entitlements:
+      path: Horae/Horae.entitlements
+      properties:
+        # Per-config via the APS_ENVIRONMENT build setting (see `settings` below):
+        # Debug/Debug-Test → development, Release/Release-Test → production. Xcode
+        # expands the $() at build time. TestFlight/App Store (Release/Release-Test)
+        # builds must carry `production` for real APNs delivery to work.
+        aps-environment: $(APS_ENVIRONMENT)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ro.acadeea.app
+        BUNDLE_DISPLAY_NAME: Acadeea
+        MARKETING_VERSION: "1.39.1"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: false
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 2C3LQ6B4B4
+        # APNs entitlement environment. Debug/Debug-Test inherit `development`
+        # (device tokens valid against the APNs sandbox host); Release/Release-Test
+        # override to `production` below so TestFlight/App Store builds get tokens
+        # valid against the APNs production host. Consumed by Horae.entitlements.
+        APS_ENVIRONMENT: development
+      configs:
+        Release:
+          APS_ENVIRONMENT: production
+    dependencies:
+      - package: swift-openapi-runtime
+        product: OpenAPIRuntime
+      - package: swift-openapi-urlsession
+        product: OpenAPIURLSession
+      - package: KeychainAccess
+        product: KeychainAccess
+      - package: socket-io-client-swift
+        product: SocketIO
+      - package: sentry-cocoa
+        product: Sentry
+      - package: posthog-ios
+        product: PostHog
+      - package: GoogleSignIn
+        product: GoogleSignIn
+    plugins:
+      - plugin: OpenAPIGenerator
+        package: swift-openapi-generator
+    # Auto build number = UTC timestamp (YYYYMMDDHHMM), strictly increasing and
+    # unique per archive — re-archiving the same commit no longer collides on
+    # TestFlight. Runs before CodeSign (Xcode signs last), so editing the
+    # product's Info.plist here is safe; applies to both schemes (Horae +
+    # Horae Test share this target). No manual bump per TestFlight upload.
+    postBuildScripts:
+      - name: Set build number
+        basedOnDependencyAnalysis: false
+        script: |
+          n=$(date -u +%Y%m%d%H%M)
+          plist="$TARGET_BUILD_DIR/$INFOPLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $n" "$plist" 2>/dev/null \
+            || /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $n" "$plist"
+          echo "Set CFBundleVersion = $n"
+
+  # Screenshot generator for the App Store (XCUITest — no accessibility perms
+  # needed). Run: xcodebuild test -scheme Horae -only-testing:HoraeScreenshots.
+  HoraeScreenshots:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: HoraeScreenshots
+    dependencies:
+      - target: Horae
+    settings:
+      base:
+        TEST_TARGET_NAME: Horae
+        GENERATE_INFOPLIST_FILE: true
+
+  # Unit tests (XCTest, hosted in the app, no network/login). Run with the
+  # "Horae Test" scheme: xcodebuild test -scheme "Horae Test" -configuration Debug-Test.
+  HoraeTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: HoraeTests
+    dependencies:
+      - target: Horae
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: true
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 2C3LQ6B4B4
+
+schemes:
+  Acadeea:
+    build:
+      targets:
+        Horae: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  # Ruleaza capturile de App Store separat, ca gate-ul obisnuit
+  # `xcodebuild test -scheme Horae` sa ramana no-op (fara login pe prod).
+  HoraeScreenshots:
+    build:
+      targets:
+        HoraeScreenshots: all
+    test:
+      config: Debug
+      targets:
+        - HoraeScreenshots
+

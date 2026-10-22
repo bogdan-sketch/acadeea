@@ -1,0 +1,12 @@
+openapi: "3.0.0"
+info:
+  title: Acadeea API
+  description: Placeholder — run `pnpm --filter @acadeea/api openapi:export` then copy docs/openapi/acadeea-api.yaml here.
+  version: "1.0"
+paths: {}
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer

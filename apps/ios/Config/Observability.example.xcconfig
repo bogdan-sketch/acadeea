@@ -1,0 +1,22 @@
+// Observability configuration — EXAMPLE (committed).
+//
+// Copy this file to `Observability.xcconfig` (same folder) and fill in real
+// values there. `Observability.xcconfig` is git-ignored so secrets never land
+// in version control. Leaving a value empty disables that SDK.
+//
+//   cp Config/Observability.example.xcconfig Config/Observability.xcconfig
+//
+// After editing run `xcodegen generate` (the xcconfig is wired as the project
+// base configuration via project.yml).
+
+// Sentry DSN (errors / crash / performance). Empty = Sentry disabled.
+SENTRY_DSN =
+
+// PostHog project API key (product analytics). Empty = PostHog disabled.
+POSTHOG_KEY =
+
+// PostHog ingestion host. Defaults to https://eu.i.posthog.com if left empty.
+// IMPORTANT: store the host WITHOUT a scheme — xcconfig treats "//" as a
+// comment, so "https://..." would be truncated. The app prepends "https://".
+//   EU cloud: eu.i.posthog.com   US cloud: us.i.posthog.com
+POSTHOG_HOST = eu.i.posthog.com

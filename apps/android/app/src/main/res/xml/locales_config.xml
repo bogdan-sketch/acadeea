@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app is Romanian only (API 33+ per-app language list). The locale is also
+     forced in code (RoLocale), so M3 pickers are Romanian and Monday-first everywhere. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="ro-RO" />
+</locale-config>

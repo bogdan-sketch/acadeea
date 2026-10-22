@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window chrome only; every colour inside the app comes from the Compose
+         HoraeTheme (six schemes). The window background is Atelier paper so the
+         cold-start frame matches the default scheme. -->
+    <style name="Theme.Acadeea" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/horae_paper</item>
+    </style>
+</resources>

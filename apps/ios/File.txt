@@ -1,0 +1,1 @@
+Unitatea de masura pentru Retete, Materii prime si Stocuri sa fie prefilled cu default-ul ales cand produsul e definit in stoc

@@ -1,0 +1,13 @@
+# Example of the git-ignored local.properties. Copy to `local.properties` and fill in.
+#   cp local.properties.example local.properties
+#
+# sdk.dir is normally written by Android Studio. For CLI builds set it explicitly:
+# sdk.dir=/Users/<you>/Library/Android/sdk
+
+# --- Observability (Sentry + PostHog) ---
+# Leave EMPTY to disable a provider (its SDK init becomes a no-op at runtime).
+# These populate BuildConfig.{SENTRY_DSN,POSTHOG_KEY,POSTHOG_HOST} via app/build.gradle.kts.
+SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0
+POSTHOG_KEY=phc_ExamplePostHogProjectApiKey
+# Optional; defaults to https://eu.i.posthog.com when blank.
+POSTHOG_HOST=https://eu.i.posthog.com

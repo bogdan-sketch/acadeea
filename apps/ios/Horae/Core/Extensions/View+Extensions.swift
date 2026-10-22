@@ -1,0 +1,13 @@
+import SwiftUI
+
+extension View {
+    /// Conditionally apply a modifier.
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
