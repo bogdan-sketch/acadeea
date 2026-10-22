@@ -38,3 +38,7 @@ Thumbs.db
 # Native apps — not part of any image
 apps/ios
 apps/android
+
+# Env files anywhere (apps/web/.env.local etc.) must never be baked into an image
+**/.env*
+!**/.env.example

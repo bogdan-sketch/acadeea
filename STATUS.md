@@ -14,6 +14,16 @@ Last updated: **2026-10-22**. Update this file whenever something below changes.
 - **Android** "Acadeea" 1.0.0 (versionCode 1): signed release APK built and side-loadable; not on
   Google Play yet.
 
+## Social login (Apple / Google)
+
+Existing links: 1 Apple + 2 Google users (all also have a password).
+
+| | Apple | Google |
+| --- | --- | --- |
+| iOS app | ON — capability on `ro.acadeea.app`, API `APPLE_AUDIENCES=ro.acadeea.app` | OFF until an **iOS OAuth client for `ro.acadeea.app`** exists in the Google Cloud project `1031952890842` (same project ⇒ same Google user ids, existing links keep working). Then: `GIDClientID` + reversed-client-id URL scheme in `apps/ios/project.yml`, and add the client id to `GOOGLE_AUDIENCES`. |
+| Web | OFF — needs the Services ID `ca.horae.signin` to list domain `app.acadeea.ro` + return URL in the Apple Developer portal (or a new Acadeea Services ID). Then build arg `NEXT_PUBLIC_APPLE_SERVICES_ID` + add it to `APPLE_AUDIENCES`. | OFF — add `https://app.acadeea.ro` as an Authorized JavaScript origin on the web client `1031952890842-16dlcao6…` (already in `GOOGLE_AUDIENCES`). Then build arg `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. |
+| Android | — (the Android app never had social login) | — |
+
 ## Pending / open
 
 1. **Google Play Console** — Bogdan creates the "Acadeea" app (package `ro.acadeea.app`, from

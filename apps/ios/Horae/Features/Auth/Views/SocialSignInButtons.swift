@@ -15,14 +15,6 @@ struct SocialSignInButtons: View {
     var viewModel: SocialSignInViewModel
 
     var body: some View {
-        // Standalone (on-prem) builds sign in with email + password only — their
-        // bundle id isn't registered for Apple/Google sign-in on the API.
-        if !AppConfig.isStandalone {
-            buttons
-        }
-    }
-
-    private var buttons: some View {
         VStack(spacing: AppTheme.Spacing.md) {
             HStack(spacing: AppTheme.Spacing.md) {
                 divider

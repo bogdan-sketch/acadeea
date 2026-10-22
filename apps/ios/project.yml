@@ -109,6 +109,10 @@ targets:
         # expands the $() at build time. TestFlight/App Store (Release/Release-Test)
         # builds must carry `production` for real APNs delivery to work.
         aps-environment: $(APS_ENVIRONMENT)
+        # Sign in with Apple — capability enabled on ro.acadeea.app (App ID
+        # 2PX8Q2375Z); the API accepts this bundle via APPLE_AUDIENCES.
+        com.apple.developer.applesignin:
+          - Default
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ro.acadeea.app

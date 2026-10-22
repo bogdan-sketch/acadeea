@@ -1,5 +1,6 @@
 'use client';
 
+import { STANDALONE_ORG } from '@/lib/brand';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import { organization as orgApi } from '@/lib/api';
@@ -26,6 +27,9 @@ import type { OrgBranding } from '@/lib/types';
  * href; appended last, the browser prefers it over Next's default.
  */
 function applyFavicon(href: string | null) {
+  // Standalone: the bundled Acadeea icon (app/icon.png) is the favicon — a wide
+  // wordmark logo would be squashed in the tab.
+  if (STANDALONE_ORG) return;
   const id = 'org-favicon';
   let link = document.getElementById(id) as HTMLLinkElement | null;
   if (!link) {

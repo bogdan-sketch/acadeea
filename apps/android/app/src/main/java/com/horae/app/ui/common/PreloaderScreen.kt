@@ -274,8 +274,8 @@ private fun SplashSurface(
                 contentScale = androidx.compose.ui.layout.ContentScale.Fit,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    // Rises further than the glow so it clears the form (iOS: ~250pt).
-                    .offset(y = -logoLift * 1.6f)
+                    // Lifts with the glow, sitting just above the form (iOS: 150pt).
+                    .offset(y = -logoLift)
                     .widthIn(max = 280.dp)
                     .fillMaxWidth(0.72f)
                     .height(72.dp),

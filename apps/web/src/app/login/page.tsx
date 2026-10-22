@@ -28,7 +28,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 /**
  * Login = the splash screen with a twist (Claude Design prototype + iOS
  * `SplashView` with `showLogin`): the SAME accent-gradient / dot-vortex intro
- * plays, then at ~2.6s the org logo LIFTS UP (`riseup`, translateY(-235px)) and
+ * plays, then at ~2.6s the org logo LIFTS UP (`riseup`, translateY(-150px)) and
  * the login form fades in on the same gradient (`formin`). The form becomes
  * part of the splash — no separate card. `prefers-reduced-motion` renders the
  * final state immediately (logo up, form visible, no pulse). All the login
@@ -43,7 +43,7 @@ const LOGO_GRACE_MS = 1000;
 
 const SPLASH_REVEAL_CSS = `
   @keyframes horae-splash-riseup {
-    to { transform: translateY(-235px); }
+    to { transform: translateY(-150px); }
   }
   @keyframes horae-splash-formin {
     to { opacity: 1; }
@@ -52,7 +52,7 @@ const SPLASH_REVEAL_CSS = `
   .horae-splash-form { opacity: 0; }
   .horae-splash-form-in { animation: horae-splash-formin 1s ease-in-out forwards; }
   @media (prefers-reduced-motion: reduce) {
-    .horae-splash-lift { animation: none; transform: translateY(-235px); }
+    .horae-splash-lift { animation: none; transform: translateY(-150px); }
     .horae-splash-form-in { animation: none; opacity: 1; }
   }
 `;

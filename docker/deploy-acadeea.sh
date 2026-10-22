@@ -50,23 +50,15 @@ rsync_with_retry() {
   echo "   rsync failed after 5 attempts." >&2
   return 1
 }
-rsync_with_retry -avz --progress \
-  --exclude='node_modules' \
-  --exclude='.git' \
-  --exclude='.github' \
-  --exclude='.husky' \
-  --exclude='docker/data' \
-  --exclude='dist' \
-  --exclude='.turbo' \
-  --exclude='coverage' \
-  --exclude='.DS_Store' \
-  --exclude='apps/api/keys' \
-  --exclude='apps/api/.env' \
-  --exclude='apps/ios' \
-  --exclude='apps/android' \
+# Only files tracked in git + the deploy env go to the server — never local
+# junk (.env.local, .vercel, backups, build output). rsync --files-from.
+FILE_LIST=$(mktemp)
+( cd "${PROJECT_DIR}" && git ls-files | grep -vE '^apps/(ios|android)/' && echo "${ENV_FILE}" ) > "$FILE_LIST"
+rsync_with_retry -az --files-from="$FILE_LIST" \
   -e 'ssh -o ConnectTimeout=30 -o ServerAliveInterval=15' \
   "${PROJECT_DIR}/" \
   "${SERVER_USER}@${SERVER}:${REMOTE_DIR}/"
+rm -f "$FILE_LIST"
 
 echo "   Sync complete."
 
