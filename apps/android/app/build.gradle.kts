@@ -50,14 +50,35 @@ android {
             isDefault = true
             buildConfigField("String", "BASE_URL", "\"https://api.acadeea.ro\"")
             buildConfigField("String", "BRAND_NAME", "\"Acadeea\"")
+            buildConfigField("String", "ORG_SLUG", "\"acadeea\"")
             resValue("string", "app_name", "Acadeea")
+        }
+    }
+
+    // Release signing: local.properties `SIGNING_PROPERTIES=/abs/path/keystore.properties`
+    // (storeFile/storePassword/keyAlias/keyPassword). The keystore is NEVER in git —
+    // without it the release build is simply unsigned.
+    val signingProps = obsProp("SIGNING_PROPERTIES").takeIf { it.isNotBlank() }
+        ?.let { file(it) }?.takeIf { it.exists() }
+        ?.let { f -> Properties().apply { f.inputStream().use { load(it) } } }
+    signingConfigs {
+        if (signingProps != null) {
+            create("release") {
+                storeFile = file(signingProps.getProperty("storeFile"))
+                storePassword = signingProps.getProperty("storePassword")
+                keyAlias = signingProps.getProperty("keyAlias")
+                keyPassword = signingProps.getProperty("keyPassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            if (signingProps != null) signingConfig = signingConfigs.getByName("release")
+            // R8 was never exercised on this app (Moshi/Retrofit/Tink keep rules missing) —
+            // ship the same unminified code as debug until it is.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

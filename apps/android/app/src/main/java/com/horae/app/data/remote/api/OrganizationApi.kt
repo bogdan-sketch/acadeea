@@ -18,12 +18,17 @@ import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface OrganizationApi {
 
     @GET("api/v1/organization")
     suspend fun get(): OrganizationBranding
+
+    /** Public branding (name, logos) — works logged out. */
+    @GET("api/v1/organization/by-slug/{slug}")
+    suspend fun getBySlug(@Path("slug") slug: String): OrganizationBranding
 
     @PATCH("api/v1/organization")
     suspend fun update(@Body body: UpdateOrganizationRequest): OrganizationBranding

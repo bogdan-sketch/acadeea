@@ -86,6 +86,8 @@ fun AppNavHost() {
     }
 
     val accentColor = loginViewModel.brandingManager.accentColor
+    // Dark-scheme (white) logo: the splash is a dark accent gradient.
+    val splashLogo = loginViewModel.brandingManager.logoFor(dark = true)
     // Only enter the app once authenticated AND the brand moment has played.
     val showApp = isAuthenticated && formationDone
 
@@ -100,12 +102,13 @@ fun AppNavHost() {
                 onLogout = { loginViewModel.logout() },
             )
             // Still deciding whether a session exists — plain brand splash, no form yet.
-            isRestoringSession -> PreloaderScreen(accentColor = accentColor)
+            isRestoringSession -> PreloaderScreen(accentColor = accentColor, logo = splashLogo)
             // Logged out: the same splash reveals the login form once the vortex has formed.
             else -> SplashLoginScreen(
                 accentColor = accentColor,
                 showLogin = formationDone,
                 viewModel = loginViewModel,
+                logo = splashLogo,
             )
         }
     }

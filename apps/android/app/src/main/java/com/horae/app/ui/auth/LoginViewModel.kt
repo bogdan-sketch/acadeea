@@ -73,6 +73,14 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             sessionEvents.ended.collect { onSessionEnded() }
         }
+        // Org logo on the splash/login even before the first sign-in.
+        viewModelScope.launch {
+            try {
+                organizationRepository.loadPublicBranding()
+            } catch (e: Exception) {
+                Timber.w(e, "LoginViewModel: public branding load failed (non-fatal)")
+            }
+        }
     }
 
     private fun onSessionEnded() {

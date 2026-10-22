@@ -11,3 +11,4 @@ SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0
 POSTHOG_KEY=phc_ExamplePostHogProjectApiKey
 # Optional; defaults to https://eu.i.posthog.com when blank.
 POSTHOG_HOST=https://eu.i.posthog.com
+SIGNING_PROPERTIES=/absolute/path/to/keystore.properties

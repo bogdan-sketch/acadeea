@@ -1,5 +1,19 @@
 # apps/ios — SwiftUI App
 
+> **Acadeea on-prem (read first).** This file was written for Horae; the technical content holds.
+> Here: project `Acadeea.xcodeproj` (generated from `project.yml` with `xcodegen generate`), ONE
+> scheme **Acadeea** (Debug/Release — no "Horae Test", no `API_TEST`), bundle `ro.acadeea.app`,
+> version from `MARKETING_VERSION` in `project.yml`, build number = UTC timestamp (post-build
+> script). `AppConfig` reads Info.plist `API_BASE_URL` (https://api.acadeea.ro), `BRAND_NAME`
+> (Acadeea) and `ORG_SLUG` (acadeea): `isStandalone` → public branding fetched before login,
+> login form shown ON the splash (`SplashView(showLogin:)` in `HoraeApp`), Apple/Google sign-in
+> hidden. The Swift module/target is still called `Horae` on purpose.
+> TestFlight upload: archive scheme Acadeea (Release) + `xcodebuild -exportArchive` with
+> method `app-store-connect`, destination `upload`, `-allowProvisioningUpdates` and an App Store
+> Connect API key (`-authenticationKeyPath/-ID/-IssuerID`). Internal group "Real Users" gets every
+> build automatically.
+
+
 Production-grade native iOS client covering all domains. SwiftUI, iOS 17+, `@Observable` state,
 actor-based services. Talks to `apps/api` over REST (`/api/v1`) + Socket.IO (`/ws`). Read with the
 root `CLAUDE.md` and `docs/ARCHITECTURE.md` for the API/auth/realtime contract.

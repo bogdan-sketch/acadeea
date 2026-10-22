@@ -198,6 +198,7 @@ private fun SplashSurface(
     progress: Float,
     logoLift: Dp,
     taglineAlpha: Float,
+    logo: String? = null,
     overlay: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
@@ -263,8 +264,23 @@ private fun SplashSurface(
             }
         }
 
-        // The center stays EMPTY (vortex + glow only) — matching iOS/web, where only a real org
-        // logo may appear there; Android has no image-loading lib yet, so nothing renders.
+        // The org logo (white/dark variant — the gradient is dark) sits in the glow and lifts
+        // with it when the login form appears, like iOS. No logo → the center stays empty.
+        val logoModel = remember(logo) { com.horae.app.ui.profile.HoraeImages.model(logo) }
+        if (logoModel != null) {
+            coil.compose.AsyncImage(
+                model = logoModel,
+                contentDescription = com.horae.app.BuildConfig.BRAND_NAME,
+                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    // Rises further than the glow so it clears the form (iOS: ~250pt).
+                    .offset(y = -logoLift * 1.6f)
+                    .widthIn(max = 280.dp)
+                    .fillMaxWidth(0.72f)
+                    .height(72.dp),
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -302,6 +318,7 @@ private fun SplashSurface(
 @Composable
 fun PreloaderScreen(
     @Suppress("UNUSED_PARAMETER") accentColor: Color = Color.Unspecified,
+    logo: String? = null,
 ) {
     val accentColor = HoraeTheme.scheme.primary
     val reduceMotion = rememberReduceMotion()
@@ -311,6 +328,7 @@ fun PreloaderScreen(
         progress = progress,
         logoLift = 0.dp,
         taglineAlpha = 1f,
+        logo = logo,
     )
 }
 
@@ -328,6 +346,7 @@ fun SplashLoginScreen(
     @Suppress("UNUSED_PARAMETER") accentColor: Color = Color.Unspecified,
     showLogin: Boolean,
     viewModel: LoginViewModel,
+    logo: String? = null,
 ) {
     val accentColor = HoraeTheme.scheme.primary
     val reduceMotion = rememberReduceMotion()
@@ -350,6 +369,7 @@ fun SplashLoginScreen(
         progress = progress,
         logoLift = logoLift,
         taglineAlpha = taglineAlpha,
+        logo = logo,
     ) {
         AnimatedVisibility(
             visible = showLogin,

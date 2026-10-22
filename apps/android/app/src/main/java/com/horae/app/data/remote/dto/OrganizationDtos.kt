@@ -6,7 +6,8 @@ import com.squareup.moshi.JsonClass
 /** GET /organization — white-label branding (mirrors OrganizationResponseDto). */
 @JsonClass(generateAdapter = true)
 data class OrganizationBranding(
-    val id: String,
+    /** Absent on the public by-slug payload. */
+    val id: String = "",
     val name: String,
     /** Tenant slug (e.g. "acadeea") — white-label identifier. */
     val slug: String? = null,

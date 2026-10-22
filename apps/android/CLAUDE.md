@@ -1,5 +1,16 @@
 # apps/android — Kotlin / Jetpack Compose App
 
+> **Acadeea on-prem (read first).** This file was written for Horae; the technical content holds.
+> Here: ONE flavor `prod` (no `staging`), applicationId `ro.acadeea.app`, `BuildConfig.BASE_URL` =
+> https://api.acadeea.ro, `BRAND_NAME` = Acadeea, `ORG_SLUG` = acadeea (public branding + logo on
+> the splash before login — `OrganizationRepository.loadPublicBranding`, logo drawn by
+> `SplashSurface` via Coil). Build: `./gradlew assembleProdDebug` (JDK 17 — Homebrew openjdk@17).
+> Release: `assembleProdRelease` (APK) / `bundleProdRelease` (Play `.aab`) are signed only when
+> `local.properties` has `SIGNING_PROPERTIES=/abs/path/keystore.properties` (storeFile,
+> storePassword, keyAlias, keyPassword). Minify/R8 is OFF for release (see STATUS.md).
+> The Kotlin package is still `com.horae.app` on purpose.
+
+
 Native Android client. **Early-stage:** networking, auth, and core read/transition flows work; several
 modules are stubs (see maturity table). Kotlin + Compose + Hilt + Retrofit. Talks to `apps/api` over
 REST (`/api/v1`). Read with the root `CLAUDE.md` and `docs/ARCHITECTURE.md` for the API/auth contract.

@@ -1,176 +1,118 @@
-# Horae — Monorepo Guide
+# Acadeea — On-prem Guide
 
-Horae (**horae.ca**) is a multi-tenant production/inventory management platform for confectionery
-(pastry) businesses: recipes, production tasks, stock, orders, deliveries, multi-location transfers,
-equipment, and analytics. One NestJS backend serves a Next.js web app, a native iOS app, and a native
-Android app. **"Acadeea"** is now just the seed/flagship organization (slug `acadeea`) — one tenant
-among many, not the product. Each organization is white-labelled (name, accent color, logos, font,
-app icon) and fully data-isolated (§ multi-tenancy below).
+**Acadeea** is a confectionery (pastry) business. This repo is its **own, on-prem copy of the Horae
+platform**: recipes, production tasks, stock, orders (WooCommerce / eBriza), deliveries,
+multi-location transfers, analytics. One NestJS backend serves a Next.js web app, a native iOS app
+and a native Android app — all branded **Acadeea**, all talking to **api.acadeea.ro**.
 
-> **Start here, then read the per-app `CLAUDE.md`** for whatever you're touching. System-wide
-> architecture and the full data model live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
->
-> **Before implementing any request, follow [`docs/IMPLEMENTATION_GUIDE.md`](docs/IMPLEMENTATION_GUIDE.md)** —
-> classify the request, locate the files, plan the vertical slice, then ripple backend-first across all
-> platforms. It exists to stop random edits and half-rippled features.
+> **Read [`STATUS.md`](STATUS.md) first** — what is live, what is pending, open decisions. Keep it
+> current: when you finish something, update it in the same commit.
+
+## What this repo is (and is not)
+
+- It is a **clone** of Horae (horae.ca, Sergiu Tigan's multi-tenant SaaS) taken on **2026-10-22**,
+  turned into a **single-organization deployment** for Acadeea on its own server, domains and apps.
+- It is **NOT** Horae. Horae.ca keeps running separately (its own repo, servers, apps). **Never**
+  point anything here at `*.horae.ca`, and never change Horae from here. Fixes made here are not
+  synced to Horae automatically, and vice versa (port by hand if both need it).
+- The code still carries Horae names internally (Swift module/target `Horae`, Kotlin package
+  `com.horae.app`, npm scope `@horae/*`, `HoraeTheme`, …). That is intentional — renaming would be
+  a huge risky diff. **Everything the user sees says "Acadeea"**; keep it that way.
+- The database still has the multi-tenant schema (`Organization`, `organizationId` everywhere). It
+  holds one active org, slug **`acadeea`** (the `demo` org is deactivated). Keep the tenant
+  scoping intact — it costs nothing and keeps the code identical to how it was built.
+
+## Live system
+
+| | |
+| --- | --- |
+| Web | https://app.acadeea.ro (Next.js, container `acadeea-web`) |
+| API | https://api.acadeea.ro — REST `/api/v1/*`, Swagger `/api/docs`, Socket.IO `/ws` |
+| Server | `root@152.53.246.168` — netcup VPS, **arm64**, Debian 13, 2 vCPU / 4 GB + 4 GB swap. SSH key only (password login disabled) |
+| iOS app | **Acadeea**, bundle `ro.acadeea.app`, App Store Connect app id `6825881291`, TestFlight group "Real Users" |
+| Android app | **Acadeea**, applicationId `ro.acadeea.app` (Google Play listing not created yet) |
+| DNS | `acadeea.ro` zone is at the client's hosting (activdesign / wdp-gazduire), not managed from here. `app` + `api` A records → `152.53.246.168` |
+
+Server layout (`/opt/acadeea`, compose project `acadeea-ro`, file `docker/docker-compose.acadeea-ro.yml`):
+`acadeea-api` (127.0.0.1:3001), `acadeea-web` (127.0.0.1:3010), `acadeea-postgres` (5434),
+`acadeea-redis` (6380), `acadeea-minio` (9002/9003) — **every port bound to 127.0.0.1** (Docker
+bypasses UFW; never publish on 0.0.0.0). nginx + Let's Encrypt in front (certbot timer renews).
+MinIO image is `pgsty/minio` (official `minio/minio` left Docker Hub and the box is arm64).
+API logs: `journalctl CONTAINER_TAG=acadeea-api`. iOS push (APNs, key `HLW2KVPK4Z`, team
+`2C3LQ6B4B4`) is ON: the `.p8` lives in `/opt/acadeea-apns` on the server.
 
 ## Repo layout
 
 ```
-acadeea/
-├── apps/
-│   ├── api/        NestJS + Prisma + PostgreSQL backend — the single source of truth   → apps/api/CLAUDE.md
-│   ├── web/        Next.js 16 (App Router) admin/dashboard web app                      → apps/web/CLAUDE.md
-│   ├── ios/        Native SwiftUI app (iOS 17+)                                         → apps/ios/CLAUDE.md
-│   └── android/    Native Kotlin + Jetpack Compose app (early-stage)                    → apps/android/CLAUDE.md
-├── packages/
-│   ├── shared-types/   TS enums + error codes shared by api + web (@horae/shared-types) → packages/shared-types/CLAUDE.md
-│   ├── eslint-config/  Shared ESLint config
-│   └── tsconfig/       Shared TS configs
-├── docs/
-│   ├── ARCHITECTURE.md   System architecture + full data model / schema reference
-│   └── openapi/          Exported OpenAPI spec (apps/api `openapi:export`)
-└── docker/               Compose + service Dockerfiles
+apps/api        NestJS + Prisma + PostgreSQL — the single source of truth  → apps/api/CLAUDE.md
+apps/web        Next.js 16 (App Router)                                    → apps/web/CLAUDE.md
+apps/ios        SwiftUI (iOS 17+), project Acadeea.xcodeproj from project.yml → apps/ios/CLAUDE.md
+apps/android    Kotlin + Jetpack Compose                                    → apps/android/CLAUDE.md
+packages/       @horae/shared-types (enums + error codes), tsconfig, eslint-config
+docker/         Dockerfile (API), Dockerfile.web, docker-compose.acadeea-ro.yml, deploy-acadeea.sh
+docs/           ARCHITECTURE.md (data model + endpoint map), ENVIRONMENTS.md, design docs
 ```
 
-Two isolated environments (Prod = **Horae.ca**, Test = **Horae.ca Test**) span every layer — API, web, and
-both native apps. See [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md) for hosts, ports, deploy scripts,
-and how each client selects its environment.
+The per-app `CLAUDE.md` files were written for Horae; their technical content (architecture,
+conventions, gotchas) is accurate here. Where they mention Horae environments, test builds,
+`api.horae.ca`, Vercel or TestFlight "Horae Test" — that does not apply; this file and
+`docs/ENVIRONMENTS.md` win.
 
-> ⚠️ **Branch flow (release branches + PRs, since 2026-07-03 evening):** day-to-day work lands on
-> a **`release/<x.y.z>`** branch (one per upcoming version, e.g. `release/1.2.0`; bump with
-> `scripts/bump-version.sh` + extend the changelog entry there). Nothing merges anywhere until the
-> user says so:
->
-> - **"deploy the new version"** → open a PR **`release/<x.y.z>` → `dev`**, merge it; `dev`
->   auto-deploys to **Horae.ca Test** (API via `deploy-test.sh`, web via the Vercel `horae-test`
->   project tracking `dev`). Then start the next `release/…` branch from `dev`.
-> - **"deploy prod"** → open a PR **`dev` → `main`** whose body aggregates, nicely formatted, the
->   changelog entries (from `apps/api/src/modules/changelog/changelog.data.ts`) of every version
->   included since the last prod release; merge it. `main` auto-deploys to prod (Horae.ca).
->
-> The `pre-push` hook blocks direct main pushes — main only advances by merging tested dev via PR.
-> Urgent prod hotfixes: fix on a `release/x.y.z+1` patch branch → PR to dev, verify on test, then
-> PR dev → main immediately. The old "work directly on dev" and dual-push rules are retired.
+## Standalone (single-org) mode — how the Acadeea branding works
 
-Tooling: **pnpm** workspaces (`pnpm-workspace.yaml`) + **Turborepo** (`turbo.json`). Conventional
-Commits enforced via commitlint + husky; prettier on commit via lint-staged. The native apps
-(ios, android) are NOT part of the pnpm/turbo graph — build them with their native toolchains.
+| Layer | Switch | Effect |
+| --- | --- | --- |
+| Web | `NEXT_PUBLIC_STANDALONE_ORG=acadeea`, `NEXT_PUBLIC_BRAND_NAME=Acadeea` (build args in the compose file; `apps/web/src/lib/brand.ts`) | every host = the acadeea org: no marketing landing, no apex→subdomain handoff, no legacy banner; "Horae" copy → "Acadeea"; Google/Apple buttons hidden (no client ids) |
+| API | `BRAND_NAME=Acadeea` (compose env) | email subjects/copy; `CORS_ORIGINS`/`FRONTEND_URL` = `https://app.acadeea.ro`, `BASE_DOMAIN` empty |
+| iOS | Info.plist `API_BASE_URL`, `BRAND_NAME`, `ORG_SLUG` (set in `apps/ios/project.yml`, read by `AppConfig`) | api.acadeea.ro; brand name; public branding fetched before login (logo + accent on the splash); login form ON the splash; no Apple/Google sign-in |
+| Android | `BuildConfig.BASE_URL`, `BRAND_NAME`, `ORG_SLUG` (single `prod` flavor in `app/build.gradle.kts`) | same as iOS (logo on the splash via Coil, public branding before login) |
+
+There is **no test environment** — one server, one app per platform. Try risky things locally
+(`pnpm dev` + local Postgres) or in the iOS Simulator / Android emulator before deploying.
 
 ## How the pieces talk
 
-```
-                ┌──────────── REST /api/v1/* (JWT Bearer) ───────────┐
-                │              WebSocket /ws (Socket.IO)              │
-   ┌─────────┐  │   ┌─────────┐   ┌─────────┐   ┌──────────────┐     │
-   │  web    │──┤   │  iOS    │   │ Android │   │ eBriza /     │     │
-   │ Next.js │  │   │ SwiftUI │   │ Compose │   │ WooCommerce  │─────┘ (webhooks → external orders)
-   └─────────┘  │   └─────────┘   └─────────┘   └──────────────┘
-                ▼
-        ┌───────────────┐      ┌──────────────┐
-        │  apps/api     │──────│  PostgreSQL  │
-        │  NestJS       │      └──────────────┘
-        │               │──────┌──────────────┐
-        └───────────────┘      │ Redis, S3,   │
-                               │ SMTP         │
-                               └──────────────┘
-```
+- All clients are thin over the API: REST `/api/v1/*` (JSON, JWT RS256 Bearer, refresh-token
+  rotation: access 12h, refresh 30d, multi-device) + Socket.IO `/ws`. No shared client code — each
+  client re-implements DTOs and its permission map against the same contract.
+- `POST /auth/login` → `{accessToken, refreshToken, user, organization}`; on `401` call
+  `POST /auth/refresh` once (single-flight); refresh failure → logout.
+- Authorization is CASL (action × subject) from DB-defined roles (`apps/api/src/modules/roles/
+  role-definitions.ts`). Role slugs: `administrator`, `sef-cofetar`, `cofetar`, `gestionar`,
+  `sofer`, `user`. The `@horae/shared-types` `UserRole` enum + client permission maps are legacy and
+  can drift — check abilities, not role names.
+- WooCommerce orders arrive through a **10-minute poll** of the shop (no webhook secret is
+  configured, so Woo webhooks are not used). eBriza sends nothing today.
 
-- **All four clients are thin** over the API. There is no shared business logic across clients —
-  each re-implements its own DTOs/models and permission map against the same REST contract.
-- **Contract:** REST under `/api/v1/*`, JSON, JWT (RS256) Bearer auth with refresh-token rotation.
-  Real-time pushes over Socket.IO namespace `/ws`. See `docs/ARCHITECTURE.md` for the endpoint map.
-- **Auth is identical everywhere:** `POST /auth/login` → `{accessToken, refreshToken, user, organization,
-handoffCode?}` (the `organization` block carries white-label branding; `handoffCode` is the single-use
-  apex→subdomain session transfer, present on login only); access
-  token in `Authorization: Bearer`; on `401` call `POST /auth/refresh` (single-flight — server rotates
-  refresh tokens); on refresh failure, log out. Access 12h / refresh 30d, **multi-device**. Emails are
-  lowercased server-side. Password reset / forgot-password, 5-fail account lockout, and admin
-  reactivation (emails a set-password link) all flow through `apps/api` `modules/password`; the emailed
-  links open the **web** `/reset-password` page. Removed (don't re-add): **task dependencies** and
-  **task templates**. Stock items (`RawMaterial`/`Consumable`) carry a nullable admin `category`
-  (null = "Misc") from the same list as recipe categories.
-- **Authorization is CASL-based** (action × subject). The backend computes abilities from
-  **dynamic, DB-defined roles**. Each client ALSO keeps its own permission map to hide UI — those
-  maps can drift from the backend (see the role warning below).
-
-## Multi-tenancy (Horae)
-
-Every tenant is an **Organization** row (`slug` unique, `isActive`, white-label branding). The API is
-**fully org-scoped**: ~22 Prisma models carry `organizationId`, and a tenant Prisma client extension
-(`apps/api/src/prisma/tenant.extension.ts`) auto-injects it into reads and stamps it on writes, driven
-by request-scoped `AsyncLocalStorage` (`tenant-context.ts`). Per-tenant uniques replace the old globals
-(`Order.orderNumber`, `Location.name`, `Role` slug/name, category configs, document serials are unique
-**per org**). Enforcement level is the `TENANT_ENFORCEMENT` env (`warn` default | `strict` | `off`).
-
-- **JWT carries `organizationId` + `orgSlug`.** Tokens minted before multi-tenancy are rejected with
-  `401` → clients refresh (or, if refresh fails, re-login). WebSocket rooms are org-scoped
-  (`org:<id>`, `org:<id>:role:<slug>`); old tokens can't connect.
-- **Web is host-routed:** the marketing landing lives on the apex (`horae.ca`); each org's app on
-  `<slug>.horae.ca` (test env: `test.horae.ca` / `*.test.horae.ca`; legacy `app.acadeea.ro` is aliased
-  via `NEXT_PUBLIC_LEGACY_HOSTS`). Login on the apex mints a single-use **handoff code** that transfers
-  the session to the org subdomain (`POST /auth/handoff/redeem`).
-- **Org provisioning** is platform-operator only (`PLATFORM_ADMIN_EMAILS` env, `PlatformAdminGuard`):
-  `POST /api/v1/organizations` clones the standard role set, seeds unit conversions + a system category,
-  and emails the first admin an invitation. Role/slug definitions are shared in
-  `apps/api/src/modules/roles/role-definitions.ts` (used by both provisioning and the seed).
-- **Deploy runs Prisma migrations** (`prisma migrate deploy`), NOT the old destructive `db push
---accept-data-loss`. Each live env was baselined once — see `docker/MIGRATION_BASELINE.md`.
-
-## ⚠️ Roles: dynamic in the backend, hardcoded (and stale) in clients
-
-The standard role set is defined once in `apps/api/src/modules/roles/role-definitions.ts`
-(`ROLE_DEFINITIONS`) and cloned **per organization** into the DB (`Role` + `RolePermission`) by both
-the seed and org provisioning. Current slugs: `administrator`, `sef-cofetar`, `cofetar`, `gestionar`,
-`sofer`, `user`. Admin short-circuits to `manage all`. Roles are now per-tenant, so slugs are unique
-per org, not globally.
-
-The `@horae/shared-types` `UserRole` enum and the web/android hardcoded permission maps still list
-an **older role set** (`SEF_LABORATOR`, `SEF_EVENIMENTE`, `PATISER`, `AJUTOR_COFETAR`, `MAGAZIONER`).
-Treat the **DB/seed roles as authoritative**; the enum is legacy. Don't add new authorization logic
-keyed off the shared-types enum — check abilities, not role names.
-
-## Common commands (from repo root)
+## Common commands
 
 ```bash
-pnpm install          # install all JS workspaces
-pnpm dev              # turbo dev (runs api + web dev servers)
-pnpm build            # turbo build
-pnpm lint             # turbo lint
-pnpm test             # turbo test
-pnpm format           # prettier across the repo
+pnpm install && pnpm dev                       # api + web locally
+pnpm --filter @horae/api build|test|lint       # backend
+pnpm --filter web build|test|lint              # web
+./docker/deploy-acadeea.sh                     # deploy api + web to the server (needs docker/.env.acadeea)
 ```
 
-Backend-only (run in `apps/api`, or `pnpm --filter @horae/api ...`): `prisma:migrate`,
-`prisma:generate`, `prisma:seed`, `openapi:export`. Native apps build via Xcode (`apps/ios`) and
-Gradle (`apps/android`) — see their `CLAUDE.md`.
+iOS: `cd apps/ios && xcodegen generate` then build scheme **Acadeea** (`Acadeea.xcodeproj`). After
+`xcodegen`, if SPM complains about a missing `Package.resolved`, keep the committed one under
+`Acadeea.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/`.
+Android: `cd apps/android && ./gradlew assembleProdDebug` (JDK 17; `assembleProdRelease` needs the
+signing config — see `apps/android/CLAUDE.md` top section).
 
-**Versioning & changelog.** Semver, single source = repo-root `VERSION`; bump with
-`scripts/bump-version.sh <x.y.z>` (propagates to iOS `project.yml` + regenerates the Xcode
-project, android `versionName`, web/api `package.json`). Minor for feature batches, patch for
-fixes — bump on `dev` per batch; merging to main releases that version. The user-facing changelog
-(Romanian, curated — NOT commit messages) lives in
-`apps/api/src/modules/changelog/changelog.data.ts`, served by public `GET /api/v1/changelog`,
-rendered at web `/changelog` and iOS Settings → "Noutăți" + a one-time "Ce e nou" popup after
-update (all three shown only on the test environment). When a feature batch lands on dev, extend
-the current version's entry.
+## Conventions (unchanged from Horae)
 
-## Cross-cutting conventions
-
-- **Romanian domain language.** Enum values and many status names are Romanian
-  (`DE_FACUT`, `IN_LUCRU`, `FINALIZAT`, `NOUA`, `IN_TRANZIT`, `LIVRATA`, `INTRARE`, `IESIRE_PRODUCTIE`,
-  `DEPOZIT`, `FRIGIDER`...). User-facing strings are Romanian; keep them so.
-- **The API is the source of truth for the data model.** When a model/enum/endpoint changes in
-  `apps/api`, the change must be mirrored by hand into web (`src/lib/types.ts`), iOS
-  (`Features/*/Models` + `Core/Theme/Enums.swift`), android (`data/remote/dto` + `domain/model/Enums.kt`),
-  and — if it's a shared enum/error code — into `packages/shared-types`.
-- **Error codes** are centralized in `packages/shared-types/src/error-codes.ts` and re-implemented in
-  each client's error mapper (e.g. iOS `APIError.swift`). Keep them in sync.
-- **Build gate:** every platform you touch must build green before the work is done. On a red build,
-  fix the cause and rebuild in a loop until it passes (iOS: `xcodebuild`; android: `./gradlew
-assembleDebug`; web/api: `pnpm --filter <x> build`). Never report a change complete on a red build.
-  Details in [`docs/IMPLEMENTATION_GUIDE.md`](docs/IMPLEMENTATION_GUIDE.md) Phase 4.
-- When you finish a change, update the affected `CLAUDE.md` (and `docs/ARCHITECTURE.md` if the model
-  or cross-app contract changed).
-  </content>
-  </invoke>
+- **Romanian domain language** — enum values (`DE_FACUT`, `IN_LUCRU`, `FINALIZAT`, `NOUA`,
+  `LIVRATA`, …) and all user-facing text are Romanian.
+- **The API is the source of truth.** A model/enum/endpoint change in `apps/api` must be mirrored
+  by hand into web (`src/lib/types.ts`), iOS (`Features/*/Models`, `Core/Theme/Enums.swift`),
+  android (`data/remote/dto`, `domain/model/Enums.kt`) and, for shared enums/error codes,
+  `packages/shared-types`.
+- **Schema changes ship as Prisma migrations** (`prisma migrate dev` locally); deploy runs
+  `prisma migrate deploy`. Never `db push` against the live DB.
+- **Build gate:** every platform you touch must build green before you call it done (`pnpm --filter
+  <x> build`, `xcodebuild`, `./gradlew assembleProdDebug`). UI changes: look at them in the
+  Simulator / emulator, not only "it compiles".
+- Conventional Commits (`feat(web): …`, `fix(api): …`, `feat(mobile-ios): …`).
+- Never commit secrets: `docker/.env.acadeea`, `apps/ios/Config/Observability.xcconfig`,
+  `apps/android/local.properties`, keystores, `.p8` keys all stay out of git (they are ignored).
+- When you finish a change: update `STATUS.md`, and the affected `CLAUDE.md` if behaviour changed.

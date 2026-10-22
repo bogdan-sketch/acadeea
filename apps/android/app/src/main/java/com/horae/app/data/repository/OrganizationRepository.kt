@@ -29,6 +29,15 @@ class OrganizationRepository @Inject constructor(
         brandingManager.apply(branding)
     }
 
+    /**
+     * Logged out: this build belongs to ONE organization (BuildConfig.ORG_SLUG), so its public
+     * branding (logo) is applied before login — a fresh install shows the org's splash/login.
+     */
+    suspend fun loadPublicBranding() {
+        val slug = com.horae.app.BuildConfig.ORG_SLUG.ifBlank { return }
+        brandingManager.apply(organizationApi.getBySlug(slug))
+    }
+
     suspend fun loadBranding() {
         Timber.d("OrganizationRepository: loadBranding")
         val branding = organizationApi.get()
