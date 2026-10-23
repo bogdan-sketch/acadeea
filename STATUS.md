@@ -16,15 +16,16 @@ Last updated: **2026-10-23**. Update this file whenever something below changes.
 
 ## Social login (Apple / Google)
 
-Uses the SAME OAuth clients as Horae (Google Cloud project `1031952890842`, Apple team
-`2C3LQ6B4B4`) ⇒ same Google/Apple user ids, so accounts already linked on Horae keep working.
-Existing links: 1 Apple + 2 Google users (all also have a password).
+Google user ids are global per Google account and Apple ids are per developer team (same team as
+Horae), so accounts already linked on Horae keep working here. Existing links: 1 Apple + 2 Google.
 
 | | Apple | Google |
 | --- | --- | --- |
-| iOS app | ON — capability on `ro.acadeea.app`; API `APPLE_AUDIENCES` has `ro.acadeea.app` | ON (since build 202610231208) — Horae's iOS client `…-vijstfl9…` (`GIDClientID` in `apps/ios/project.yml`). Not yet tried on a device; if Google refuses the bundle id, create an iOS client for `ro.acadeea.app` in the same project and swap the id (+ `GOOGLE_AUDIENCES`). |
-| Web | Button shown, **needs Apple portal config**: Services ID `ca.horae.signin` → Sign in with Apple → add domain `app.acadeea.ro` + return URL `https://app.acadeea.ro` | Button shown, **needs Google config**: web client `…-16dlcao6…` → Authorized JavaScript origins → add `https://app.acadeea.ro` (until then the console says "origin is not allowed") |
+| iOS app | ON — capability on `ro.acadeea.app`; API `APPLE_AUDIENCES` has `ro.acadeea.app` | ON (build 202610231219) — client "Acadeea iOS" `862059629533-vael7gbj…` (Google Cloud project `862059629533`), `GIDClientID` in `apps/ios/project.yml` |
+| Web | Button shown; currently Services ID `ca.horae.signin` → Apple answers "Invalid web redirect url" until a Services ID lists return URL `https://app.acadeea.ro`. Plan: new Services ID `ro.acadeea.signin` (domain `app.acadeea.ro`, return URL `https://app.acadeea.ro`), then swap `NEXT_PUBLIC_APPLE_SERVICES_ID` in the compose file + `APPLE_AUDIENCES` | ON — client "Acadeea Web" `862059629533-lc15fjiq…`, origin `https://app.acadeea.ro` (verified: no origin error) |
 | Android | — (the Android app never had social login) | — |
+
+API `GOOGLE_AUDIENCES` = the two Acadeea clients only (Horae's were removed).
 
 ## Pending / open
 

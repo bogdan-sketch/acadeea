@@ -29,14 +29,14 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1031952890842-vijstfl9rmv5vo21jr38ne3v6sle594c</string>
+				<string>com.googleusercontent.apps.862059629533-vael7gbj887v7jfgi85hd79h3grbc5nm</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>GIDClientID</key>
-	<string>1031952890842-vijstfl9rmv5vo21jr38ne3v6sle594c.apps.googleusercontent.com</string>
+	<string>862059629533-vael7gbj887v7jfgi85hd79h3grbc5nm.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>ORG_SLUG</key>

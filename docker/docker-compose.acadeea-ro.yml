@@ -176,10 +176,10 @@ services:
         NEXT_PUBLIC_API_URL: https://api.acadeea.ro
         NEXT_PUBLIC_STANDALONE_ORG: acadeea
         NEXT_PUBLIC_BRAND_NAME: Acadeea
-        # Social sign-in: Horae's prod web client / Services ID (same Google
-        # project + Apple team ⇒ same user ids). Need app.acadeea.ro allowed
-        # on both (Google: JS origin; Apple: domain + return URL).
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: 1031952890842-16dlcao6et702nklsqns102spnabndrb.apps.googleusercontent.com
+        # Social sign-in. Google: web client "Acadeea Web" (project 862059629533,
+        # origin https://app.acadeea.ro). Apple: Services ID (domain + return URL
+        # https://app.acadeea.ro configured in the Apple Developer portal).
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: 862059629533-lc15fjiq9sj5begbpbm391uanasaff8r.apps.googleusercontent.com
         NEXT_PUBLIC_APPLE_SERVICES_ID: ca.horae.signin
     container_name: acadeea-web
     restart: always
