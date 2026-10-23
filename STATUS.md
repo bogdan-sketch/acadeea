@@ -39,24 +39,27 @@ API `GOOGLE_AUDIENCES` = the two Acadeea clients only (Horae's were removed).
 1. **Google Play Console** — Bogdan creates the "Acadeea" app (package `ro.acadeea.app`, from
    Sergiu's Play developer account). Then upload an `.aab` (`./gradlew bundleProdRelease`) signed
    with the Acadeea upload key, and enroll in Play App Signing.
-2. **Email sender** — mails go out through Resend as `Acadeea <noreply@horae.ca>` (Resend only
+2. **SMTP port** — netcup blocks outbound 465/587 on this server, so `SMTP_PORT=2587` (Resend
+   STARTTLS alternate port) in `docker/.env.acadeea`. Before 2026-10-23 16:47 every email timed out
+   (forgot-password hung; 3 invitations to acadeeabakery@gmail.com failed — re-send them).
+3. **Email sender** — mails go out through Resend as `Acadeea <noreply@horae.ca>` (Resend only
    allows verified domains). To send from `@acadeea.ro`, verify acadeea.ro in Resend (DNS records
    at the client's hosting) and change `SMTP_FROM` in `docker/.env.acadeea`.
-3. **Old copy on Horae** — the `acadeea` org still exists on Horae prod (left untouched on
+4. **Old copy on Horae** — the `acadeea` org still exists on Horae prod (left untouched on
    purpose) and that server still polls the same WooCommerce shop into it. It is an archive, BUT
    staff kept opening the "Horae" app after the cutover (6 people logged in there on 22–23.10) and
    3 stock receptions were entered ONLY there on 23.10 ~10:45 by Andreea Filpisan (Rom 1,4 kg,
    Ouă 30 kg, Gălbenuș 18 kg) — they must be re-entered in Acadeea. Decide with Sergiu whether to
    deactivate the org on Horae so nobody can work in the wrong system.
-4. **Android R8/minify is OFF** for release (`isMinifyEnabled = false`) — it was never exercised
+5. **Android R8/minify is OFF** for release (`isMinifyEnabled = false`) — it was never exercised
    (missing keep rules for Tink/Moshi/Retrofit). Turning it on needs proguard rules + a full test.
-5. **App icon** is provisional (white Acadeea wordmark on #D4527B). Replace
+6. **App icon** is provisional (white Acadeea wordmark on #D4527B). Replace
    `apps/ios/Horae/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png` (1024×1024) and the
    Android `drawable-*/ic_launcher_foreground.png` + `mipmap-*/ic_launcher*.png` when a final icon
    exists.
-6. **Backups** — the API writes a daily `pg_dump` to the `acadeea-db-backups` volume on the same
+7. **Backups** — the API writes a daily `pg_dump` to the `acadeea-db-backups` volume on the same
    server. There is no off-server copy yet; add one (e.g. nightly rsync to another box).
-7. Changelog / "Ce e nou" screens are hidden (they were Horae test-only features).
+8. Changelog / "Ce e nou" screens are hidden (they were Horae test-only features).
 
 ## Who holds what
 

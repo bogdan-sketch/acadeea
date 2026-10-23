@@ -13,6 +13,11 @@ import { EmailService } from './email.service';
         transport: {
           host: config.get<string>('SMTP_HOST', 'localhost'),
           port: config.get<number>('SMTP_PORT', 587),
+          // Fail fast instead of hanging the request (and the client spinner) when
+          // the SMTP port is filtered — netcup blocks 465/587, Acadeea uses 2587.
+          connectionTimeout: 10_000,
+          greetingTimeout: 10_000,
+          socketTimeout: 20_000,
           auth: {
             user: config.get<string>('SMTP_USER', ''),
             pass: config.get<string>('SMTP_PASS', ''),
