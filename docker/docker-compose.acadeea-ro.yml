@@ -180,7 +180,7 @@ services:
         # origin https://app.acadeea.ro). Apple: Services ID (domain + return URL
         # https://app.acadeea.ro configured in the Apple Developer portal).
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: 862059629533-lc15fjiq9sj5begbpbm391uanasaff8r.apps.googleusercontent.com
-        NEXT_PUBLIC_APPLE_SERVICES_ID: ca.horae.signin
+        NEXT_PUBLIC_APPLE_SERVICES_ID: ro.acadeea.signin
     container_name: acadeea-web
     restart: always
     logging:

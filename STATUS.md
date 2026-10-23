@@ -22,7 +22,7 @@ Horae), so accounts already linked on Horae keep working here. Existing links: 1
 | | Apple | Google |
 | --- | --- | --- |
 | iOS app | ON — capability on `ro.acadeea.app`; API `APPLE_AUDIENCES` has `ro.acadeea.app` | ON (build 202610231219) — client "Acadeea iOS" `862059629533-vael7gbj…` (Google Cloud project `862059629533`), `GIDClientID` in `apps/ios/project.yml` |
-| Web | Button shown; currently Services ID `ca.horae.signin` → Apple answers "Invalid web redirect url" until a Services ID lists return URL `https://app.acadeea.ro`. Plan: new Services ID `ro.acadeea.signin` (domain `app.acadeea.ro`, return URL `https://app.acadeea.ro`), then swap `NEXT_PUBLIC_APPLE_SERVICES_ID` in the compose file + `APPLE_AUDIENCES` | ON — client "Acadeea Web" `862059629533-lc15fjiq…`, origin `https://app.acadeea.ro` (verified: no origin error) |
+| Web | ON — Services ID `ro.acadeea.signin` (domain `app.acadeea.ro`, return URL `https://app.acadeea.ro`, primary App ID `ro.acadeea.app`); Apple's sheet says "sign in to Acadeea" (verified 2026-10-23) | ON — client "Acadeea Web" `862059629533-lc15fjiq…`, origin `https://app.acadeea.ro` (verified: no origin error) |
 | Android | — (the Android app never had social login) | — |
 
 API `GOOGLE_AUDIENCES` = the two Acadeea clients only (Horae's were removed).
