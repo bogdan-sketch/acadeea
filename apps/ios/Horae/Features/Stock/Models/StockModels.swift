@@ -671,3 +671,61 @@ struct RecipeLotResponse: Decodable, Identifiable, Sendable {
         return expiryDate.timeIntervalSinceNow <= 3 * 24 * 60 * 60
     }
 }
+
+// MARK: - Product traceability (GET /stock/traceability)
+
+/// Which stock item a traceability screen is about (exactly one id is sent).
+enum TraceabilityItemKind: String, Hashable, Sendable {
+    case rawMaterial = "rawMaterialId"
+    case consumable = "consumableId"
+    case recipe = "recipeId"
+}
+
+struct StockTraceability: Decodable, Sendable {
+    struct Item: Decodable, Sendable {
+        let kind: String
+        let id: String
+        let name: String
+        let unit: String
+    }
+
+    struct Totals: Decodable, Sendable {
+        let consumed: Double
+        let reserved: Double
+        let produced: Double
+        let taskCount: Int
+    }
+
+    let item: Item
+    let totals: Totals
+    let rows: [TraceabilityRow]
+}
+
+struct TraceabilityRow: Decodable, Sendable, Identifiable {
+    /// CONSUMED (task finalized) · RESERVED (task not finalized yet) · PRODUCED (recipes).
+    enum Kind: String, Decodable, Sendable {
+        case consumed = "CONSUMED"
+        case reserved = "RESERVED"
+        case produced = "PRODUCED"
+    }
+
+    struct Lot: Decodable, Sendable, Hashable {
+        let lotNumber: String?
+        let quantity: Double
+        let supplierInvoice: String?
+    }
+
+    let kind: Kind
+    let date: Date
+    let taskId: String
+    let taskName: String
+    let recipeName: String
+    let taskStatus: String
+    let quantity: Double
+    let unit: String
+    let locationName: String?
+    let assignedToName: String?
+    let lots: [Lot]
+
+    var id: String { "\(taskId):\(kind.rawValue)" }
+}

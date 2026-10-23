@@ -363,6 +363,14 @@ webhookSecret } }` (config is replaced wholesale — resend the keys). No secret
   (in-memory filter+paginate — Prisma can't compare two columns) and the row `status` in both
   toDto mappers all use it, and the ad-hoc transfer finalize rewrites the stored column with it.
   The stored `status` column can still be stale elsewhere — never trust it for new reads.
+- **Product traceability (`GET /stock/traceability`, Acadeea).** Exactly one of `rawMaterialId` /
+  `consumableId` / `recipeId`, optional `from`/`to` (ISO, inclusive, on the row date), gated `read
+  StockMovement` (`services/stock-traceability.service.ts`). Rows (newest first, one per task × kind):
+  `CONSUMED` = the item's `IESIRE_PRODUCTIE` movements tied to a task (summed; raw materials carry the
+  FIFO intake lots from `LotConsumption`, float dust < 0.0005 skipped), `RESERVED` = live reservations
+  (not fulfilled/released; date = task.plannedDate ?? reservation time), `PRODUCED` (recipes only) =
+  `INTRARE_PRODUCTIE`. Plus `item` + `totals`. Web `/stock/traceability?…` and iOS
+  `ProductTraceabilityView` ("Trasabilitate" button on raw material / consumable / recipe pages).
 - **Item availability.** `GET /stock/item-availability?rawMaterialId=|consumableId=|recipeId=`
   (exactly one, gated `read StockMovement`) returns a one-item snapshot: `totalQuantity`,
   per-location `locations[] {locationId, locationName, quantity, reservedCount}` (empty for

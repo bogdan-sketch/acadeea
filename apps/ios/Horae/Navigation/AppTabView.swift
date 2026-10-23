@@ -391,6 +391,8 @@ struct AppTabView: View {
         case .testConsumption: TestConsumptionView()
         case .requirementsPlan: RequirementsPlanView()
         case .stockSearch: StockSearchView()
+        case .productTraceability(let kind, let id, let name):
+            ProductTraceabilityView(kind: kind, itemId: id, itemName: name)
         case .suppliers: SuppliersListView()
         case .salesDeductions: SalesDeductionListView()
         case .salesDeductionDetail(let id): SalesDeductionDetailView(deductionId: id)

@@ -39,6 +39,8 @@ enum Route: Hashable {
     case suppliers
     case salesDeductions
     case salesDeductionDetail(id: String)
+    /// "Trasabilitate": every task that used (or produced) one stock item.
+    case productTraceability(kind: TraceabilityItemKind, id: String, name: String)
 
     // Users
     case userList

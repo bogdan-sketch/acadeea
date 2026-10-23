@@ -156,6 +156,7 @@
 		810230EC5BB2556D3D51CFCE /* ProducerField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F6992A708BEA73CC187FBEF /* ProducerField.swift */; };
 		83E580343FAFE09EAA3947B5 /* LinkedAccountsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED5BFAEED3C294B1AC8660F /* LinkedAccountsViewModel.swift */; };
 		85810F065DA4C6853EAB8622 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C0A383F9AAE9AC295AD920 /* LoginView.swift */; };
+		86307D332BC1FFE18EBF338E /* ProductTraceabilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE68DFE6AD98EF55A91EBC21 /* ProductTraceabilityView.swift */; };
 		86A5EEABD448472BBE2393B4 /* SchemePickerGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636FA75F5ED405CA4B2D5369 /* SchemePickerGrid.swift */; };
 		879178898DC536C4E5A6C53A /* OrderStatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FC5EC838D4E015CE95C80CA /* OrderStatusBadge.swift */; };
 		8875E2536505B0516BE59E9F /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = F07F441A130856616042CDD5 /* Sentry */; };
@@ -607,6 +608,7 @@
 		EAADA7FBCEAF3221834ECEF0 /* LocationUsersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationUsersView.swift; sourceTree = "<group>"; };
 		ED1C974985182DE6A0C63657 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		ED2FC8F64246958C9122ED39 /* SupplierService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplierService.swift; sourceTree = "<group>"; };
+		EE68DFE6AD98EF55A91EBC21 /* ProductTraceabilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductTraceabilityView.swift; sourceTree = "<group>"; };
 		EFE014646AB2DB45B9F24885 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		F1A253B956A476582735043D /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F1EFB44BDFB998737EC8C661 /* RawMaterialListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawMaterialListView.swift; sourceTree = "<group>"; };
@@ -1665,6 +1667,7 @@
 				7DCE6D2C5912D8D109ABD2EF /* LowStockAlertBanner.swift */,
 				1AC29FD5E7F6C95584E963D4 /* NutritionViews.swift */,
 				850561D57D6DD1BCE3991056 /* ProductListView.swift */,
+				EE68DFE6AD98EF55A91EBC21 /* ProductTraceabilityView.swift */,
 				046851294AF48A3C17A58DE1 /* RawMaterialDetailView.swift */,
 				F1EFB44BDFB998737EC8C661 /* RawMaterialListView.swift */,
 				F2CB2FD113572BF19DB424E3 /* RecipeStockDetailView.swift */,
@@ -2062,6 +2065,7 @@
 				810230EC5BB2556D3D51CFCE /* ProducerField.swift in Sources */,
 				2D32E53675F3704A95A30450 /* ProductListView.swift in Sources */,
 				65CCE7BA3FB3270136DDFD6D /* ProductListViewModel.swift in Sources */,
+				86307D332BC1FFE18EBF338E /* ProductTraceabilityView.swift in Sources */,
 				70265A1A05EFA81230FF3280 /* ProductionCalendarView.swift in Sources */,
 				0B0B8D013E73068C198564D9 /* ProductionCalendarViewModel.swift in Sources */,
 				2D3D8EDB2430C9933FF92EA3 /* ProfileAvatarEditor.swift in Sources */,

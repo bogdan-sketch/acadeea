@@ -193,6 +193,7 @@ struct RecipeStockDetailView: View {
 
     private var permissions: PermissionManager { AuthManager.shared.permissionManager }
     private var canTransfer: Bool { permissions.can(.create, .StockTransfer) }
+    private var canTrace: Bool { permissions.can(.read, .StockMovement) }
     private var canDeductSales: Bool {
         SalesDeductionFeature.shared.isAvailable(permissions) && permissions.can(.create, .StockMovement)
     }
@@ -207,8 +208,13 @@ struct RecipeStockDetailView: View {
         Group {
             if let recipe = viewModel.recipe {
                 List {
-                    if canTransfer || canDeductSales {
+                    if canTransfer || canDeductSales || canTrace {
                         StockQuickActionsSection {
+                            if canTrace {
+                                StockQuickActionButton(label: "Trasabilitate", icon: "point.3.connected.trianglepath.dotted") {
+                                    navigator.push(.productTraceability(kind: .recipe, id: recipeId, name: recipe.name))
+                                }
+                            }
                             if canTransfer {
                                 StockQuickActionButton(label: "Transfer", icon: "arrow.left.arrow.right.circle.fill") {
                                     showTransfer = true

@@ -107,7 +107,7 @@ extension Route {
         case .taskList, .productionCalendar, .stockHistory,
              .recipeList, .recipeYieldHistory, .priceHistory,
              .rawMaterialList, .consumableList, .stockMovements, .expiryTracking,
-             .stockSearch, .suppliers, .salesDeductions,
+             .stockSearch, .suppliers, .salesDeductions, .productTraceability,
              .userList, .roleList,
              .orderList, .orderStats, .orderCalendar,
              .categoryManagement,

@@ -144,6 +144,13 @@ struct ConsumableDetailView: View {
                 HQuickActionChip("Ajustare", systemImage: "slider.horizontal.3", help: "Corectează stocul la valoarea reală") {
                     showAdjust = true
                 }
+                if AuthManager.shared.permissionManager.can(.read, .StockMovement) {
+                    HQuickActionChip(
+                        "Trasabilitate", systemImage: "point.3.connected.trianglepath.dotted",
+                        help: "Toate taskurile care au folosit acest consumabil",
+                        destination: .productTraceability(
+                            kind: .consumable, id: consumableId, name: consumable?.title ?? "Consumabil"))
+                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 2)

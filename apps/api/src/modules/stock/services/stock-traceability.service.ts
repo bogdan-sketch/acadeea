@@ -123,6 +123,8 @@ export class StockTraceabilityService {
         },
       });
       for (const c of consumptions) {
+        // FIFO splits leave float dust (1e-18 kg) — not a real lot draw.
+        if (Number(c.quantity) < 0.0005) continue;
         const list = lotsByTask.get(c.taskId) ?? [];
         list.push({
           lotNumber: c.stockLot.lotNumber,

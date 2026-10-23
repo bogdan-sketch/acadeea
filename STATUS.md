@@ -14,6 +14,13 @@ Last updated: **2026-10-23**. Update this file whenever something below changes.
 - **Android** "Acadeea" 1.0.0 (versionCode 1): signed release APK built and side-loadable; not on
   Google Play yet.
 
+## Features added on Acadeea (not in Horae)
+
+- **Trasabilitate produs** (2026-10-23): button on raw material, consumable and recipe pages (web +
+  iOS; not Android) → every task that used the item (and, for recipes, the tasks that produced it),
+  with date, quantity, status, location, assignee, intake lots; period filters (Tot / 7 / 30 zile /
+  luna asta / interval) pinned on top. Web also filters by kind (Folosit / Rezervat / Produs).
+
 ## Social login (Apple / Google)
 
 Google user ids are global per Google account and Apple ids are per developer team (same team as

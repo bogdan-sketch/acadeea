@@ -324,6 +324,13 @@ struct RawMaterialDetailView: View {
                         showAdjust = true
                     }
                 }
+                if permissions.can(.read, .StockMovement) {
+                    HQuickActionChip(
+                        "Trasabilitate", systemImage: "point.3.connected.trianglepath.dotted",
+                        help: "Toate taskurile care au folosit această materie primă",
+                        destination: .productTraceability(
+                            kind: .rawMaterial, id: materialId, name: material?.title ?? "Materie primă"))
+                }
                 if canUpdate {
                     HQuickActionChip("Editează", systemImage: "pencil", help: "Denumire, categorie, furnizor, unitate, stoc minim") {
                         showEdit = true

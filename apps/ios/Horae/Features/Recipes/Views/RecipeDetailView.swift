@@ -224,6 +224,11 @@ struct RecipeDetailView: View {
             HIconButton("printer", label: "Tipărește fișa rețetei") {
                 HTMLPrinter.present(html: RecipePrintSheet.html(recipe, scale: scale), jobName: recipe.name)
             }
+            if permissions.can(.read, .StockMovement) {
+                HIconButton("point.3.connected.trianglepath.dotted", label: "Trasabilitate") {
+                    navigator.push(.productTraceability(kind: .recipe, id: recipe.id, name: recipe.name))
+                }
+            }
             if permissions.can(.create, .Task) {
                 Button {
                     navigator.push(.taskCreateFromRecipe(recipeId: recipe.id))

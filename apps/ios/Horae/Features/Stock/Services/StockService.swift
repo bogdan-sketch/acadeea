@@ -348,6 +348,28 @@ actor StockService {
         return try decoder.decode(StockItemAvailability.self, from: data)
     }
 
+    // MARK: - Product traceability
+
+    /// Every task that used (or produced) one stock item, newest first;
+    /// `from`/`to` bound the row date (inclusive).
+    func fetchTraceability(
+        kind: TraceabilityItemKind,
+        id: String,
+        from: Date? = nil,
+        to: Date? = nil
+    ) async throws -> StockTraceability {
+        var components = URLComponents(string: "\(APIClient.baseURL)/api/v1/stock/traceability")!
+        var queryItems = [URLQueryItem(name: kind.rawValue, value: id)]
+        let iso = ISO8601DateFormatter()
+        if let from { queryItems.append(URLQueryItem(name: "from", value: iso.string(from: from))) }
+        if let to { queryItems.append(URLQueryItem(name: "to", value: iso.string(from: to))) }
+        components.queryItems = queryItems
+        let request = authenticatedRequest(url: components.url!, method: "GET")
+        let (data, response) = try await APIClient.authenticatedData(for: request)
+        try validateResponse(response, data: data)
+        return try decoder.decode(StockTraceability.self, from: data)
+    }
+
     // MARK: - Stats
 
     func fetchStockStats() async throws -> StockStatsResponse {
