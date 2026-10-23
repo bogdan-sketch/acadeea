@@ -10,6 +10,7 @@ import { StockService } from './stock.service';
 import { StockReservationService } from './services/stock-reservation.service';
 import { RequirementsPlanService } from './services/requirements-plan.service';
 import { StockImportExportService } from './services/stock-import-export.service';
+import { StockTraceabilityService } from './services/stock-traceability.service';
 import { StockReviewService } from './services/stock-review.service';
 
 @Module({
@@ -21,6 +22,7 @@ import { StockReviewService } from './services/stock-review.service';
     RequirementsPlanService,
     StockImportExportService,
     StockReviewService,
+    StockTraceabilityService,
   ],
   exports: [StockService, StockReservationService, RequirementsPlanService],
 })

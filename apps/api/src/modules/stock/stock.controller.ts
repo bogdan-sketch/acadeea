@@ -59,6 +59,8 @@ import { RequirementsPlanService } from './services/requirements-plan.service';
 import { StockImportExportService } from './services/stock-import-export.service';
 import { StockReviewService } from './services/stock-review.service';
 import { StockReviewResultDto } from './dto/stock-review.dto';
+import { StockTraceabilityService } from './services/stock-traceability.service';
+import { StockTraceabilityDto, StockTraceabilityQueryDto } from './dto/stock-traceability.dto';
 
 @ApiTags('Stock')
 @ApiBearerAuth()
@@ -70,6 +72,7 @@ export class StockController {
     private readonly requirementsPlan: RequirementsPlanService,
     private readonly importExport: StockImportExportService,
     private readonly review: StockReviewService,
+    private readonly traceability: StockTraceabilityService,
   ) {}
 
   @Post('test-consumption')
@@ -301,6 +304,22 @@ export class StockController {
     @Query() query: ItemAvailabilityQueryDto,
   ): Promise<StockItemAvailabilityDto> {
     return this.stockService.getItemAvailability(query);
+  }
+
+  @Get('traceability')
+  @CheckPolicies((ability) => ability.can('read', 'StockMovement'))
+  @ApiOperation({
+    summary: 'Product traceability — every task that used (or produced) one stock item',
+    description:
+      'Exactly one of rawMaterialId / consumableId / recipeId. Rows: CONSUMED (finalized tasks, ' +
+      'with FIFO intake lots for raw materials), RESERVED (tasks not finalized yet) and, for ' +
+      'recipes, PRODUCED. Optional from/to (ISO) filter the row date. Newest first.',
+  })
+  @ApiOkResponse({ type: StockTraceabilityDto })
+  @ApiForbiddenResponse({ description: 'Insufficient permissions' })
+  @ApiNotFoundResponse({ description: 'Item not found' })
+  async getTraceability(@Query() query: StockTraceabilityQueryDto): Promise<StockTraceabilityDto> {
+    return this.traceability.getTraceability(query);
   }
 
   @Get('recipes')
