@@ -55,6 +55,7 @@ import {
   Check,
   Save,
   X,
+  Waypoints,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePermissions } from '@/contexts/auth-context';
@@ -286,6 +287,15 @@ export default function RawMaterialDetailPage() {
             label="Ajustare stoc"
             title="Corectează stocul la valoarea reală"
             onClick={() => setAdjustOpen(true)}
+          />
+        )}
+        {can('read', 'StockMovement') && (
+          <IconAction
+            icon={Waypoints}
+            word="Trasabilitate"
+            label="Trasabilitate"
+            title="Toate taskurile care au folosit materia primă"
+            href={`/stock/traceability?rawMaterialId=${id}`}
           />
         )}
         {can('update', 'RawMaterial') && (

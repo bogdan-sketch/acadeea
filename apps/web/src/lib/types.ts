@@ -1047,6 +1047,28 @@ export interface ItemPendingTransfer {
   unit: import('@horae/shared-types').UnitType;
 }
 
+/** "Trasabilitate produs" — GET /stock/traceability. */
+export type TraceabilityKind = 'CONSUMED' | 'RESERVED' | 'PRODUCED';
+export interface TraceabilityRow {
+  kind: TraceabilityKind;
+  /** ISO — consumption / production time; planned date for RESERVED. */
+  date: string;
+  taskId: string;
+  taskName: string;
+  recipeName: string;
+  taskStatus: TaskStatus;
+  quantity: number;
+  unit: string;
+  locationName: string | null;
+  assignedToName: string | null;
+  lots: { lotNumber: string | null; quantity: number; supplierInvoice: string | null }[];
+}
+export interface StockTraceability {
+  item: { kind: 'RAW_MATERIAL' | 'CONSUMABLE' | 'RECIPE'; id: string; name: string; unit: string };
+  totals: { consumed: number; reserved: number; produced: number; taskCount: number };
+  rows: TraceabilityRow[];
+}
+
 export interface StockItemAvailability {
   totalQuantity: number;
   reservedForTasks: number;

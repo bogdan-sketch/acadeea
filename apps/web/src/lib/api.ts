@@ -1019,6 +1019,16 @@ export const stock = {
       `/api/v1/stock/item-availability${buildQuery(params)}`,
     ),
 
+  // Every task that used (or produced) one item; from/to = ISO instants.
+  traceability: (params: {
+    rawMaterialId?: string;
+    consumableId?: string;
+    recipeId?: string;
+    from?: string;
+    to?: string;
+  }) =>
+    request<import('./types').StockTraceability>(`/api/v1/stock/traceability${buildQuery(params)}`),
+
   lowStock: () => request<import('./types').LowStockItem[]>('/api/v1/stock/low-stock'),
 
   expiring: (days = 30) =>

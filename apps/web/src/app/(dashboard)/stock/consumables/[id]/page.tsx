@@ -25,7 +25,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
-import { ArrowLeft, Loader2, PackagePlus, SlidersHorizontal, TrendingDown } from 'lucide-react';
+import {
+  ArrowLeft,
+  Loader2,
+  PackagePlus,
+  SlidersHorizontal,
+  TrendingDown,
+  Waypoints,
+} from 'lucide-react';
 import { BackLink } from '@/components/back-link';
 import { usePermissions } from '@/contexts/auth-context';
 import { format } from 'date-fns';
@@ -133,25 +140,36 @@ export default function ConsumableDetailPage() {
         )}
       </div>
 
-      {can('create', 'StockMovement') && (
-        <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-2.5">
+        {can('create', 'StockMovement') && (
+          <>
+            <IconAction
+              icon={PackagePlus}
+              word="Recepție"
+              tone="primary"
+              label="Recepție marfă"
+              title="Înregistrează o intrare în stoc pentru acest consumabil"
+              onClick={() => openDialog('INTRARE')}
+            />
+            <IconAction
+              icon={SlidersHorizontal}
+              word="Ajustare"
+              label="Ajustare stoc"
+              title="Corectează stocul la valoarea reală"
+              onClick={() => openDialog('AJUSTARE')}
+            />
+          </>
+        )}
+        {can('read', 'StockMovement') && (
           <IconAction
-            icon={PackagePlus}
-            word="Recepție"
-            tone="primary"
-            label="Recepție marfă"
-            title="Înregistrează o intrare în stoc pentru acest consumabil"
-            onClick={() => openDialog('INTRARE')}
+            icon={Waypoints}
+            word="Trasabilitate"
+            label="Trasabilitate"
+            title="Toate taskurile care au folosit consumabilul"
+            href={`/stock/traceability?consumableId=${id}`}
           />
-          <IconAction
-            icon={SlidersHorizontal}
-            word="Ajustare"
-            label="Ajustare stoc"
-            title="Corectează stocul la valoarea reală"
-            onClick={() => openDialog('AJUSTARE')}
-          />
-        </div>
-      )}
+        )}
+      </div>
 
       <StockAdjustmentDialog
         open={dialogOpen}

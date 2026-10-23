@@ -37,6 +37,7 @@ import {
   Printer,
   Send,
   Trash2,
+  Waypoints,
 } from 'lucide-react';
 import { usePermissions } from '@/contexts/auth-context';
 import { RecipeNutritionCard, useNutritionEnabled } from '@/components/nutrition';
@@ -481,6 +482,15 @@ export default function RecipeDetailPage() {
           </div>
 
           <div className="rec-noprint flex flex-wrap items-center gap-2.5">
+            {can('read', 'StockMovement') && (
+              <IconAction
+                icon={Waypoints}
+                word="Trasabilitate"
+                label="Trasabilitate"
+                title="Taskurile care au folosit sau au produs rețeta"
+                href={`/stock/traceability?recipeId=${id}`}
+              />
+            )}
             {can('create', 'Recipe') && (
               <IconAction
                 icon={Copy}
