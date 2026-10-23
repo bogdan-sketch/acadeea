@@ -67,7 +67,7 @@ echo "   Sync complete."
 # ──────────────────────────────────────────────
 echo ""
 echo "[2/5] Setting up JWT keys..."
-ssh "${SERVER_USER}@${SERVER}" bash -s <<'REMOTE_JWT'
+ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" bash -s <<'REMOTE_JWT'
 set -euo pipefail
 
 KEY_TMP_DIR="/tmp/acadeea-jwt-keys"
@@ -110,13 +110,13 @@ REMOTE_JWT
 # (see docker/MIGRATION_BASELINE.md); never use `db push` against live DBs.
 echo ""
 echo "[3/5] Building image + applying database migrations..."
-ssh "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} build api"
-ssh "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} run --rm --no-TTY api /app/apps/api/node_modules/.bin/prisma migrate deploy --schema=apps/api/src/prisma/schema.prisma"
+ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} build api"
+ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} run --rm --no-TTY api /app/apps/api/node_modules/.bin/prisma migrate deploy --schema=apps/api/src/prisma/schema.prisma"
 echo "   Database migrations applied."
 
 echo ""
 echo "[4/5] Starting containers..."
-ssh "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d --build"
+ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} up -d --build"
 echo "   Containers started."
 
 # ──────────────────────────────────────────────
@@ -126,7 +126,7 @@ if [ "$RUN_SEED" = true ]; then
   echo ""
   echo "[seed] Running bootstrap seed..."
   # Forward SEED_* vars from the server-side env file into the container
-  ssh "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && set -a && . ${ENV_FILE} 2>/dev/null; set +a && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} exec -T -e SEED_ADMIN_EMAIL -e SEED_ADMIN_PASSWORD -e SEED_ADMIN_FIRST_NAME -e SEED_ADMIN_LAST_NAME -e SEED_ORG_NAME api node apps/api/dist/prisma/seed.js"
+  ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" "cd ${REMOTE_DIR} && set -a && . ${ENV_FILE} 2>/dev/null; set +a && docker compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} exec -T -e SEED_ADMIN_EMAIL -e SEED_ADMIN_PASSWORD -e SEED_ADMIN_FIRST_NAME -e SEED_ADMIN_LAST_NAME -e SEED_ORG_NAME api node apps/api/dist/prisma/seed.js"
   echo "   Bootstrap seed complete."
 fi
 
@@ -136,7 +136,7 @@ fi
 echo ""
 echo "[5/5] Configuring Nginx reverse proxy + SSL..."
 
-ssh "${SERVER_USER}@${SERVER}" bash -s <<'REMOTE_NGINX'
+ssh -o ServerAliveInterval=20 -o ServerAliveCountMax=15 "${SERVER_USER}@${SERVER}" bash -s <<'REMOTE_NGINX'
 # NOTE: no `set -e` — a certbot failure (DNS not pointed here yet, lock) must
 # NOT abort before nginx is reloaded with the correct vhosts.
 set -uo pipefail
