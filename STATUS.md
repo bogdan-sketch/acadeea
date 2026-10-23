@@ -1,6 +1,6 @@
 # Acadeea — status
 
-Last updated: **2026-10-22**. Update this file whenever something below changes.
+Last updated: **2026-10-23**. Update this file whenever something below changes.
 
 ## Live
 
@@ -16,12 +16,14 @@ Last updated: **2026-10-22**. Update this file whenever something below changes.
 
 ## Social login (Apple / Google)
 
+Uses the SAME OAuth clients as Horae (Google Cloud project `1031952890842`, Apple team
+`2C3LQ6B4B4`) ⇒ same Google/Apple user ids, so accounts already linked on Horae keep working.
 Existing links: 1 Apple + 2 Google users (all also have a password).
 
 | | Apple | Google |
 | --- | --- | --- |
-| iOS app | ON — capability on `ro.acadeea.app`, API `APPLE_AUDIENCES=ro.acadeea.app` | OFF until an **iOS OAuth client for `ro.acadeea.app`** exists in the Google Cloud project `1031952890842` (same project ⇒ same Google user ids, existing links keep working). Then: `GIDClientID` + reversed-client-id URL scheme in `apps/ios/project.yml`, and add the client id to `GOOGLE_AUDIENCES`. |
-| Web | OFF — needs the Services ID `ca.horae.signin` to list domain `app.acadeea.ro` + return URL in the Apple Developer portal (or a new Acadeea Services ID). Then build arg `NEXT_PUBLIC_APPLE_SERVICES_ID` + add it to `APPLE_AUDIENCES`. | OFF — add `https://app.acadeea.ro` as an Authorized JavaScript origin on the web client `1031952890842-16dlcao6…` (already in `GOOGLE_AUDIENCES`). Then build arg `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. |
+| iOS app | ON — capability on `ro.acadeea.app`; API `APPLE_AUDIENCES` has `ro.acadeea.app` | ON (since build 202610231208) — Horae's iOS client `…-vijstfl9…` (`GIDClientID` in `apps/ios/project.yml`). Not yet tried on a device; if Google refuses the bundle id, create an iOS client for `ro.acadeea.app` in the same project and swap the id (+ `GOOGLE_AUDIENCES`). |
+| Web | Button shown, **needs Apple portal config**: Services ID `ca.horae.signin` → Sign in with Apple → add domain `app.acadeea.ro` + return URL `https://app.acadeea.ro` | Button shown, **needs Google config**: web client `…-16dlcao6…` → Authorized JavaScript origins → add `https://app.acadeea.ro` (until then the console says "origin is not allowed") |
 | Android | — (the Android app never had social login) | — |
 
 ## Pending / open
@@ -33,8 +35,11 @@ Existing links: 1 Apple + 2 Google users (all also have a password).
    allows verified domains). To send from `@acadeea.ro`, verify acadeea.ro in Resend (DNS records
    at the client's hosting) and change `SMTP_FROM` in `docker/.env.acadeea`.
 3. **Old copy on Horae** — the `acadeea` org still exists on Horae prod (left untouched on
-   purpose) and that server still polls the same WooCommerce shop into it. It is an archive; staff
-   must use the Acadeea apps/web, not the "Horae" app. Ask Sergiu before touching anything there.
+   purpose) and that server still polls the same WooCommerce shop into it. It is an archive, BUT
+   staff kept opening the "Horae" app after the cutover (6 people logged in there on 22–23.10) and
+   3 stock receptions were entered ONLY there on 23.10 ~10:45 by Andreea Filpisan (Rom 1,4 kg,
+   Ouă 30 kg, Gălbenuș 18 kg) — they must be re-entered in Acadeea. Decide with Sergiu whether to
+   deactivate the org on Horae so nobody can work in the wrong system.
 4. **Android R8/minify is OFF** for release (`isMinifyEnabled = false`) — it was never exercised
    (missing keep rules for Tink/Moshi/Retrofit). Turning it on needs proguard rules + a full test.
 5. **App icon** is provisional (white Acadeea wordmark on #D4527B). Replace

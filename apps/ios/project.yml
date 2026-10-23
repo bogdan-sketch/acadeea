@@ -96,6 +96,15 @@ targets:
         # Standalone (single-org, on-prem) builds set these; empty = Horae
         # defaults (read by AppConfig).
         API_BASE_URL: https://api.acadeea.ro
+        # Google Sign-In: the Horae prod iOS client of the same Google Cloud
+        # project (1031952890842) — same project ⇒ same Google user ids, so
+        # accounts already linked on Horae keep working. Its id is in the API's
+        # GOOGLE_AUDIENCES. Swap for a dedicated ro.acadeea.app client if Google
+        # ever enforces the bundle id.
+        GIDClientID: 1031952890842-vijstfl9rmv5vo21jr38ne3v6sle594c.apps.googleusercontent.com
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - com.googleusercontent.apps.1031952890842-vijstfl9rmv5vo21jr38ne3v6sle594c
         BRAND_NAME: Acadeea
         ORG_SLUG: acadeea
     # Push Notifications capability — the aps-environment entitlement. Shared by

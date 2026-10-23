@@ -25,7 +25,7 @@ struct SplashView: View {
 
     private static let formationDuration = 2.5
     /// Cat de mult urca logoul cand apare formularul (design: translateY(-235px)).
-    private static let logoLift: CGFloat = 150
+    private static let logoLift: CGFloat = 185
 
     private var accent: Color { BrandingManager.shared.accentColor }
 
